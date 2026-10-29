@@ -13,10 +13,16 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
     ).toHaveCount(13);
     await expect(page.locator('aside a[href="#follow"]')).toHaveCount(0);
     const contents = page.locator(".book-contents");
-    if (width > 750) await expect(contents).toHaveAttribute("open", "");
-    else {
+    if (width > 750) {
+      await expect(contents).toHaveAttribute("open", "");
+      await expect(page.locator(".book-contents-heading")).toBeVisible();
+      await expect(contents.locator("summary")).toBeHidden();
+      await expect(contents.locator("nav")).toBeVisible();
+    } else {
       await expect(contents).not.toHaveAttribute("open");
-      await page.getByText("Book contents", { exact: true }).click();
+      await expect(page.locator(".book-contents-heading")).toBeHidden();
+      await expect(contents.locator("nav")).toBeHidden();
+      await page.getByText("Chapters", { exact: true }).click();
       await expect(page.locator('aside [aria-current="page"]')).toBeVisible();
     }
     await page.locator('main nav a[href="#follow"]').click();
@@ -28,6 +34,16 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
       ),
     ).toBe(true);
   }
+  // A phone menu closed by the reader must become a visible sidebar on tablet.
+  await page.getByText("Chapters", { exact: true }).click();
+  await expect(page.locator(".book-contents nav")).toBeHidden();
+  await page.setViewportSize({ width: 1024, height: 1000 });
+  await expect(page.locator(".book-contents nav")).toBeVisible();
+  await expect(page.locator(".book-contents summary")).toBeHidden();
+  await expect(page.locator('aside [aria-current="page"]')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await expect(page.locator(".book-contents")).not.toHaveAttribute("open");
+  await expect(page.locator(".book-contents summary")).toHaveText("Chapters");
 });
 
 test("introduction, working chapters and outlines open and reload without JavaScript", async ({
@@ -35,11 +51,15 @@ test("introduction, working chapters and outlines open and reload without JavaSc
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  await page.setViewportSize({ width: 320, height: 844 });
+  await page.setViewportSize({ width: 1280, height: 844 });
   await page.goto(
     "http://127.0.0.1:4173/benchmarking-lab/chapters/start-here.html",
   );
   await expect(page.locator("h1")).toContainText("Start here");
+  await expect(page.locator(".book-contents-heading")).toBeVisible();
+  await expect(page.locator(".book-contents summary")).toBeHidden();
+  await expect(page.locator(".book-contents nav")).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 844 });
   await expect(page.locator("#finished-comparison")).toBeVisible();
   await expect(
     page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
@@ -55,7 +75,7 @@ test("introduction, working chapters and outlines open and reload without JavaSc
   await page.locator('a[rel="prev"]').click();
   await expect(page.locator("h1")).toContainText("Start here");
   await page.locator('a[rel="next"]').click();
-  await page.getByText("Book contents", { exact: true }).click();
+  await page.getByText("Chapters", { exact: true }).click();
   const links = await page
     .locator('nav[aria-label="Book chapters"] a')
     .evaluateAll((nodes) =>
@@ -128,14 +148,14 @@ test("introduction and outlines work on phones with shared theme and no benchmar
   await page.goto("./chapters/start-here.html");
   await expect(page.locator(".book-contents")).not.toHaveAttribute("open");
   await page.getByRole("button", { name: "Switch to dark theme" }).click();
-  await page.getByText("Book contents", { exact: true }).click();
+  await page.getByText("Chapters", { exact: true }).click();
   await page
     .locator(
       'nav[aria-label="Book chapters"] a[href="10-complete-pipeline.html"]',
     )
     .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByText("Book contents", { exact: true }).click();
+  await page.getByText("Chapters", { exact: true }).click();
   await page
     .locator(
       'nav[aria-label="Book chapters"] a[href="11-capacity-and-cost.html"]',

@@ -849,8 +849,23 @@ code {
 }
 
 /* Chapter outlines share the reading layout with the working lab. */
+.book-contents-heading {
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font:
+    600 13px/1.65 Arial,
+    Helvetica,
+    sans-serif;
+  letter-spacing: 0;
+}
 .book-contents {
-  padding: 14px 0;
+  border-top: 0;
+  padding: 0;
+}
+.book-contents > summary {
+  display: none;
 }
 .book-contents nav {
   max-height: 55vh;
@@ -935,6 +950,16 @@ code {
   .roadmap {
     display: block;
     margin-top: 16px;
+  }
+  .book-contents-heading {
+    display: none;
+  }
+  .book-contents {
+    border-top: 1px solid var(--line);
+    padding: 14px 0;
+  }
+  .book-contents > summary {
+    display: list-item;
   }
   .book-contents nav {
     max-height: 300px;

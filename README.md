@@ -25,8 +25,11 @@ and route through the book. It leads into two executable chapters:
 Chapters 3–12 have navigable skeleton pages with objectives, planned experiments,
 design tasks and evidence checklists. Their labs are explicitly marked as planned.
 Book contents and previous/next links connect the introduction and all twelve
-chapters, including direct loads without JavaScript. Explanatory diagrams stay
-distinct from measured outputs.
+chapters, including direct loads without JavaScript. The contents are permanently
+visible on desktop and tablet, with a collapsible “Chapters” menu on phones.
+The list opens automatically when resizing to a larger screen. Without JavaScript,
+the phone menu starts open and remains usable as a native disclosure.
+Explanatory diagrams stay distinct from measured outputs.
 
 The chapter 1 benchmark uses the same scalar function for both traversal orders. Compilation
 and input setup happen before timing. It warms both orders, calibrates a common
