@@ -3,215 +3,135 @@
 Copyright © 2026 Christopher Snow.
 
 The reader learns to take a customer question, design and run a fair benchmark,
-and explain the evidence behind a recommendation. Readers practise both producing
-their own comparison and reviewing somebody else's. Small runnable examples lead
-to independently designed experiments, executable scripts and a final report.
+and explain the evidence behind a recommendation. Small experiments lead to
+independent workload design, real service tests, cost models and a final report.
+The full introduction and twelve chapters are implemented.
 
-No prior programming or database experience is required for the opening labs.
-Introduce loops, arrays, queries and other technical terms where readers first
-need them. Introduce terminal commands, configuration files and small scripts as
-they become useful. Wasm provides the initial execution environment. Later
-infrastructure exercises use real services with downloadable harnesses and
-recorded deployment conditions.
+No programming or database experience is required for the opening labs. Introduce
+loops, arrays, queries and other technical terms when readers need them. Explain
+the purpose of an example before its technical question. Terminal commands and
+small scripts appear alongside their explanation and source.
 
 ## Introduction
 
-The unnumbered [Start here](../chapters/start-here.html) page introduces the
-customer decision, the skills readers will practise, the route through the book
-and the evidence they will produce. It takes about three minutes to read and
-leads directly to Chapter 1. No prior programming or database experience is
-required for the opening labs. It distinguishes the two working browser labs
-from the planned infrastructure chapters. Keep it linked from every book menu
-and from Chapter 1 without changing the numbered chapters or their URLs.
+[Start here](../chapters/start-here.html) is an unnumbered three-minute guide to
+the customer decision, skills, route and final evidence package. It explains
+WebAssembly and why the opening experiments use it. The header and every book menu
+link to it; Chapter 1's existing URL and all chapter numbers are preserved.
 
 ## Chapters
 
-| Chapter                                                                                  | Question                                                                                        | Status               |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------- |
-| 1. Same work, different order                                                            | How do we turn “faster” into a specific comparison question?                                    | Implemented          |
-| 2. [DuckDB or Postgres?](../chapters/02-duckdb-postgres.html)                            | What does a first comparison of DuckDB-Wasm and PGlite show, and what must we check next?       | Implemented          |
-| 3. [Are they doing the same work?](../chapters/03-equivalent-work.html)                  | Do inputs, answers, configuration and service guarantees make the comparison fair?              | Outline; lab planned |
-| 4. [Choose a representative workload](../chapters/04-representative-workloads.html)      | Does the recommendation change with the customer's data and usage?                              | Outline; lab planned |
-| 5. [Can you trust your benchmark?](../chapters/05-trust-the-benchmark.html)              | Is the harness measuring the intended work, or limiting and distorting it?                      | Outline; lab planned |
-| 6. [How much faster—and how certain?](../chapters/06-differences-and-uncertainty.html)   | What do repeated runs and their variation support?                                              | Outline; lab planned |
-| 7. [Beyond the average](../chapters/07-beyond-the-average.html)                          | What do response-time distributions, errors and throughput tell us?                             | Outline; lab planned |
-| 8. [What happens as demand grows?](../chapters/08-demand-and-scaling.html)               | Where do capacity limits and crossover points appear?                                           | Outline; lab planned |
-| 9. [Beyond databases](../chapters/09-beyond-databases.html)                              | Which methods transfer to Kafka, object storage and search, and which measurements must change? | Outline; lab planned |
-| 10. [Benchmark the complete pipeline](../chapters/10-complete-pipeline.html)             | How do storage, brokers, connectors and databases combine to determine the customer's result?   | Outline; lab planned |
-| 11. [From benchmark results to capacity and cost](../chapters/11-capacity-and-cost.html) | What does it cost to meet the same workload and service requirements?                           | Outline; lab planned |
-| 12. [Present a comparison you can defend](../chapters/12-defensible-comparison.html)     | Can another reader reproduce, challenge and use the recommendation?                             | Outline; lab planned |
+| Chapter                                                                                  | Reader outcome                                                               | Execution                                                                                 |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1. Same work, different order                                                            | Inspect equivalent work and explain a conditional timing finding.            | Real editable Wasm; checksums, samples and export.                                        |
+| 2. [DuckDB or Postgres?](../chapters/02-duckdb-postgres.html)                            | Run both jobs, check answers, separate setup and query time.                 | Real DuckDB-Wasm and PGlite; visual request comparisons.                                  |
+| 3. [Are they doing the same work?](../chapters/03-equivalent-work.html)                  | Find different output or configuration before quoting a speed claim.         | Real SQL, independent edge-case reference, flawed/repaired queries and indexes.           |
+| 4. [Choose a representative workload](../chapters/04-representative-workloads.html)      | Connect the data and request mix to a customer's usage.                      | Real workload replay, uniform/hotspot data and explicit weighting.                        |
+| 5. [Can you trust your benchmark?](../chapters/05-trust-the-benchmark.html)              | Audit timing, client limits and work accounting.                             | Real SQL with controlled client pauses, closed-loop/scheduled arrivals and a full ledger. |
+| 6. [How much faster—and how certain?](../chapters/06-differences-and-uncertainty.html)   | Compare independent paired runs and practical benefit.                       | Editable analysis and import of compatible real Chapter 2 records.                        |
+| 7. [Beyond the average](../chapters/07-beyond-the-average.html)                          | Read response-time populations alongside failures and unfinished work.       | Editable request-ledger analysis with explicit timing boundaries.                         |
+| 8. [What happens as demand grows?](../chapters/08-demand-and-scaling.html)               | Design load sweeps and screen capacity evidence against targets.             | Editable load-step analysis plus real browser/service sweep assignments.                  |
+| 9. [Beyond databases](../chapters/09-beyond-databases.html)                              | Adapt the method to Kafka, storage and search.                               | Real downloadable broker workload and browser trace inspector.                            |
+| 10. [Benchmark the complete pipeline](../chapters/10-complete-pipeline.html)             | Verify the customer's result across connected services.                      | Real object store→ingestion→Kafka→sink→Postgres harness and trace inspection.             |
+| 11. [From benchmark results to capacity and cost](../chapters/11-capacity-and-cost.html) | Estimate complete deployments at equivalent targets and explore uncertainty. | Capacity/TCO planner with explicit provenance and assumptions.                            |
+| 12. [Present a comparison you can defend](../chapters/12-defensible-comparison.html)     | Build, reproduce and review an evidence-backed recommendation.               | Report/evidence builder and adaptable self-checking HTTP runner.                          |
 
-Chapter 1 introduces “two options, one question” through the existing memory-order
-lab. Chapter 2 provides an early database comparison. Subsequent chapters improve
-that experiment rather than requiring every method before running anything. Keep
-the final report after the technology, pipeline and cost chapters so readers can
-use all three in their project.
+The book deliberately runs a first comparison early. Later chapters improve it
+instead of requiring every method before a first experiment. The final report
+follows the technology, pipeline and cost chapters so readers can use all three.
 
-## The recurring database comparison
+## Recurring comparison and measurement
 
-Chapter 2 runs DuckDB-Wasm and PGlite against the same generated orders dataset.
-Begin with a lookup and an aggregation, verify equivalent answers, record actual
-times and let the reader change the data size. The first conclusion is provisional.
-End by asking what needs checking before recommending either option.
+Chapters 2–5 use the pinned browser database engines and checked order fixtures.
+A lookup and an aggregation reveal why the customer's job matters. Equivalent
+answers come before timings; configuration choices, indexes, setup and warm
+requests stay visible. Workload replay distinguishes actual request timings from
+an arithmetic weighted summary. The runner experiment records intended arrival,
+actual enqueue, submission and completion for every offered item.
 
-Later chapters revisit correctness, indexes, timing boundaries, startup and warm
-operation, workload distributions, repeated runs and scaling. Preserve the reader's
-benchmark brief and run records as the experiment develops. Browser-build results
-describe those builds and conditions. Native/server companion exercises establish
-the performance inputs used for deployment and cost comparisons.
+Browser-build results describe those builds and conditions. They do not establish
+native/server throughput, availability or infrastructure cost. Fresh engine runs
+can be analysed as paired run summaries in Chapter 6, but an importer cannot prove
+experimental independence or representative conditions.
 
-## Trusting the runner and the evidence
+Chapter 6 uses independent paired log time ratios and a stated approximate
+Student-t interval. Requests within one run are not treated as independent
+experiments. Chapter 7 defines successful-request latency populations and retains
+errors, timeouts and pending work. Chapter 8 reconciles offered work and queue
+changes, distinguishes finite draining from steady operation, and treats supplied
+passing points as a screening result requiring longer repeated observations.
 
-Chapter 5 makes the harness an object of investigation. Separate offered load from
-achieved work, identify a client bottleneck, and count errors, timeouts and pending
-work. Explain how closed-loop clients reduce offered load when the system slows,
-and why latency measured only after sending can omit waiting before submission.
-Choose the arrival model to match the customer scenario and record it.
+All authored starter traces are labelled illustrative. Their calculations are
+real, but the numbers are not claimed as measured product performance. Actual
+measurements require the relevant executable workload, configuration and records.
 
-Distinguish compilation/startup, cache warming, sustained operation and recovery.
-Include long enough observations to encounter relevant background work. Chapter 6
-treats independent repeated runs and uncertainty; chapter 7 defines measurement
-points, latency distributions and error accounting. Read a published comparison
-critically before designing the experiment that would resolve its missing evidence.
+## Real service transfer and pipelines
 
-## Beyond databases
+The downloadable Compose harness runs Kafka 3.9.1, SeaweedFS 3.85 (S3-compatible
+storage) and PostgreSQL 17.5 with versioned Python clients. The broker exercise
+records scheduled and actual offers, acknowledgement, receipt, processing, errors
+and event identities. Consumer pauses are tested while arrivals continue. Explicit
+offset commits follow processing. One broker/partition/replica is a teaching
+topology, so acknowledgement and ordering checks do not establish production
+replicated durability or cross-partition ordering.
 
-Chapter 9 uses Kafka as a worked transfer exercise. Begin with a sustained event
-rate and a delivery-latency target. Define message sizes, arrival patterns,
-partitions, producers, consumer groups, batching, compression, replication and
-acknowledgement semantics. Compare equivalent guarantees, not merely option names.
+The pipeline follows uploaded objects through a synchronous ingestion adapter,
+Kafka, a consumer/sink worker and a verification query. Records are transformed
+and checked against an independent expected set. Unique run and object identities
+connect milestones. Duplicate receipts remain visible even though the sink uses
+idempotent upserts. Each run has an isolated object-key prefix in a shared local
+bucket, so repeated runs do not create a new storage collection for every run.
 
-Distinguish producer acknowledgement, consumer receipt and completed downstream
-processing. Record delivered rate, errors, consumer lag and latency under load.
-Pause a consumer and measure catch-up while new events continue arriving. Verify
-event identities and explain which loss, duplication and ordering checks the
-exercise performs. Delivery guarantees must match the actual configuration.
+All event timestamps use one client monotonic clock. Query polling adds detection
+delay, and verification cost is recorded. Object completion differs from record
+latency. End-to-end time is measured directly; stage p99 values cannot be added.
+Target arrival rate differs from achieved offers when the synchronous client falls
+behind. The timeout is a declared drain budget; library calls have their own
+bounds. Failed correctness checks retain the evidence and fail the command.
 
-Run the benchmark against a real broker using a downloadable harness. Browser
-activities support configuration, predictions and inspection of recorded traces.
-Shorter design exercises apply the same reasoning to object-storage request sizes,
-concurrency and request charges, and to search relevance, indexing delay and
-response time. Teach readers to define success before selecting the tool.
+Browser inspectors validate and render user-supplied traces, keep the inspected
+snapshot separate from edits, and show unique outstanding work over time. They
+also retain exact observations and notes. No broker runs inside the browser.
 
-## Benchmark the complete pipeline
+## Capacity, cost and final project
 
-Chapter 10 follows one customer outcome across several services. The planned
-reference pipeline is:
+[The Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/) supplies
+deeper modelling. Chapter 11 makes the bridge from performance at a required
+service level to complete deployments and cost over a stated horizon. Capacity
+and price must cover the same service group, including replicas. Headroom and a
+group-loss reserve are explicit; linear scaling remains an assumption to test.
 
-```text
-Object upload to S3-compatible storage
-  → ingestion worker reads and transforms records
-  → Kafka carries events
-  → sink worker writes the database
-  → a query verifies the records are available
-```
+Prices, discounts, region/date, physical storage, operations, network, licences,
+workers, labour and setup have sources and exclusions. Failed or late output stays
+visible beside cost per useful result. Starter capacities/prices are illustrative
+example credits. Imported browser timings cannot silently become server sizing.
 
-The adapters, clients, networks and serialisation are part of the system being
-tested. A diagram must name them. The reference implementation will declare how
-ingestion is triggered, when offsets are committed and how retries and duplicate
-events are handled.
+The capstone combines a benchmark brief, source/setup, a self-checking workload,
+raw records, conditions, analysis and recommendation. Its report builder retains
+original evidence payloads and file hashes, while identifying missing evidence
+and the limits of each record. Review checks do not certify fairness. Markdown
+reports and JSON evidence projects can be downloaded, restored and reviewed.
 
-Start from a customer question: how long after submitting an upload are all
-expected records queryable, at the required arrival rate? Define the expected
-record set and any transformation before running the test. Record the query-polling
-interval and verification cost: observed availability includes detection delay.
-Distinguish per-object completion time from per-record latency.
+The downloadable Python standard-library runner gives readers complete code to
+adapt: HTTP work, an independent oracle, paired order, warmup, raw observations
+and negative controls. Local closed-loop runs teach the method; their blocks do
+not claim independent server deployments or fixed-arrival sustainable capacity.
+Readers must modify the operation and checks, repeat relevant experiments and
+review somebody else's published comparison.
 
-The lesson must cover:
+## Maintenance and verification
 
-- **An end-to-end contract.** Use unique run, object and record identifiers to
-  correlate work. Measure from upload submission to verification of queryable
-  output with the harness's monotonic clock. Record upload acknowledgement and
-  stage boundaries separately. If timestamps cross hosts, state clock
-  synchronisation and its uncertainty.
-- **Correctness and completion.** Verify expected records and values, detect
-  missing or duplicate output, and record failures, late completions and unfinished
-  work. An intermediate acknowledgement is not final completion.
-- **A workload for the whole path.** Vary object sizes, records per object,
-  arrival bursts, message batching, transformations and concurrent queries.
-  Express stage rates in compatible units when comparing capacity. Record both
-  offered input and verified output, with bounded backlog as a steady-state goal.
-- **Bottleneck diagnosis.** Collect component metrics and correlated stage
-  observations alongside end-to-end results. Deliberately slow one worker or
-  restrict a resource, then test an explanation by changing that constraint.
-  Inspect queues and backpressure; a faster database may leave the limiting stage
-  elsewhere. Component scores alone cannot predict pipeline capacity.
-- **Recovery under continuing load.** Pause a worker or introduce a service
-  failure, then restore it while arrivals continue. Measure backlog growth,
-  catch-up, user-visible delay, retries and data correctness. Interpret results
-  within the tested topology and availability guarantees.
-- **Latency across the path.** Match observations for the same work item.
-  Do not add stage p99 values to manufacture an end-to-end p99. Stages can
-  overlap, batch and queue differently; measure the full path directly.
+Every chapter has a purpose-first opening, worked example, executable or analytical
+exercise, independent task, progressive hints, further reading and interpretation
+boundaries. Notes and portable evidence support work beyond preset controls.
 
-The independent task changes one component or configuration and asks whether it
-improved the complete customer outcome. Require a repeatable baseline and control
-changes to guarantees, output, resources and topology. The report distinguishes
-local improvements from observed whole-system improvements.
+The reading path and styles work without JavaScript. There is one book menu:
+static on larger screens and a native “Chapters” disclosure on phones. Light/dark
+themes, keyboard controls, readable visual results and local scrolling tables are
+shared requirements. Current chapter labels distinguish measured browser labs,
+analysis labs, real service exercises, cost planning and the final project.
 
-Use real containerised services and a runnable harness for execution. Pin versions,
-record configuration and supply reset, run, collect and verify commands. A small
-local deployment teaches the procedure; deployment-scale or resilience claims
-require corresponding tests. Browser queue models must be labelled explanatory,
-and recorded examples must identify their source rather than imply live execution.
-
-## From performance to capacity and TCO
-
-Chapter 11 links directly to [Sizing and TCO](https://snowch.github.io/sizing-and-tco/).
-Keep the practical bridge here and use the companion for deeper modelling and
-uncertainty analysis:
-
-```text
-Measured performance at the required service level
-  → required capacity and deployment design
-  → total cost over a stated period
-```
-
-Readers use sustainable throughput while meeting latency and correctness targets,
-then account for demand, headroom and availability needs. Explain where replication
-and redundancy are already included in measured capacity to avoid counting them
-twice. For a pipeline, size its interacting stages and check the proposed complete
-deployment; isolated component peaks are insufficient evidence.
-
-Include compute, storage capacity, storage operations, networking/egress, licences
-and operational effort where relevant. Pipeline costs include workers, connectors,
-retention, replicas, retries and recovery capacity. Record region, price date,
-discount assumptions and time horizon. Compare cost per correct useful result
-meeting the stated target, while also reporting failures and missed targets.
-
-Follow the companion's distinction between measured facts, vendor claims and
-assumptions. Attach benchmark run records to performance inputs; retain separate
-sources for prices and operating assumptions. Explore sensitivity to demand,
-performance and prices. Missing measurements remain visible. Cost exercises use
-native/server evidence and priced configurations; browser timings alone do not
-establish infrastructure TCO.
-
-The independent task asks: one option costs less per instance, but does it still
-cost less when both deployments satisfy the same workload and service requirements?
-
-## Final project and chapter requirements
-
-The final project produces a benchmark brief, a self-checking workload, a repeatable
-runner, raw observations with recorded conditions, and a concise recommendation.
-Readers also review somebody else's comparison and propose a fair follow-up test.
-The chosen system may be a database, broker or complete pipeline.
-
-Open each chapter by explaining what the reader will examine, why that example
-matters to a customer decision, and what the reader will learn. Connect it to the
-preceding chapter and introduce unfamiliar terms before relying on them. Establish
-the purpose before posing the technical question. Preserve this approach as the
-planned chapters become full labs.
-
-Each chapter needs a concrete question, a small runnable example, an observation
-target, an independent task, progressive hints and an account of what the evidence
-establishes. Keep predictions optional and a reading path available before execution.
-Introduce enough command-line and scripting practice to let readers modify and
-eventually build their own harness, not just operate preset controls.
-
-Before expanding, try chapter 1 with readers: can they explain the address orders,
-distinguish a model from a measurement, identify the timed region, and state a
-conditional conclusion from their own run? Automated checks do not establish this.
-Chapters 3–12 have published skeleton pages; their worked examples and executable
-labs remain planned. Each outline contains objectives, a proposed experiment, an
-independent design task, an evidence checklist and an interpretation boundary.
-No unfinished lab is presented as implemented.
+Detailed implementation and validation boundaries are in the memory, database,
+methods, statistics, infrastructure and decision measurement documents. Automated
+checks cover behaviour, arithmetic and provenance; learner comprehension and the
+quality of a customer's chosen workload still need human review.

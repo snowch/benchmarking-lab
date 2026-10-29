@@ -1,0 +1,227 @@
+/* Copyright © 2026 Christopher Snow */
+.decision-tool {
+  margin: 2rem 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+}
+.decision-tool h3 {
+  margin-top: 1.5rem;
+}
+.decision-tool label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  font-weight: 650;
+}
+.decision-tool input,
+.decision-tool select,
+.decision-tool textarea {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.65rem;
+}
+.decision-tool textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+.decision-tool input[type="file"] {
+  font-size: 0.8rem;
+}
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.decision-tool .decision-wide {
+  grid-column: 1 / -1;
+}
+.decision-tool fieldset {
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+.decision-tool legend {
+  font-weight: 700;
+  padding: 0 0.4rem;
+}
+.decision-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.decision-actions button,
+.decision-tool button {
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  background: var(--surface);
+  font: inherit;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+.decision-tool button:hover {
+  background: var(--paper);
+}
+.decision-tool [role="status"] {
+  min-height: 1.5em;
+  font-size: 0.9rem;
+}
+.decision-scroll {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.decision-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+}
+.decision-table th,
+.decision-table td {
+  text-align: left;
+  padding: 0.7rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.decision-table thead {
+  background: var(--paper);
+}
+.decision-tool .decision-summary {
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--paper);
+}
+.decision-comparison {
+  min-width: 0;
+  margin: 24px 0;
+}
+.decision-comparison figcaption {
+  font:
+    600 14px/1.5 Arial,
+    sans-serif;
+}
+.decision-tool .decision-comparison-scale {
+  margin: 6px 0 14px;
+  color: var(--muted);
+  font:
+    12px/1.6 Arial,
+    sans-serif;
+}
+.decision-comparison-row {
+  margin: 12px 0;
+}
+.decision-comparison-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3px 12px;
+  margin-bottom: 5px;
+  font:
+    13px/1.5 Arial,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.decision-comparison-heading span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.decision-comparison-track {
+  height: 14px;
+  background: var(--line);
+}
+.decision-comparison-bar {
+  height: 100%;
+  background: var(--green);
+}
+.decision-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+.decision-flow > div {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+}
+.decision-flow strong {
+  display: block;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+.decision-flow p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+.decision-tool pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 32rem;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 1rem;
+  font-size: 0.82rem;
+}
+.decision-attachment {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  margin: 1rem 0;
+  overflow-wrap: anywhere;
+}
+.decision-attachment p {
+  font-size: 0.9rem;
+}
+.decision-attachment textarea {
+  min-height: 4rem;
+  margin: 0.5rem 0;
+}
+.lesson-page section p,
+.lesson-page section li {
+  line-height: 1.75;
+}
+.lesson-page details {
+  margin: 1rem 0;
+}
+.lesson-page details summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.lesson-page .decision-tool p {
+  line-height: 1.65;
+}
+@media (max-width: 650px) {
+  .decision-grid,
+  .decision-flow {
+    grid-template-columns: 1fr;
+  }
+  .decision-wide {
+    grid-column: auto;
+  }
+  .decision-tool {
+    padding: 1rem;
+  }
+}
+@media print {
+  .decision-actions {
+    display: none;
+  }
+  .decision-tool pre {
+    max-height: none;
+  }
+}

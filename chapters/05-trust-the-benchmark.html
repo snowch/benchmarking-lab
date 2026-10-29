@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Is the runner measuring the intended work, or limiting and distorting it? Chapter outline for Benchmarking Lab."
+      content="Investigate a real SQL runner, scheduled arrivals, client waiting and work accounting."
     />
     <title>Can you trust your benchmark? · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/methods.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page methods-page" data-method="5">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html" aria-current="page"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,109 +154,448 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 05</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 05</span><span>Working lab</span
+          ><span>About 35 minutes</span>
         </div>
         <h1>Can you trust your benchmark?</h1>
         <p class="standfirst">
-          We’ll look at the program that sends requests and records their times.
-          Its own limits can make a database appear slower or hide work that is
-          waiting. You’ll learn to check the measuring process before using its
-          numbers to compare systems.
+          The program sending requests can set the limit you mistake for a
+          database limit. You will run real SQL through two arrival patterns,
+          introduce a deliberate client pause, and account for the work waiting
+          outside the query timer.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
+        <p>
+          Chapter 4 changed the workload. This chapter holds the database and
+          query fixed and changes the <strong>harness</strong>: the program that
+          prepares inputs, sends work, records time and checks outputs. A
+          harness is part of every benchmark. Before explaining why a product is
+          slow, establish that the tool observing it can produce and measure the
+          intended demand.
         </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>Define what belongs inside the timed interval.</li>
-            <li>
-              Distinguish work submitted, work completed and work still waiting.
-            </li>
-            <li>
-              Recognise when the request-sending program limits the test or
-              omits waiting time.
-            </li>
-          </ul>
-        </section>
-        <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+        <div class="methods-flow">
+          <strong>Your evidence:</strong> intended arrivals → actual enqueue
+          times → client preparation → submitted SQL → verified completions.
+          Count every offered request, including work still waiting.
+        </div>
+        <nav class="chapter-jumps" aria-label="In this chapter">
+          <a href="#arrival">Choose arrivals</a>
+          <a href="#worked-example">Find omitted waiting</a>
+          <a href="#experiment">Run the harness</a>
+          <a href="#practice">Diagnose a claim</a>
+        </nav>
+        <section id="arrival">
+          <p class="eyebrow section-number">
+            01 / How demand reaches the system
+          </p>
+          <h2>A waiting client changes the offered load</h2>
           <p>
-            So far, we’ve focused on the systems and the work we ask them to do.
-            Now we’ll examine the <strong>benchmark runner</strong>: the program
-            that prepares the test, sends requests and collects results. It is
-            part of the experiment and can affect what we observe.
+            <strong>Offered load</strong> is the work the test intends to
+            introduce. <strong>Achieved work</strong> is what actually completes
+            during observation. <strong>Throughput</strong> is a count divided
+            by time, such as correct responses per second. Always name which
+            count you use: submissions, acknowledgements and verified
+            completions are different events.
           </p>
           <p>
-            Imagine that completed requests stop increasing as we ask for more
-            work. The database might be at its limit, or the runner might be
-            unable to send requests quickly enough. A runner that waits for
-            every response before sending the next request also changes the
-            demand when responses slow down.
+            A <strong>closed-loop</strong> client sends a request, waits for the
+            response, then starts the next. If the database or client slows
+            down, fewer requests are offered. This can fit a person who waits
+            for a page before continuing, but a single closed-loop client does
+            not represent many independent arrivals.
           </p>
           <p>
-            We’ll inspect where the clock starts and stops, count work sent and
-            completed, and investigate the runner’s limits. These checks help
-            establish whether a measured difference belongs to the systems being
-            compared or to the way we tested them.
+            A <strong>scheduled-arrival</strong> test intends requests at stated
+            times even while earlier work is waiting. Here we schedule twelve
+            arrivals, five milliseconds apart: 0, 5, 10, …, 55 ms. A single
+            client then drains that queue in order, with at most one SQL request
+            in flight. This is a finite demonstration of waiting and client
+            limitations, not a sustained capacity test.
+          </p>
+          <p>
+            In a browser, timers can fire late. The record therefore keeps both
+            the intended arrival and when the page actually enqueued it. A delay
+            before enqueue indicates timer or scheduling lateness. A gap between
+            enqueue and submission indicates waiting for the client plus its
+            preparation. The database query timer alone includes neither of
+            those earlier waits.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / A worked timeline</p>
+          <h2>The missing time can be before the SQL</h2>
           <p>
-            Inspect a supplied runner that includes input generation in one
-            timing and excludes it in another. Then investigate a client that
-            waits for a response before submitting more work.
+            Consider an <strong>invented timeline for explanation</strong>. A
+            request is intended at 10 ms, enqueued at 12 ms, submitted at 32 ms,
+            and its response arrives at 34 ms. The query request took 2 ms. The
+            elapsed time from the intended arrival was 24 ms.
+          </p>
+          <pre class="methods-source" tabindex="0">
+Intended arrival       10 ms
+Actually enqueued      12 ms    2 ms scheduler lateness
+SQL submitted          32 ms   20 ms queue + client preparation
+Full response received 34 ms    2 ms measured query request
+
+Total from intended arrival = 34 − 10 = 24 ms
+Total = scheduler lateness + queue/preparation + request time</pre>
+          <p>
+            The arithmetic describes one work item. A chart of only the 2 ms
+            query response would omit its earlier delay. An application
+            measurement may legitimately start at submission, but it should not
+            be presented as the customer's whole wait when requests have already
+            been waiting elsewhere.
+          </p>
+          <p>
+            A related problem is <strong>coordinated omission</strong>: a load
+            generator that waits for a slow response stops generating the
+            arrivals that would otherwise have waited during the slowdown. Its
+            apparently healthy latency distribution may leave out those affected
+            requests. Match the arrival model to the scenario and document where
+            your clock begins; adding more decimals cannot repair the missing
+            population.
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>Separate startup, setup, warm-up and measured operation.</li>
-            <li>
-              Record intended arrivals, actual submission, completion, errors
-              and timeouts.
-            </li>
-            <li>
-              Change client capacity or pacing and examine achieved work and
-              outstanding requests.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <p class="eyebrow section-number">03 / Investigate the runner</p>
+          <h2>Make the client the bottleneck</h2>
+          <p>
+            A <strong>bottleneck</strong> is the stage that limits progress
+            under the tested conditions. Start with one engine, closed-loop
+            arrivals and no intentional client pause. Download the result. Add a
+            20 ms client pause before every SQL submission, then run again.
+            Finally switch to scheduled arrivals while retaining that pause. The
+            query and 20,000-row fixture stay identical.
+          </p>
+          <div class="methods-lab">
+            <div class="methods-controls">
+              <label for="methods-engine"
+                >Real local engine<select
+                  id="methods-engine"
+                  data-method-setting
+                >
+                  <option value="duckdb">DuckDB-Wasm</option>
+                  <option value="pglite">PGlite (Postgres)</option>
+                </select></label
+              ><label for="methods-arrival"
+                >Arrival pattern<select
+                  id="methods-arrival"
+                  data-method-setting
+                >
+                  <option value="closed">
+                    Closed loop · next arrival waits for response
+                  </option>
+                  <option value="scheduled">
+                    Scheduled · twelve intended arrivals, 5 ms apart
+                  </option>
+                </select></label
+              ><label for="methods-pause"
+                >Intentional client pause before each SQL request<select
+                  id="methods-pause"
+                  data-method-setting
+                >
+                  <option value="0">No intentional pause</option>
+                  <option value="20">20 ms client preparation pause</option>
+                </select></label
+              >
+            </div>
+            <details>
+              <summary>Inspect the query and fixture</summary>
+              <pre id="methods-sql" class="methods-source" tabindex="0">
+-- Twenty thousand deterministic orders, as in Chapter 2.
+SELECT order_id, month_id, region_id, amount_cents
+FROM orders WHERE order_id = 10000;
+-- Twelve requests, one connection, at most one request in flight.</pre>
+            </details>
+            <div class="methods-buttons">
+              <button id="methods-run" type="button" disabled>
+                Run harness investigation</button
+              ><button
+                id="methods-stop"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Stop
+              </button>
+            </div>
+            <p
+              id="methods-status"
+              class="methods-status"
+              role="status"
+              aria-live="polite"
+            >
+              Ready. No engine or timings have been loaded. SQL responses will
+              come from the selected real engine.
+            </p>
+            <p class="caption">
+              Each run creates a fresh local in-memory worker, loads the same
+              data, gathers statistics and checks one unmeasured warm-up lookup.
+              The twelve observed lookups must each match the independent
+              answer. The intentional pause is a browser timer, an explicit
+              educational intervention in the client; actual engine query times
+              and all timestamps are measured. Even a zero-millisecond timer can
+              yield to the event loop. Keep this tab visible.
+            </p>
+            <noscript
+              ><p class="notice">
+                The lesson and worked timeline are readable without JavaScript.
+                Enable JavaScript to execute the engine, investigate the runner
+                and download actual timestamps.
+              </p></noscript
+            >
+            <p id="methods-stale" class="methods-stale" hidden>
+              Controls changed. Results and download describe the completed
+              settings; run again to measure the current choices.
+            </p>
+            <div id="methods-results" hidden></div>
+            <div class="methods-buttons">
+              <button
+                id="methods-download"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Download evidence JSON
+              </button>
+            </div>
+            <p class="caption">
+              Export each completed or incomplete observation before the next
+              run. The JSON includes original settings, fixture and SQL, engine
+              version, setup times, intended/enqueued/submitted/completed
+              timestamps, every correct response, and error/pending counts.
+              Notes save locally; raw completed observations remain in this tab
+              until the next run or page exit.
+            </p>
+          </div>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">04 / Test the explanation</p>
+          <h2>A faster query can leave throughput unchanged</h2>
+          <p>
+            With a 20 ms pause, the client can submit at most about 50 requests
+            per second even if each database request were instantaneous. That is
+            a mathematical upper bound from the deliberate pause, not a measured
+            engine limit. Real timer delays and query work reduce the achieved
+            rate further. The intervention gives you a cause to test: removing
+            the pause should reduce client delay, though short observations
+            still vary.
+          </p>
+          <p>
+            Under the closed loop, the next intended arrival moves later
+            whenever a previous request takes longer. Under scheduled arrivals,
+            the intended timeline remains fixed and queued work can accumulate.
+            Compare total time from intended arrival with query request time for
+            the same row. A large difference locates delay outside the query
+            boundary; it does not prove the database is slow.
+          </p>
+          <div class="methods-checks">
+            <div>
+              <h3>Account for work</h3>
+              <p>
+                Offered = completed + errors + pending at the end of this finite
+                observation. Submitted is a separate subset; unsent queued work
+                is still pending.
+              </p>
+            </div>
+            <div>
+              <h3>Retain failures</h3>
+              <p>
+                Timeouts, bad answers and worker errors invalidate a successful
+                comparison. An incomplete record keeps completed samples, error
+                text and pending counts visible.
+              </p>
+            </div>
+            <div>
+              <h3>Test the limit</h3>
+              <p>
+                Change the suspected client constraint while holding SQL and
+                data fixed. On servers, also inspect client CPU, connections,
+                network and server utilisation.
+              </p>
+            </div>
+          </div>
+          <p>
+            These twelve requests are too short to establish sustained capacity
+            or tail latency. A finite replay drains its queue, so zero pending
+            work at the end does not show that an ongoing arrival stream is
+            stable. A sustained test needs a fixed observation period,
+            continuing arrivals, bounded backlog, errors, resource observations
+            and response targets measured together. Do not hide late requests by
+            ending the clock when submissions stop.
+          </p>
+          <details>
+            <summary>Hint 1 · I only see fast SQL. Where is the pause?</summary>
+            <p>
+              The pause is before submission, outside the query request timer.
+              Subtract intended from completed for the same request, then
+              compare that total with the query duration.
+            </p>
+            <details>
+              <summary>
+                Hint 2 · Why do later scheduled requests wait longer?
+              </summary>
+              <p>
+                New work is intended every 5 ms, but one client pauses for 20 ms
+                before each submission and waits for each response. Arrivals can
+                therefore outpace that client even when SQL is quick.
+              </p>
+              <details>
+                <summary>Hint 3 · How do I test a client bottleneck?</summary>
+                <p>
+                  Keep the engine and arrival pattern fixed and remove the
+                  pause. Compare achieved responses per second and time before
+                  submission. A different result after that intervention
+                  supports the runner explanation for these conditions.
+                </p>
+              </details>
+            </details>
+          </details>
+        </section>
+        <section id="lifecycle">
+          <p class="eyebrow section-number">05 / Observe the right lifecycle</p>
+          <h2>Warm operation is only one phase</h2>
+          <p>
+            <strong>Startup</strong> can include downloading engine files,
+            compiling WebAssembly and opening the database.
+            <strong>Warm-up</strong> gives code and caches an initial request.
+            <strong>Sustained operation</strong> must last long enough to
+            encounter relevant background tasks. <strong>Recovery</strong> asks
+            what happens after disruption. Each phase answers a different
+            customer question; choose and report the boundary before comparing
+            numbers.
+          </p>
+          <p>
+            This lab records startup, loading and statistics separately and
+            warms the lookup once. It does not assert that one warm-up reaches a
+            stable state. Cached downloads can make later startup runs
+            different. Server checkpoints, garbage collection, compaction,
+            backups and recovery are absent from this short in-memory exercise.
+            For an application used once after each import, include startup and
+            preparation in a separate whole-job test; for an always-on service,
+            design sustained and recovery observations.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">06 / Independent practice</p>
+          <h2>Challenge a plausible benchmark claim</h2>
           <p>
-            Define the timing boundary and arrival model for your comparison.
-            Add a control experiment that could reveal a client-side limit.
+            A colleague writes: “Our database handles the peak rate. We sent the
+            next request only after the previous one returned. The successful
+            responses were quick, and we excluded timeouts from the chart.”
+            Treat this as a constructed review exercise. Write what is missing,
+            then propose an experiment that could resolve it.
           </p>
+          <ol>
+            <li>
+              Collect the three runner records above. Compare query time, time
+              before submission, achieved work and all outcome counts.
+            </li>
+            <li>
+              Explain why one waiting client does not establish an independent
+              arrival rate. Describe how excluding timeouts changes the
+              population being reported.
+            </li>
+            <li>
+              Write a sustained-test protocol: arrival schedule, observation
+              duration, drain policy, response target, error accounting, client
+              resource checks and expected correctness.
+            </li>
+          </ol>
+          <p>
+            For an executable extension, change the scheduled interval in
+            <code>runner()</code> in <code>src/methods-runtime.ts</code> from 5
+            ms to a named constant, then use that constant in the intended
+            timestamps as well as the scheduling expression. Update the visible
+            description and run both 5 ms and 25 ms intervals locally. This is a
+            useful first harness edit: the intended arrival record must change
+            with the schedule, or the evidence becomes misleading. Keep twelve
+            requests initially so you can inspect every timeline.
+          </p>
+          <label class="methods-label" for="methods-notes"
+            >Your diagnosis, measured evidence and sustained-test
+            protocol</label
+          ><textarea
+            id="methods-notes"
+            class="methods-notes"
+            placeholder="The suspected limit is… My intervention changed… The omitted waiting was… A peak-rate claim would require…"
+          ></textarea>
+          <p class="caption">
+            Draft and controls save on this device when storage is available.
+            Your current notes are attached to the original completed record
+            when downloaded.
+          </p>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              Your diagnosis should explain a timestamp difference with a
+              specific intervention. Your protocol should count failures and
+              unfinished work, use arrivals that match the customer, and
+              distinguish a finite drained trace from steady operation. A low
+              average among successful requests is insufficient on its own.
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Runner version, commands and timing boundaries</li>
-            <li>Offered and achieved rates, errors and pending work</li>
-            <li>Client-resource observations and the control run</li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">07 / Sources and reproducibility</p>
+          <h2>Keep the observer in the evidence</h2>
           <p>
-            A timed batch average is not an individual-request latency
-            distribution. Document warm-up and background work; a stable-looking
-            chart alone does not establish steady state.
+            All clocks use the page's monotonic <code>performance.now()</code>,
+            which measures elapsed time without depending on wall-clock changes.
+            Timestamps share one clock and are offsets from observation start. A
+            submitted request includes worker messages, engine work and
+            conversion of the full result. Intended-to-completed time
+            additionally includes scheduler lateness, client queueing and the
+            intentional pause. No clock synchronisation across machines is
+            involved.
+          </p>
+          <p>
+            Limits are 60 seconds for startup, 30 seconds for load/setup, and 15
+            seconds for a request. Stop, hidden-tab detection, page exit and
+            worker errors terminate workers. An incomplete record is explicitly
+            labelled; do not use its partial samples as a successful comparison.
+            This runner offers no configurable request deadline or server
+            cancellation contract beyond worker termination.
+          </p>
+          <ul>
+            <li>
+              <a href="https://www.postgresql.org/docs/current/pgbench.html"
+                >Postgres pgbench documentation</a
+              >
+              explains rate scheduling, schedule lag, latency limits and
+              transaction counts in a production-oriented benchmark tool.
+            </li>
+            <li>
+              <a href="https://github.com/giltene/wrk2"
+                >wrk2's description of coordinated omission</a
+              >
+              explains the consequences of measuring only after actual
+              submission.
+            </li>
+            <li>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Performance/now"
+                >The browser monotonic clock</a
+              >
+              and
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout"
+                >timer scheduling limits</a
+              >
+              explain relevant browser behaviour.
+            </li>
+            <li>
+              <a
+                href="https://github.com/snowch/benchmarking-lab/blob/main/docs/methods-measurement.md"
+                >Measurement contract and reproduction</a
+              >;
+              <a href="../engine-licenses.txt"
+                >engine source and licence notices</a
+              >.
+            </li>
+          </ul>
+          <p>
+            With a defined workload and an inspected runner, repeated runs
+            become meaningful. The next chapter asks how large a difference is
+            and how much uncertainty remains.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -277,6 +626,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/methods-runtime.ts"></script>
   </body>
 </html>

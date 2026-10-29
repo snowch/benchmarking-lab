@@ -1,0 +1,68 @@
+#trace-inspector label {
+  display: block;
+  margin: 1rem 0 0.35rem;
+  font-weight: 650;
+}
+#trace-inspector textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+}
+#trace-inspector input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}
+#trace-inspector button {
+  margin-top: 0.75rem;
+}
+#trace-inspector #trace-result {
+  overflow-wrap: anywhere;
+  font:
+    14px/1.7 Arial,
+    Helvetica,
+    sans-serif;
+}
+#trace-chart svg {
+  display: block;
+  width: 100%;
+  height: 230px;
+  color: inherit;
+}
+#trace-chart svg text {
+  fill: currentColor;
+  font:
+    13px system-ui,
+    sans-serif;
+}
+#trace-chart .trace-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+#trace-chart details {
+  margin-top: 1rem;
+}
+.trace-table-scroll {
+  overflow: auto;
+  max-height: 24rem;
+  max-width: 100%;
+}
+.trace-table-scroll:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.trace-table-scroll table {
+  min-width: 40rem;
+  border-collapse: collapse;
+}
+.trace-table-scroll th,
+.trace-table-scroll td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid currentColor;
+}

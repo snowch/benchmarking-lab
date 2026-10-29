@@ -1,0 +1,804 @@
+{
+  "provenance": {
+    "harness_sha256": "09c2bd7ae5468c586063eb23321dcf348e9a835b174c4479345cf95a0ee25828",
+    "runtime": {
+      "python": "3.12.10",
+      "kafka-python": "2.2.10",
+      "boto3": "1.38.23",
+      "botocore": "1.38.46",
+      "psycopg2-binary": "2.9.10",
+      "postgres_server": null
+    },
+    "declared_images": {
+      "client_base": "python:3.12.10-slim",
+      "kafka": "apache/kafka:3.9.1",
+      "store": "chrislusf/seaweedfs:3.85",
+      "database": "postgres:17.5"
+    }
+  },
+  "schema": "benchmarking-lab-infrastructure-v1",
+  "mode": "broker",
+  "run_id": "cae09e70445943868c5822079d23eecd",
+  "config": {
+    "mode": "broker",
+    "count": 30,
+    "rate": 10.0,
+    "records": 5,
+    "pause_at": 0.5,
+    "pause_for": 1.5,
+    "timeout": 15.0,
+    "sink_delay": 0,
+    "poll": 0.1
+  },
+  "topology": "single Kafka broker, one partition and replica; local Compose network; Python clients; SeaweedFS and Postgres for pipeline",
+  "guarantees": "acks=all with one replica; explicit consumer commit after processing; sink upsert makes repeated keys idempotent; no fault-tolerance claim",
+  "summary": {
+    "offered": 30,
+    "expected_records": 30,
+    "received": 30,
+    "processed_unique": 30,
+    "verified_objects": null,
+    "missing": 0,
+    "extra": 0,
+    "wrong_values": 0,
+    "duplicate_receipts": 0,
+    "ordered_receipts": true,
+    "errors": 0,
+    "verification_polls": 0,
+    "verification_seconds": 0.0,
+    "elapsed_seconds": 3.106888
+  },
+  "observations": [
+    {
+      "t": 0.000613,
+      "kind": "offered",
+      "object_id": 0,
+      "scheduled_t": 0.0
+    },
+    {
+      "t": 0.006976,
+      "kind": "ack",
+      "object_id": 0,
+      "record_id": null
+    },
+    {
+      "t": 0.100776,
+      "kind": "offered",
+      "object_id": 1,
+      "scheduled_t": 0.1
+    },
+    {
+      "t": 0.102733,
+      "kind": "ack",
+      "object_id": 1,
+      "record_id": null
+    },
+    {
+      "t": 0.200305,
+      "kind": "offered",
+      "object_id": 2,
+      "scheduled_t": 0.2
+    },
+    {
+      "t": 0.202975,
+      "kind": "ack",
+      "object_id": 2,
+      "record_id": null
+    },
+    {
+      "t": 0.207211,
+      "kind": "receipt",
+      "object_id": 0,
+      "record_id": null,
+      "offset": 0
+    },
+    {
+      "t": 0.207219,
+      "kind": "processed",
+      "object_id": 0,
+      "record_id": null
+    },
+    {
+      "t": 0.208578,
+      "kind": "receipt",
+      "object_id": 1,
+      "record_id": null,
+      "offset": 1
+    },
+    {
+      "t": 0.208584,
+      "kind": "processed",
+      "object_id": 1,
+      "record_id": null
+    },
+    {
+      "t": 0.209486,
+      "kind": "receipt",
+      "object_id": 2,
+      "record_id": null,
+      "offset": 2
+    },
+    {
+      "t": 0.209491,
+      "kind": "processed",
+      "object_id": 2,
+      "record_id": null
+    },
+    {
+      "t": 0.300163,
+      "kind": "offered",
+      "object_id": 3,
+      "scheduled_t": 0.3
+    },
+    {
+      "t": 0.302267,
+      "kind": "ack",
+      "object_id": 3,
+      "record_id": null
+    },
+    {
+      "t": 0.302822,
+      "kind": "receipt",
+      "object_id": 3,
+      "record_id": null,
+      "offset": 3
+    },
+    {
+      "t": 0.302829,
+      "kind": "processed",
+      "object_id": 3,
+      "record_id": null
+    },
+    {
+      "t": 0.400172,
+      "kind": "offered",
+      "object_id": 4,
+      "scheduled_t": 0.4
+    },
+    {
+      "t": 0.40261,
+      "kind": "ack",
+      "object_id": 4,
+      "record_id": null
+    },
+    {
+      "t": 0.402952,
+      "kind": "receipt",
+      "object_id": 4,
+      "record_id": null,
+      "offset": 4
+    },
+    {
+      "t": 0.402958,
+      "kind": "processed",
+      "object_id": 4,
+      "record_id": null
+    },
+    {
+      "t": 0.500191,
+      "kind": "offered",
+      "object_id": 5,
+      "scheduled_t": 0.5
+    },
+    {
+      "t": 0.502776,
+      "kind": "ack",
+      "object_id": 5,
+      "record_id": null
+    },
+    {
+      "t": 0.600157,
+      "kind": "offered",
+      "object_id": 6,
+      "scheduled_t": 0.6
+    },
+    {
+      "t": 0.602155,
+      "kind": "ack",
+      "object_id": 6,
+      "record_id": null
+    },
+    {
+      "t": 0.700158,
+      "kind": "offered",
+      "object_id": 7,
+      "scheduled_t": 0.7
+    },
+    {
+      "t": 0.702097,
+      "kind": "ack",
+      "object_id": 7,
+      "record_id": null
+    },
+    {
+      "t": 0.800163,
+      "kind": "offered",
+      "object_id": 8,
+      "scheduled_t": 0.8
+    },
+    {
+      "t": 0.802034,
+      "kind": "ack",
+      "object_id": 8,
+      "record_id": null
+    },
+    {
+      "t": 0.900159,
+      "kind": "offered",
+      "object_id": 9,
+      "scheduled_t": 0.9
+    },
+    {
+      "t": 0.902234,
+      "kind": "ack",
+      "object_id": 9,
+      "record_id": null
+    },
+    {
+      "t": 1.000156,
+      "kind": "offered",
+      "object_id": 10,
+      "scheduled_t": 1.0
+    },
+    {
+      "t": 1.00214,
+      "kind": "ack",
+      "object_id": 10,
+      "record_id": null
+    },
+    {
+      "t": 1.100245,
+      "kind": "offered",
+      "object_id": 11,
+      "scheduled_t": 1.1
+    },
+    {
+      "t": 1.102166,
+      "kind": "ack",
+      "object_id": 11,
+      "record_id": null
+    },
+    {
+      "t": 1.200148,
+      "kind": "offered",
+      "object_id": 12,
+      "scheduled_t": 1.2
+    },
+    {
+      "t": 1.202398,
+      "kind": "ack",
+      "object_id": 12,
+      "record_id": null
+    },
+    {
+      "t": 1.300156,
+      "kind": "offered",
+      "object_id": 13,
+      "scheduled_t": 1.3
+    },
+    {
+      "t": 1.302227,
+      "kind": "ack",
+      "object_id": 13,
+      "record_id": null
+    },
+    {
+      "t": 1.400174,
+      "kind": "offered",
+      "object_id": 14,
+      "scheduled_t": 1.4
+    },
+    {
+      "t": 1.402274,
+      "kind": "ack",
+      "object_id": 14,
+      "record_id": null
+    },
+    {
+      "t": 1.500157,
+      "kind": "offered",
+      "object_id": 15,
+      "scheduled_t": 1.5
+    },
+    {
+      "t": 1.502068,
+      "kind": "ack",
+      "object_id": 15,
+      "record_id": null
+    },
+    {
+      "t": 1.600143,
+      "kind": "offered",
+      "object_id": 16,
+      "scheduled_t": 1.6
+    },
+    {
+      "t": 1.602162,
+      "kind": "ack",
+      "object_id": 16,
+      "record_id": null
+    },
+    {
+      "t": 1.700174,
+      "kind": "offered",
+      "object_id": 17,
+      "scheduled_t": 1.7
+    },
+    {
+      "t": 1.702352,
+      "kind": "ack",
+      "object_id": 17,
+      "record_id": null
+    },
+    {
+      "t": 1.800212,
+      "kind": "offered",
+      "object_id": 18,
+      "scheduled_t": 1.8
+    },
+    {
+      "t": 1.80233,
+      "kind": "ack",
+      "object_id": 18,
+      "record_id": null
+    },
+    {
+      "t": 1.90015,
+      "kind": "offered",
+      "object_id": 19,
+      "scheduled_t": 1.9
+    },
+    {
+      "t": 1.902172,
+      "kind": "ack",
+      "object_id": 19,
+      "record_id": null
+    },
+    {
+      "t": 2.000157,
+      "kind": "offered",
+      "object_id": 20,
+      "scheduled_t": 2.0
+    },
+    {
+      "t": 2.002125,
+      "kind": "ack",
+      "object_id": 20,
+      "record_id": null
+    },
+    {
+      "t": 2.00581,
+      "kind": "receipt",
+      "object_id": 5,
+      "record_id": null,
+      "offset": 5
+    },
+    {
+      "t": 2.005821,
+      "kind": "processed",
+      "object_id": 5,
+      "record_id": null
+    },
+    {
+      "t": 2.009129,
+      "kind": "receipt",
+      "object_id": 6,
+      "record_id": null,
+      "offset": 6
+    },
+    {
+      "t": 2.009136,
+      "kind": "processed",
+      "object_id": 6,
+      "record_id": null
+    },
+    {
+      "t": 2.010705,
+      "kind": "receipt",
+      "object_id": 7,
+      "record_id": null,
+      "offset": 7
+    },
+    {
+      "t": 2.010711,
+      "kind": "processed",
+      "object_id": 7,
+      "record_id": null
+    },
+    {
+      "t": 2.011666,
+      "kind": "receipt",
+      "object_id": 8,
+      "record_id": null,
+      "offset": 8
+    },
+    {
+      "t": 2.011671,
+      "kind": "processed",
+      "object_id": 8,
+      "record_id": null
+    },
+    {
+      "t": 2.012408,
+      "kind": "receipt",
+      "object_id": 9,
+      "record_id": null,
+      "offset": 9
+    },
+    {
+      "t": 2.012442,
+      "kind": "processed",
+      "object_id": 9,
+      "record_id": null
+    },
+    {
+      "t": 2.01311,
+      "kind": "receipt",
+      "object_id": 10,
+      "record_id": null,
+      "offset": 10
+    },
+    {
+      "t": 2.013115,
+      "kind": "processed",
+      "object_id": 10,
+      "record_id": null
+    },
+    {
+      "t": 2.01402,
+      "kind": "receipt",
+      "object_id": 11,
+      "record_id": null,
+      "offset": 11
+    },
+    {
+      "t": 2.014026,
+      "kind": "processed",
+      "object_id": 11,
+      "record_id": null
+    },
+    {
+      "t": 2.014841,
+      "kind": "receipt",
+      "object_id": 12,
+      "record_id": null,
+      "offset": 12
+    },
+    {
+      "t": 2.014846,
+      "kind": "processed",
+      "object_id": 12,
+      "record_id": null
+    },
+    {
+      "t": 2.016638,
+      "kind": "receipt",
+      "object_id": 13,
+      "record_id": null,
+      "offset": 13
+    },
+    {
+      "t": 2.016643,
+      "kind": "processed",
+      "object_id": 13,
+      "record_id": null
+    },
+    {
+      "t": 2.017548,
+      "kind": "receipt",
+      "object_id": 14,
+      "record_id": null,
+      "offset": 14
+    },
+    {
+      "t": 2.017553,
+      "kind": "processed",
+      "object_id": 14,
+      "record_id": null
+    },
+    {
+      "t": 2.01959,
+      "kind": "receipt",
+      "object_id": 15,
+      "record_id": null,
+      "offset": 15
+    },
+    {
+      "t": 2.019595,
+      "kind": "processed",
+      "object_id": 15,
+      "record_id": null
+    },
+    {
+      "t": 2.020563,
+      "kind": "receipt",
+      "object_id": 16,
+      "record_id": null,
+      "offset": 16
+    },
+    {
+      "t": 2.020569,
+      "kind": "processed",
+      "object_id": 16,
+      "record_id": null
+    },
+    {
+      "t": 2.021505,
+      "kind": "receipt",
+      "object_id": 17,
+      "record_id": null,
+      "offset": 17
+    },
+    {
+      "t": 2.02151,
+      "kind": "processed",
+      "object_id": 17,
+      "record_id": null
+    },
+    {
+      "t": 2.022258,
+      "kind": "receipt",
+      "object_id": 18,
+      "record_id": null,
+      "offset": 18
+    },
+    {
+      "t": 2.022263,
+      "kind": "processed",
+      "object_id": 18,
+      "record_id": null
+    },
+    {
+      "t": 2.023049,
+      "kind": "receipt",
+      "object_id": 19,
+      "record_id": null,
+      "offset": 19
+    },
+    {
+      "t": 2.023054,
+      "kind": "processed",
+      "object_id": 19,
+      "record_id": null
+    },
+    {
+      "t": 2.023822,
+      "kind": "receipt",
+      "object_id": 20,
+      "record_id": null,
+      "offset": 20
+    },
+    {
+      "t": 2.023827,
+      "kind": "processed",
+      "object_id": 20,
+      "record_id": null
+    },
+    {
+      "t": 2.100154,
+      "kind": "offered",
+      "object_id": 21,
+      "scheduled_t": 2.1
+    },
+    {
+      "t": 2.102182,
+      "kind": "ack",
+      "object_id": 21,
+      "record_id": null
+    },
+    {
+      "t": 2.102691,
+      "kind": "receipt",
+      "object_id": 21,
+      "record_id": null,
+      "offset": 21
+    },
+    {
+      "t": 2.102697,
+      "kind": "processed",
+      "object_id": 21,
+      "record_id": null
+    },
+    {
+      "t": 2.200247,
+      "kind": "offered",
+      "object_id": 22,
+      "scheduled_t": 2.2
+    },
+    {
+      "t": 2.202506,
+      "kind": "ack",
+      "object_id": 22,
+      "record_id": null
+    },
+    {
+      "t": 2.203041,
+      "kind": "receipt",
+      "object_id": 22,
+      "record_id": null,
+      "offset": 22
+    },
+    {
+      "t": 2.203047,
+      "kind": "processed",
+      "object_id": 22,
+      "record_id": null
+    },
+    {
+      "t": 2.300164,
+      "kind": "offered",
+      "object_id": 23,
+      "scheduled_t": 2.3
+    },
+    {
+      "t": 2.306081,
+      "kind": "receipt",
+      "object_id": 23,
+      "record_id": null,
+      "offset": 23
+    },
+    {
+      "t": 2.306091,
+      "kind": "processed",
+      "object_id": 23,
+      "record_id": null
+    },
+    {
+      "t": 2.306366,
+      "kind": "ack",
+      "object_id": 23,
+      "record_id": null
+    },
+    {
+      "t": 2.400224,
+      "kind": "offered",
+      "object_id": 24,
+      "scheduled_t": 2.4
+    },
+    {
+      "t": 2.403152,
+      "kind": "ack",
+      "object_id": 24,
+      "record_id": null
+    },
+    {
+      "t": 2.403911,
+      "kind": "receipt",
+      "object_id": 24,
+      "record_id": null,
+      "offset": 24
+    },
+    {
+      "t": 2.403917,
+      "kind": "processed",
+      "object_id": 24,
+      "record_id": null
+    },
+    {
+      "t": 2.500227,
+      "kind": "offered",
+      "object_id": 25,
+      "scheduled_t": 2.5
+    },
+    {
+      "t": 2.503094,
+      "kind": "ack",
+      "object_id": 25,
+      "record_id": null
+    },
+    {
+      "t": 2.503537,
+      "kind": "receipt",
+      "object_id": 25,
+      "record_id": null,
+      "offset": 25
+    },
+    {
+      "t": 2.503544,
+      "kind": "processed",
+      "object_id": 25,
+      "record_id": null
+    },
+    {
+      "t": 2.600161,
+      "kind": "offered",
+      "object_id": 26,
+      "scheduled_t": 2.6
+    },
+    {
+      "t": 2.603612,
+      "kind": "ack",
+      "object_id": 26,
+      "record_id": null
+    },
+    {
+      "t": 2.603979,
+      "kind": "receipt",
+      "object_id": 26,
+      "record_id": null,
+      "offset": 26
+    },
+    {
+      "t": 2.603985,
+      "kind": "processed",
+      "object_id": 26,
+      "record_id": null
+    },
+    {
+      "t": 2.700171,
+      "kind": "offered",
+      "object_id": 27,
+      "scheduled_t": 2.7
+    },
+    {
+      "t": 2.702798,
+      "kind": "ack",
+      "object_id": 27,
+      "record_id": null
+    },
+    {
+      "t": 2.703151,
+      "kind": "receipt",
+      "object_id": 27,
+      "record_id": null,
+      "offset": 27
+    },
+    {
+      "t": 2.703157,
+      "kind": "processed",
+      "object_id": 27,
+      "record_id": null
+    },
+    {
+      "t": 2.80016,
+      "kind": "offered",
+      "object_id": 28,
+      "scheduled_t": 2.8
+    },
+    {
+      "t": 2.802784,
+      "kind": "ack",
+      "object_id": 28,
+      "record_id": null
+    },
+    {
+      "t": 2.803139,
+      "kind": "receipt",
+      "object_id": 28,
+      "record_id": null,
+      "offset": 28
+    },
+    {
+      "t": 2.803145,
+      "kind": "processed",
+      "object_id": 28,
+      "record_id": null
+    },
+    {
+      "t": 2.900163,
+      "kind": "offered",
+      "object_id": 29,
+      "scheduled_t": 2.9
+    },
+    {
+      "t": 2.902839,
+      "kind": "ack",
+      "object_id": 29,
+      "record_id": null
+    },
+    {
+      "t": 2.903193,
+      "kind": "receipt",
+      "object_id": 29,
+      "record_id": null,
+      "offset": 29
+    },
+    {
+      "t": 2.903199,
+      "kind": "processed",
+      "object_id": 29,
+      "record_id": null
+    }
+  ],
+  "errors": []
+}

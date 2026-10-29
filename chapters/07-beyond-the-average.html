@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="What do slow requests, errors and completed work reveal that a single average hides? Chapter outline for Benchmarking Lab."
+      content="What do slow requests, errors and completed work reveal that a single average hides? Interactive evidence lab for Benchmarking Lab."
     />
     <title>Beyond the average · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/statistics-style.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page" data-statistics="7">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html" aria-current="page"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,112 +154,306 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 07</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 07</span><span>Analysis lab</span
+          ><span>About 35 minutes</span>
         </div>
         <h1>Beyond the average</h1>
         <p class="standfirst">
-          We’ll look beyond a typical request time to examine long waits, failed
-          requests and completed work. Customers experience all three. You’ll
-          learn to compare systems against response-time and completion targets
-          that describe the service they need.
+          A fast typical response can coexist with frustrated users and
+          unfinished work. We’ll follow individual requests through a busy
+          interval, compare long waits with completed work, and account for
+          every planned request before presenting a service claim.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Define where request timing starts and stops, and which requests a
-              summary includes.
-            </li>
-            <li>Compare the work completed with the time requests take.</li>
-            <li>Account for failures, timeouts and unfinished requests.</li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Define latency and throughput populations, calculate percentiles
+            from raw observations, and expose waiting that a send-only timer can
+            hide.
+          </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            You can read the worked examples and design tasks without
+            JavaScript. Enable JavaScript to calculate, import, save and
+            download lab evidence.
+          </p></noscript
+        >
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Frame the decision</a
+          ><a href="#worked-example">Follow the example</a
+          ><a href="#experiment">Analyse evidence</a
+          ><a href="#practice">Design your test</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / The decision</p>
+          <h2>What did the customer actually receive?</h2>
           <p>
-            A typical response time helps describe an experience, but it leaves
-            out the slowest requests and the work that never finishes. Two
-            systems can look similar by that one number while providing
-            different service during a busy period.
+            Chapter 6 compared repeated run summaries. Now imagine that an order
+            screen must respond within 100 ms for at least 99% of requests, with
+            fewer than 1% failures. A mean time cannot establish either promise.
+            You need individual outcomes, a stated clock boundary and the full
+            population of requests that should have received service.
           </p>
           <p>
-            We’ll use <strong>latency</strong> for the elapsed time between
-            defined request events, such as sending a request and receiving its
-            full answer. <strong>Throughput</strong> is the amount of work
-            completed per unit of time. Reading them together helps us ask how
-            much work a system completes while keeping waits acceptable.
+            <strong>Latency</strong> is elapsed time between two named events.
+            Here a request has a planned arrival, an actual send and a completed
+            response or other observed outcome. <strong>Throughput</strong> is
+            completed work per unit of time. We report successful throughput,
+            sometimes called goodput, separately from offered work and failures.
           </p>
           <p>
-            Imagine two order screens with similar typical response times. One
-            occasionally makes users wait much longer and fails more requests
-            during a burst. We’ll inspect individual request records, including
-            errors and unfinished work, to compare the experience each system
-            delivers.
+            An <strong>error</strong> is a completed unsuccessful outcome. A
+            <strong>timeout</strong> means the caller stopped waiting at its
+            deadline; the server may still be working.
+            <strong>Pending</strong> work has no terminal outcome at the end of
+            the observation window. Never give a pending request a latency of
+            zero or quietly drop it from the account.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Seven quick answers do not mean ten happy users</h2>
           <p>
-            Inspect request-level observations from a controlled workload. Show
-            the latency distribution alongside completion counts, timeouts and
-            the observation window.
+            Our authored trace plans ten requests during a one-second window.
+            Seven finish successfully, one returns an error, one times out and
+            one is still pending. The offered rate is 10 ÷ 1 = 10 requests/s;
+            successful throughput is 7 ÷ 1 = 7 requests/s. The error rate is
+            10%, the timeout rate is 10%, and the pending fraction is 10%. Their
+            categories sum to all ten planned requests.
+          </p>
+          <p>
+            Six successful responses take 20 ms after sending. Request r7 is
+            planned at 600 ms, sent at 900 ms and finished at 950 ms. Its
+            send-to-response time is 50 ms, but its planned-arrival-to-response
+            time is 350 ms: 300 ms of waiting before submission plus 50 ms after
+            sending. A customer or upstream queue may experience both.
+          </p>
+          <p>
+            A <strong>percentile</strong> describes a sorted population. p50 is
+            the value at or below which at least half the observations fall; p99
+            uses 99%. This lab uses <strong>nearest rank</strong>: sort the n
+            values and select position ceil(p × n), counting from 1. With seven
+            successes, p99 is position ceil(0.99 × 7) = 7, the maximum observed
+            value.
+          </p>
+          <p>
+            The send-only successful times are 20, 20, 20, 20, 20, 20 and 50 ms.
+            Their mean is 170 ÷ 7 = 24.29 ms, p50 is 20 ms and p99 is 50 ms.
+            Including pre-send waiting changes the last value to 350 ms: mean
+            470 ÷ 7 = 67.14 ms and p99 350 ms. Both summaries still exclude
+            unsuccessful and unfinished work, which must remain visible beside
+            them.
+          </p>
+          <p>
+            Seven successes do not reliably estimate a production p99. Even 100
+            observations put the estimate near one of the largest samples, and
+            rare events may not appear at all. Choose enough requests,
+            observation duration and independent repeats to encounter relevant
+            slow paths and maintenance cycles. Do not average per-run p99 values
+            into a combined p99: combine the intended raw population or present
+            the runs separately.
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Collect individual request timestamps under a declared arrival
-              model.
-            </li>
-            <li>
-              Report typical and tail latency with offered and achieved
-              throughput.
-            </li>
-            <li>
-              Inspect what changes when timeouts and outstanding requests are
-              accounted for.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <p class="eyebrow section-number">03 / Evidence lab</p>
+          <h2>Change the timing boundary without losing the population</h2>
+          <p>
+            Switch between actual send and planned arrival. Then change r7’s
+            finish time to 990 ms and analyse again. Finally change r10 from
+            pending to a successful completion at 980 ms. Observe the population
+            counts as well as the percentile.
+          </p>
+          <div class="statistics-lab">
+            <p class="caption">
+              All starter values below are authored illustrative data for
+              learning the method. No database, server or customer was measured
+              to produce them. Editing and analysing these values runs
+              calculations locally in this tab.
+            </p>
+            <label for="statistics-window"
+              >Observation window (ms; starts at 0)</label
+            ><input
+              id="statistics-window"
+              data-statistics-control
+              type="number"
+              min="1"
+              value="1000"
+            /><label for="statistics-boundary"
+              >Successful-request latency starts at</label
+            ><select id="statistics-boundary" data-statistics-control>
+              <option value="sent">Actual send</option>
+              <option value="planned">
+                Planned arrival (includes pre-send waiting)
+              </option></select
+            ><label for="statistics-input"
+              >Request events (plain CSV; milliseconds from window start)</label
+            ><textarea id="statistics-input" rows="13" spellcheck="false">
+id,planned_ms,sent_ms,finished_ms,status
+r1,0,0,20,ok
+r2,100,100,120,ok
+r3,200,200,220,ok
+r4,300,300,320,ok
+r5,400,400,420,ok
+r6,500,500,520,ok
+r7,600,900,950,ok
+r8,700,700,730,error
+r9,800,800,1000,timeout
+r10,900,900,,pending</textarea>
+            <div class="run-row">
+              <button type="button" class="primary" id="statistics-analyse">
+                Analyse evidence</button
+              ><button type="button" id="statistics-reset">
+                Restore illustrative data</button
+              ><button type="button" id="statistics-download" disabled>
+                Download evidence
+              </button>
+            </div>
+            <p
+              class="status"
+              id="statistics-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <div class="statistics-output" id="statistics-output"></div>
+            <label for="statistics-notes"
+              >Your experiment design, finding and next check</label
+            ><textarea
+              id="statistics-notes"
+              rows="7"
+              placeholder="Decision and target; source and conditions; what changed; what the evidence supports; what to test next."
+            ></textarea>
+            <p class="caption">
+              Input and notes save in this browser when storage is available.
+              Downloads include the raw CSV, controls, calculations, notes and
+              any imported original records. Keep a download for your benchmark
+              brief.
+            </p>
+          </div>
+        </section>
+        <section id="observe">
+          <p class="eyebrow section-number">04 / Measurement traps</p>
+          <h2>A slowing client can hide missing demand</h2>
+          <p>
+            A <strong>closed-loop</strong> client sends its next request only
+            after the previous one finishes. If each request changes from 10 ms
+            to 100 ms, one such client falls from roughly 100 to 10 requests/s.
+            This may represent a fixed population of users waiting between
+            actions. It does not represent an independent stream of 100 new
+            requests/s.
+          </p>
+          <p>
+            If arrivals should continue during a stall but the runner waits for
+            responses before scheduling them, the trace omits the requests and
+            waits that would have occurred. This is called
+            <strong>coordinated omission</strong>. Measuring only actual send
+            times can also omit queueing in the load generator. A
+            planned-arrival timestamp exposes that waiting for requests that
+            were actually planned; it cannot reconstruct requests that were
+            never generated.
+          </p>
+          <p>
+            An <strong>open-loop</strong> test schedules arrivals independently
+            of completions. Retain planned timestamps, actual sends, client
+            queue depth, dropped submissions and final outcomes. Verify the
+            generator can keep up. Report the observed arrival schedule and
+            delivery rate; a configured target alone does not establish
+            delivered load.
+          </p>
+          <p>
+            A timeout at 200 ms establishes that the caller did not receive
+            success within 200 ms. It does not establish the server’s eventual
+            response time. This is a censored observation. Do not turn timeouts
+            into ordinary 200 ms successful responses in the histogram. If late
+            completion matters, continue observing and link it to the original
+            request ID while retaining the user-visible timeout outcome.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Independent practice</p>
+          <h2>Build a service-level account</h2>
           <p>
-            Choose metrics for an interactive lookup and a batch report. Explain
-            why the same headline metric may not serve both decisions.
+            Design two tests: an interactive lookup and an overnight revenue
+            report. For each, state the work unit, arrival model, timing start
+            and stop, latency population, success criterion, timeout,
+            observation window and unfinished-work policy. An interactive
+            service may need a tail-latency target; a report may need correct
+            completion before a deadline. Explain why each metric serves the
+            decision.
           </p>
+          <p>
+            For a real run, retain one row per planned request with an ID and
+            event timestamps from one monotonic clock, such as
+            <code>performance.now()</code>. Convert elapsed times to the CSV
+            format above. Do not compare timestamps from separate machines
+            without clock synchronisation and an uncertainty bound. Keep
+            terminal outcomes mutually exclusive in the accounting window.
+          </p>
+          <p>
+            Use the notes field to challenge this claim: “Our p99 is 50 ms, so
+            we meet the 100 ms requirement.” State the missing population, the
+            hidden waiting and what experiment would resolve them. Download the
+            corrected account with your plan.
+          </p>
+          <details>
+            <summary>Hint 1 · Start with counts</summary>
+            <p>
+              Planned requests = successful + error + timeout + pending for the
+              lab’s window. A server-side retry is additional work, not an extra
+              satisfied customer request.
+            </p>
+          </details>
+          <details>
+            <summary>Hint 2 · Read the boundary</summary>
+            <p>
+              Request r7 waits 900 − 600 = 300 ms before send. The two latency
+              definitions answer different questions.
+            </p>
+          </details>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              The starter successful throughput is 7/s. The successful-request
+              send-only p99 is 50 ms; planned-arrival p99 is 350 ms. Two of ten
+              planned requests have terminal failures and one remains pending. A
+              claim about all customer requests needs those outcomes as well as
+              a much larger representative sample.
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Request-level observations and measurement points</li>
-            <li>Error, timeout and incomplete-work counts</li>
-            <li>Percentile method and throughput observation window</li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <h2>Report the service, its denominator and its limits</h2>
           <p>
-            A percentile describes a specified population. Omitting failed or
-            unfinished requests can change the story. Do not average percentiles
-            or substitute batch averages for request observations.
+            Keep raw event records, window length, load model, histogram or
+            sorted observations, percentile method,
+            success/error/timeout/pending counts and measurement boundaries. A
+            percentile with no population or offered rate is incomplete
+            evidence. Chapter 8 uses these measures to find the tested operating
+            range.
           </p>
+          <h3>Further reading</h3>
+          <ul class="statistics-reading">
+            <li>
+              <a href="https://sre.google/sre-book/service-level-objectives/"
+                >Google SRE: Service Level Objectives</a
+              >
+              connects indicators, measurement populations and user needs.
+            </li>
+            <li>
+              <a
+                href="https://github.com/HdrHistogram/HdrHistogram#coordinated-omission"
+                >HdrHistogram: coordinated omission</a
+              >
+              explains omitted observations and why workload generation matters.
+            </li>
+            <li>
+              <a
+                href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc262.htm"
+                >NIST: percentiles</a
+              >
+              discusses quantiles and different estimation conventions.
+            </li>
+          </ul>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
           <a rel="prev" href="06-differences-and-uncertainty.html"
@@ -279,6 +483,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/statistics-labs.ts"></script>
   </body>
 </html>

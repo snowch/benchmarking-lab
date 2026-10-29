@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="What difference do repeated experiments support, and how uncertain is that estimate? Chapter outline for Benchmarking Lab."
+      content="What difference do repeated experiments support, and how uncertain is that estimate? Interactive evidence lab for Benchmarking Lab."
     />
     <title>How much faster—and how certain? · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/statistics-style.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page" data-statistics="6">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -87,7 +93,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -95,28 +101,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -125,7 +135,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -135,7 +145,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -146,111 +156,324 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 06</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 06</span><span>Analysis lab</span
+          ><span>About 35 minutes</span>
         </div>
         <h1>How much faster—and how certain?</h1>
         <p class="standfirst">
-          We’ll repeat the database comparison and examine how much the results
-          change between runs. A small lead in one run may disappear in the
-          next. You’ll learn to describe both the size of a difference and how
-          much confidence the evidence gives you.
+          A customer asks whether a measured improvement will hold tomorrow. One
+          quick run cannot answer that. We’ll compare repeated experiments,
+          express the size of a difference clearly, and decide whether the
+          variation leaves room for a different conclusion.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Distinguish repeated independent runs from samples within one run.
-            </li>
-            <li>Compare distributions and calculate clearly defined ratios.</li>
-            <li>
-              Describe uncertainty without treating an inconclusive result as a
-              win.
-            </li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Turn independent paired runs into a conditional comparison, import
+            your own Chapter 2 evidence, and plan repetitions that answer the
+            customer’s decision.
+          </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            You can read the worked examples and design tasks without
+            JavaScript. Enable JavaScript to calculate, import, save and
+            download lab evidence.
+          </p></noscript
+        >
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Frame the decision</a
+          ><a href="#worked-example">Follow the example</a
+          ><a href="#experiment">Analyse evidence</a
+          ><a href="#practice">Design your test</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / The decision</p>
+          <h2>A repeatable benefit is more useful than a winning run</h2>
           <p>
-            Even with the same workload and runner, timings vary. Other activity
-            on the device, engine startup and cached data can affect a run.
-            Before saying one option is faster, we need to see whether the
-            difference persists when we repeat the experiment.
+            Chapter 5 examined whether the runner measures the intended work.
+            Even with a sound runner, the same request can take different times
+            because of background activity, caches, scheduling or temperature.
+            <strong>Variation</strong> is this spread of observed results. The
+            next question is whether the improvement is large enough, and
+            consistent enough, to matter.
           </p>
           <p>
-            Suppose one engine has a lower <strong>median</strong>, the middle
-            request time when observations are sorted, in your first run. A
-            second run narrows or reverses that lead. Quoting only the first
-            result would leave out evidence relevant to the customer’s decision.
+            Suppose a sales operations team is considering a change to its
+            revenue dashboard. Agree on a practical threshold before testing:
+            perhaps at least a 20% reduction in elapsed time for a
+            representative report, with the same answer and service guarantees.
+            A tiny reliable improvement and a large unreliable one support
+            different decisions.
           </p>
           <p>
-            We’ll compare repeated runs, calculate clearly defined speed ratios
-            and examine the variation. You’ll learn what the measurements
-            support, when the result remains uncertain, and which follow-up run
-            would be useful.
+            A <strong>run</strong> is a complete execution of the experimental
+            procedure. Several requests within one warm engine share its state;
+            they are useful observations within that run. They are not
+            automatically separate independent experiments. Restarting the
+            engines helps reset state, but does not remove shared device
+            conditions or time trends.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Make the direction and denominator explicit</h2>
           <p>
-            Compare several independent runs of the orders benchmark. Keep
-            warm-up and reset conditions recorded, and distinguish the ratio of
-            medians from other possible summaries.
+            In one illustrative run, A takes 120 ms and B takes 100 ms. The
+            <strong>time ratio A/B</strong> is 120 ÷ 100 = 1.20. This says that
+            A took 1.20 times as long, or that B completed the same work at 1.20
+            times the rate if only that elapsed time matters. B’s time reduction
+            is (120 − 100) ÷ 120 = 16.7%. A 1.20× ratio is therefore not a 20%
+            time reduction.
+          </p>
+          <p>
+            A 20% time reduction requires B/A ≤ 0.80, equivalently A/B ≥ 1.25.
+            Write the numerator, denominator and unit whenever you use “faster”.
+            Keep startup and warm-query results separate, as in Chapter 2.
+          </p>
+          <p>
+            The starter evidence contains five independent illustrative pairs:
+            120/100, 108/100, 132/100, 114/100 and 126/100 ms. Pairing means A
+            and B are tested within the same experimental block under closely
+            matched conditions. Alternate or randomise which goes first;
+            otherwise an order effect can look like an engine effect.
+          </p>
+          <p>
+            For each pair calculate A/B, then take its natural logarithm,
+            written <code>ln(A/B)</code>. Logs put reciprocal ratios at equal
+            distances around zero: doubling and halving balance. The average of
+            those logs is about 0.17981; reversing the log with
+            <code>exp</code> gives a <strong>geometric mean ratio</strong> of
+            1.197. This gives equal weight to each run’s proportional
+            difference.
+          </p>
+          <details>
+            <summary>How the uncertainty calculation works</summary>
+            <p>
+              The sample standard deviation of the five log ratios is about
+              0.0793. It describes their spread. Divide by √5 to obtain the
+              estimated standard error, about 0.0355. With five pairs, the
+              Student t critical value is 2.776. The interval is exp(0.17981 ±
+              2.776 × 0.0355), approximately 1.085–1.321.
+            </p>
+            <p>
+              The lab uses a two-sided approximate 95% t interval on paired log
+              ratios. The statistical model assumes independent run blocks whose
+              log ratios have a reasonably normal distribution and describe the
+              same stable experiment. With few runs, these assumptions are hard
+              to inspect. For more than 31 runs the lab conservatively retains
+              the 30-degree-of-freedom critical value, 2.042.
+            </p>
+          </details>
+          <p>
+            The interval lies above parity, 1, for this example. It still
+            crosses the practical threshold of 1.25, so it does not establish
+            the agreed 20% time reduction. A confidence interval concerns the
+            procedure’s coverage over repeated experiments under its
+            assumptions; it is not a promise about 95% of future requests or a
+            95% probability that a particular product will win.
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Repeat the experiment with a recorded reset procedure and rotated
-              execution order.
-            </li>
-            <li>
-              Inspect raw samples, run-level summaries and unusual observations.
-            </li>
-            <li>
-              Estimate the difference and its uncertainty using a method whose
-              assumptions are explained.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <p class="eyebrow section-number">03 / Evidence lab</p>
+          <h2>Compare run summaries, then inspect the pairs</h2>
+          <p>
+            Read the starter result first, or change one run and analyse again.
+            Try changing B in run 5 from 100 to 150 ms. Observe both the central
+            ratio and the interval: a headline alone hides the less consistent
+            result.
+          </p>
+          <div class="statistics-lab">
+            <p class="caption">
+              All starter values below are authored illustrative data for
+              learning the method. No database, server or customer was measured
+              to produce them. Editing and analysing these values runs
+              calculations locally in this tab.
+            </p>
+            <label for="statistics-input"
+              >Paired run summaries (plain CSV; milliseconds)</label
+            ><textarea id="statistics-input" rows="8" spellcheck="false">
+run,a_ms,b_ms
+run-1,120,100
+run-2,108,100
+run-3,132,100
+run-4,114,100
+run-5,126,100</textarea>
+            <details>
+              <summary>Use real Chapter 2 measurements</summary>
+              <p>
+                Run the same Chapter 2 configuration at least five times and
+                download each complete run. Each run creates fresh engines.
+                Retain the same query, row count, repeat count, build and
+                environment. Close unrelated activity, record conditions, and
+                spread or block runs to expose trends. Several files captured
+                seconds apart on one device do not represent every customer
+                deployment.
+              </p>
+              <p>
+                Select one query, then select all its compatible JSON exports
+                together. A is DuckDB-Wasm and B is PGlite. The importer uses
+                each engine’s median request time within each run; those two
+                medians form one pair. It checks compatible settings, engine
+                identities, build, method and generated input hash, and rejects
+                duplicate run timestamps. It cannot verify independence or
+                equivalent operating conditions for you.
+              </p>
+              <label for="statistics-query"
+                >Query to compare when importing</label
+              ><select id="statistics-query">
+                <option value="lookup">Find one order</option>
+                <option value="revenue">Total the revenue</option></select
+              ><label for="statistics-import"
+                >Completed Chapter 2 exports (select multiple JSON files)</label
+              ><input
+                id="statistics-import"
+                type="file"
+                accept=".json,application/json"
+                multiple
+              />
+              <p>
+                <a href="02-duckdb-postgres.html#experiment"
+                  >Open the real database comparison →</a
+                >
+              </p>
+            </details>
+            <div class="run-row">
+              <button type="button" class="primary" id="statistics-analyse">
+                Analyse evidence</button
+              ><button type="button" id="statistics-reset">
+                Restore illustrative data</button
+              ><button type="button" id="statistics-download" disabled>
+                Download evidence
+              </button>
+            </div>
+            <p
+              class="status"
+              id="statistics-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <div class="statistics-output" id="statistics-output"></div>
+            <label for="statistics-notes"
+              >Your experiment design, finding and next check</label
+            ><textarea
+              id="statistics-notes"
+              rows="7"
+              placeholder="Decision and target; source and conditions; what changed; what the evidence supports; what to test next."
+            ></textarea>
+            <p class="caption">
+              Input and notes save in this browser when storage is available.
+              Downloads include the raw CSV, controls, calculations, notes and
+              any imported original records. Keep a download for your benchmark
+              brief.
+            </p>
+          </div>
+        </section>
+        <section id="observe">
+          <p class="eyebrow section-number">04 / Read the evidence</p>
+          <h2>Ask what repetition actually repeated</h2>
+          <p>
+            Inspect the per-run bars before trusting the interval. Are later
+            runs systematically different? Did one option always go second? Was
+            a slow run caused by the tested system or a documented external
+            interruption? Keep every valid run; decide exclusion rules before
+            seeing which option benefits.
+          </p>
+          <p>
+            Hundreds of requests from one engine session can make a calculation
+            appear precise while leaving session-to-session variability
+            unmeasured. Resampling individual requests as though they were
+            independent runs is inappropriate when they share state. If you use
+            a bootstrap elsewhere, resample independent run blocks and justify
+            its assumptions. This lab does not bootstrap requests.
+          </p>
+          <p>
+            More runs reduce sampling uncertainty under a stable design. They do
+            not repair unequal work, an unrepresentative workload or a biased
+            timer. Avoid repeatedly adding runs only until an interval excludes
+            1; choose the number of runs or a valid sequential design in
+            advance.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Independent practice</p>
+          <h2>Write a repeatable comparison plan</h2>
           <p>
-            Write a conditional comparison claim. Explain what variation remains
-            and what further experiment would help resolve it.
+            Choose one real customer job. State the useful time reduction, what
+            stays fixed, how a run resets state, and how you will pair and order
+            A and B. Choose at least five independent runs for this learning
+            exercise; more may be necessary for your target precision. Keep all
+            raw request records and reduce each run using a declared statistic.
+            Compare a different row count in a separate experiment.
           </p>
+          <p>
+            Use the notes field to write a two-sentence finding: “For this job
+            and these conditions, the estimated A/B time ratio was …, with an
+            approximate interval of … . This does/does not resolve our practical
+            threshold because … .” Add the next condition you need to test.
+          </p>
+          <details>
+            <summary>Hint 1 · Define the experimental unit</summary>
+            <p>
+              Describe what happens between two run IDs. If nothing resets or
+              conditions drift continuously, explain why you would treat the
+              blocks as independent.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Hint 2 · Separate statistical and practical questions
+            </summary>
+            <p>
+              Ask both whether the interval crosses 1 and whether it crosses the
+              customer’s useful threshold. These are different questions.
+            </p>
+          </details>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              The starter ratio is about 1.197, and the interval about
+              1.085–1.321. The implied central time reduction for B is about
+              16.5%. The evidence favours B in the illustrative conditions, but
+              does not establish a reduction of at least 20%. Your own numbers
+              should replace every placeholder, with conditions and source
+              attached.
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>All samples and their run identities</li>
-            <li>Reset, execution-order and environment records</li>
-            <li>Calculation method, assumptions and uncertainty estimate</li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <h2>Keep the result attached to its experiment</h2>
           <p>
-            Closely spaced samples can be dependent. More samples from one run
-            do not automatically replace independent repetitions. Statistical
-            evidence and customer relevance are separate questions.
+            Download the paired input, original exports, per-run summaries,
+            interval method, ordering, exclusions and notes. Record whether an
+            interval refers to mean log run ratios, mean request latency or
+            another quantity. They answer different questions. Chapter 7
+            examines the requests that a run summary can conceal.
           </p>
+          <h3>Further reading</h3>
+          <ul class="statistics-reading">
+            <li>
+              <a
+                href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm"
+                >NIST: confidence limits for the mean</a
+              >
+              explains the t interval and its assumptions.
+            </li>
+            <li>
+              <a href="https://doi.org/10.1145/2464157.2464160"
+                >Kalibera and Jones: Rigorous Benchmarking in Reasonable Time</a
+              >
+              examines sources of variation and repetition levels in performance
+              experiments.
+            </li>
+            <li>
+              <a href="https://doi.org/10.1145/1297027.1297033"
+                >Georges, Buytaert and Eeckhout: Statistically Rigorous Java
+                Performance Evaluation</a
+              >
+              discusses warmup and repeated executions in a runtime environment.
+            </li>
+          </ul>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
           <a rel="prev" href="05-trust-the-benchmark.html"
@@ -279,6 +502,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/statistics-labs.ts"></script>
   </body>
 </html>

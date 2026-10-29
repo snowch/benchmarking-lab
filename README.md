@@ -2,52 +2,46 @@
 
 Copyright © 2026 Christopher Snow.
 
-An interactive book about measuring performance and explaining the evidence.
-The first chapter compares two ways to sum a grid using real WebAssembly in a
-browser worker. Read the source, step through an address diagram, change the grid
-size, edit the Wasm function, and download the measured samples with their conditions.
+An interactive book about designing, running and explaining technology comparisons
+that help a customer choose. Start with a small experiment, develop a fair workload
+and measurement method, then use evidence to build a recommendation.
 
 Start reading: <https://snowch.github.io/benchmarking-lab/chapters/start-here.html>.
-
 Chapter 1 remains at <https://snowch.github.io/benchmarking-lab/>.
 
-## Current scope
+## The book
 
-An unnumbered **Start here** introduction explains the purpose, reader outcomes
-and route through the book. It leads into two executable chapters:
+The introduction and all twelve chapters are complete, with worked examples,
+exercises, independent practice, progressive hints, further reading and evidence
+that can be downloaded. The chapters use several kinds of execution deliberately:
 
-- **Same work, different order:** sum a grid using a real scalar Wasm loop,
-  inspect memory addresses, and explore how traversal order affects measured time.
-- **DuckDB or Postgres?:** run the same order lookup and revenue aggregation in
-  DuckDB-Wasm and PGlite. Verify the answers, inspect setup and query timings,
-  change the dataset size, and download the run conditions and raw samples.
+| Chapters | What runs                                                                                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | A real scalar WebAssembly memory traversal, with editable source and checked sums.                                                                                                    |
+| 2        | DuckDB-Wasm and PGlite against identical orders, with checked answers and every request plotted.                                                                                      |
+| 3–5      | Real SQL equivalence checks, workload replays and runner interventions using the same browser engines.                                                                                |
+| 6–8      | Evidence-analysis tools for independent runs, request populations and load steps; authored starter inputs are labelled. Chapter 6 also imports real Chapter 2 exports.                |
+| 9–10     | A downloadable real Kafka, S3-compatible storage and Postgres harness, plus browser trace inspection and backlog plots. Docker Engine and Compose are required for service execution. |
+| 11       | A validated capacity and complete-deployment cost planner with visible provenance, assumptions and sensitivity.                                                                       |
+| 12       | A persistent benchmark brief/report builder, evidence attachments and a downloadable self-checking Python HTTP runner to adapt.                                                       |
 
-Chapters 3–12 have navigable skeleton pages with objectives, planned experiments,
-design tasks and evidence checklists. Their labs are explicitly marked as planned.
-Book contents and previous/next links connect the introduction and all twelve
-chapters, including direct loads without JavaScript. The contents are permanently
-visible on desktop and tablet, with a collapsible “Chapters” menu on phones.
-The list opens automatically when resizing to a larger screen. Without JavaScript,
-the phone menu starts open and remains usable as a native disclosure.
-Explanatory diagrams stay distinct from measured outputs.
+Browser timings describe the tested browser builds and device. Analysis exercises
+and cost assumptions are not live service measurements. Short infrastructure
+smoke tests establish execution and checking, not sustainable capacity, production
+availability or a universal winner.
 
-The chapter 1 benchmark uses the same scalar function for both traversal orders. Compilation
-and input setup happen before timing. It warms both orders, calibrates a common
-batch size, alternates the starting order, checks every returned checksum, and
-shows all samples alongside medians. Edited code must satisfy the fixture checksum;
-that check cannot prove that arbitrary code performs equivalent work.
+One book menu connects every page. It stays visible on desktop/tablet and uses a
+collapsed “Chapters” disclosure on phones. With JavaScript disabled, the phone
+menu starts open and the complete reading path remains available. Light/dark themes
+and a clearly marked current chapter are shared throughout.
 
-Chapter 1 runs stop when the tab becomes hidden, on request, or after 30 seconds. Source,
-settings and notes save locally when browser storage is available. Run records
-remain in the current tab until replaced or reloaded; download them to retain
-raw samples, source, hashes, browser identifier and build. Results are never uploaded.
-Chapter 2’s timing boundaries, setup conditions, interruption behaviour and evidence
-format are described in [its measurement contract](docs/database-measurement.md).
-No offline installation or cross-device synchronisation is implemented.
+Settings and notes are local browser drafts where storage is available. Downloads
+are the portable record; no offline installation, account or cross-device sync is
+implemented. Imported evidence remains local. Wasm engines load only after Run.
 
 ## Develop and verify
 
-Use Node 24 or later.
+Use Node 24 or later:
 
 ```sh
 npm ci
@@ -56,55 +50,62 @@ npm run dev
 npm run check
 ```
 
-The dev URL is <http://localhost:5173/benchmarking-lab/>. `npm run check` runs
-formatting, strict TypeScript, a production build, Wasm correctness checks and
-browser tests. Browser checks run against the production build at the Pages base
-path. `CHROMIUM_PATH=/usr/bin/chromium npm run check` can use an installed browser.
-Tests validate behaviour and arithmetic, never a device-specific timing ratio.
+The dev URL is <http://localhost:5173/benchmarking-lab/>. `npm run check` checks
+formatting, strict TypeScript, the production build, internal links/fragments, real Wasm/database correctness
+and browser journeys at the GitHub Pages base path. An installed browser can be
+selected with `CHROMIUM_PATH=/usr/bin/chromium npm run check`. Tests verify
+arithmetic, evidence, lifecycle, layouts and state; they never require a particular
+engine to win a timing comparison.
 
-## GitHub Pages
+Run the native service harness separately using [its README](harnesses/infrastructure/README.md).
+It creates an isolated local Compose topology and writes raw observations to its
+`results/` directory. The book ships a [download bundle](public/harnesses/infrastructure.zip).
+The independent runner in [Chapter 12](chapters/12-defensible-comparison.html) uses
+Python's standard library and includes an intentional wrong-answer exercise.
+
+## Measurement and source
+
+- [Course progression](docs/plan.md): chapter outcomes and execution boundaries.
+- [Memory contract](docs/measurement.md): timed region, checks and limits.
+- [Database contract](docs/database-measurement.md): pinned engines, SQL, setup and evidence.
+- [Methods contract](docs/methods-measurement.md): fairness, replay and runner accounting.
+- [Statistics contract](docs/statistics-measurement.md): independent runs, populations, intervals and load rules.
+- [Infrastructure contract](docs/infrastructure-measurement.md): topology, guarantees, traces and limitations.
+- [Decision tools contract](docs/decision-measurement.md): sizing/TCO semantics, evidence and report formats.
+- [Design review](docs/design-review.md): patterns selected from six companion books.
+- [Sizing and TCO](https://snowch.github.io/sizing-and-tco/): the companion for deeper modelling.
+
+The static HTML lives in `index.html` and `chapters/`. Small TypeScript modules in
+`src/` own each lab. Vite discovers chapter HTML automatically. Shared typography
+and navigation live in `style.css`, `lesson.css` and `chapter.ts`; group-specific
+styles and runtimes stay scoped to their lessons.
+
+The initial memory and database workers remain independent of the analysis tools.
+They use WABT 1.0.39, DuckDB-Wasm 1.32.0 and PGlite 0.5.13, self-hosted under the
+Pages base path. Notices ship in `public/third-party-notices.txt` and
+`public/engine-licenses.txt`. Downloadable harnesses contain authored source and
+pinned dependency references; dependencies are installed when the reader builds.
+
+## Publish and maintain
 
 `.github/workflows/deploy.yml` checks pushes and pull requests. Successful pushes
-to `main` publish `dist/` using GitHub Pages Actions. The repository's Pages source
-must be **GitHub Actions**. No backend, secret, external CDN or isolation headers
-are required. Wasm engines and compilers are loaded into workers only when Run is pressed.
-`prebuild` and `predev` copy the pinned database resources into ignored
-`public/engines/`; the production build self-hosts them under the Pages base path.
+to `main` publish `dist/` through GitHub Pages Actions. The site needs no backend,
+external CDN or cross-origin isolation headers. `prebuild` and `predev` copy pinned
+database resources into ignored `public/engines/`.
 
-## Design and implementation
+When editing a chapter, preserve its customer question, source/provenance,
+correctness checks, measurement boundary, independent task and interpretation
+limits. Keep status labels and previous/next links consistent across all book
+menus. An explanatory model must stay visibly distinct from measured execution.
 
-- [Review of six companion books](docs/design-review.md): the selected patterns and their sources.
-- [Chapter 1 measurement contract](docs/measurement.md): timing boundaries, limits and validation.
-- [Database comparison measurement contract](docs/database-measurement.md): engine builds, correctness, setup and query timing.
-- [Course plan](docs/plan.md): twelve chapters, from the first database comparison
-  through Kafka, complete pipelines, capacity and cost, and a defensible report.
-- [Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/): capacity
-  planning and cost modelling, linked from the planned cost chapter.
-- `index.html`: the working first chapter, also available without JavaScript.
-- `chapters/`: the introduction, working database chapter and static HTML outlines for chapters 3–12.
-- `src/theme.ts`, `src/chapter.ts`: shared theme and lightweight outline-page behaviour.
-- `src/kernel.wat`: the original scalar Wasm loop.
-- `src/benchmark.ts`, `src/worker.ts`: compilation and measurement.
-- `src/main.ts`: address explorer, controls, results and local drafts.
-- `tests/lab.spec.ts`: real Wasm arithmetic and browser journeys.
+When editing the infrastructure harness, regenerate and verify its source-only
+download with Python 3:
 
-This first chapter follows GPU Lab's small standalone approach and the shared
-books' interaction vocabulary. It does not vendor or modify `learning-platform`.
-The design review explains why the fixed ten-section runtime is not used here.
-WABT 1.0.39 compiles chapter 1’s WAT locally; its Apache-2.0 licence ships in
-`public/third-party-notices.txt`. Chapter 2 ships DuckDB-Wasm, PGlite and wrapper
-dependency notices in `public/engine-licenses.txt`. No lesson text or application code is copied
-from the reference books.
+```sh
+python3 scripts/package-harness.py
+python3 scripts/package-harness.py --check
+```
 
-## Editing chapter outlines
-
-Edit the corresponding HTML file in `chapters/`. Keep its question, objectives,
-planned example, planned experiment, independent design task, evidence checklist
-and interpretation boundary together. Update the book-contents lists and
-previous/next links when changing chapter order or titles. Vite discovers all
-chapter HTML entry points during the production build. These pages load the
-shared theme without loading the benchmark worker or compiler.
-
-An outline becomes a working chapter only after its real execution path, checks,
-evidence and explanatory text are implemented and verified. Until then retain
-the outline notice and planned-lab labels.
+CI verifies the bundle against its source and checks both downloadable Python
+programs for valid syntax. Infrastructure runs are tested separately against real
+local services; the browser suite does not imply those services ran inside Pages.

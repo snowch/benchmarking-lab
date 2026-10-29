@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
-    "check": "prettier --check . && npm run build && npm test",
+    "check": "prettier --check . && npm run build && npm run check:book && npm test",
+    "check:book": "node scripts/check-book.mjs",
     "prepare:engines": "node scripts/prepare-engines.mjs",
     "prebuild": "npm run prepare:engines",
     "predev": "npm run prepare:engines"

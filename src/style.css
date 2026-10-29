@@ -946,6 +946,7 @@ code {
     sans-serif;
   padding-left: 24px;
 }
+
 @media (max-width: 750px) {
   .roadmap {
     display: block;

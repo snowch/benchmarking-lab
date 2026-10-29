@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Can another reader reproduce, challenge and use your recommendation? Chapter outline for Benchmarking Lab."
+      content="Build a benchmark brief, run a self-checking experiment, retain reproducible evidence and export a customer-facing recommendation with explicit limits."
     />
     <title>Present a comparison you can defend · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/decision.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,122 +154,466 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 12</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 12</span><span>Final project</span
+          ><span>About 60–90 minutes, plus runs</span>
         </div>
         <h1>Present a comparison you can defend</h1>
         <p class="standfirst">
-          We’ll bring the workload, measurements and cost assumptions together
-          in a customer recommendation. You’ll learn to explain what was tested,
-          why it matters and what could change the decision, while giving
-          another person enough evidence to check your conclusion.
+          Turn a customer question into a repeatable experiment and an
+          evidence-backed recommendation. Build a brief, run a self-checking
+          workload, preserve the conditions and explain exactly where the
+          finding applies. Then use the same method to review somebody else’s
+          claim.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Produce a benchmark brief, self-checking workload and repeatable
-              runner.
-            </li>
-            <li>
-              Connect a conditional technical finding to a customer decision.
-            </li>
-            <li>
-              Review somebody else’s evidence and propose a fair follow-up test.
-            </li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            A portable project containing the benchmark brief, runnable setup,
+            correctness checks, run artifacts, analysis, capacity assumptions
+            and a customer-facing report. You can use a database, broker or
+            complete pipeline. The builder saves your draft and packages
+            evidence; it does not decide whether your claims are true.
+          </p>
+        </div>
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Write the brief</a
+          ><a href="#worked-example">Study a claim</a
+          ><a href="#runner">Run your project</a
+          ><a href="#experiment">Build the report</a
+          ><a href="#practice">Review another comparison</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / Begin with a decision</p>
+          <h2>Agree what would change the customer’s mind</h2>
           <p>
-            A customer needs to choose an option, and another technical reviewer
-            needs to understand the evidence behind your advice. This final
-            chapter brings together the comparison skills developed throughout
-            the book.
+            Chapter 11 connected performance evidence to a deployment and its
+            cost. The final task is to make that chain inspectable. Imagine a
+            sales operations team choosing a way to serve its order screen and
+            revenue dashboard. “Which database is faster?” is too open to guide
+            the purchase. “Which tested deployment meets our workload,
+            correctness, response-time, recovery and cost targets?” leads to an
+            experiment.
           </p>
           <p>
-            We’ll assemble a <strong>benchmark brief</strong>, a short statement
-            of the decision, workload, requirements and planned measurements.
-            Alongside it, we’ll keep the setup instructions, correctness checks,
-            raw observations and analysis needed to repeat the experiment.
+            A <strong>benchmark brief</strong> is the agreement you write before
+            running: the decision, customer workload, alternatives, acceptance
+            criteria and method. An <strong>acceptance criterion</strong> is an
+            observable pass/fail condition, such as no missing or duplicate
+            order IDs, p99 client response time below 200 ms at a stated arrival
+            rate, bounded pending work, and recovery within ten minutes while
+            new work continues. The numbers are customer requirements to agree,
+            not defaults this book prescribes.
           </p>
           <p>
-            You’ll use this material to write a concise recommendation for a
-            database, an event system or a complete pipeline. A review of
-            another comparison will help you practise finding missing evidence
-            and proposing a useful next test. The aim is a claim whose
-            conditions, tradeoffs and practical value are clear.
+            Choose the smallest experiment that can affect the decision. If the
+            only evidence is Chapter 2, ask about the tested DuckDB-Wasm and
+            PGlite builds on that browser and dataset. If the decision concerns
+            server deployment capacity, use the native/service exercises and
+            record the real topology. If the outcome crosses several services,
+            measure its full path as in Chapter 10.
           </p>
+          <figure>
+            <div class="decision-flow">
+              <div>
+                <strong>Brief → test</strong>
+                <p>
+                  A decision and falsifiable acceptance criteria define the
+                  work.
+                </p>
+              </div>
+              <div>
+                <strong>Test → evidence</strong>
+                <p>
+                  Checked outputs, raw observations and exact setup preserve
+                  what happened.
+                </p>
+              </div>
+              <div>
+                <strong>Evidence → claim</strong>
+                <p>
+                  A conditional recommendation states scope, uncertainty and
+                  next action.
+                </p>
+              </div>
+            </div>
+            <figcaption>
+              A reviewer should be able to travel in both directions: from a
+              claim to its observations, and from an observation to the customer
+              question it helps answer.
+            </figcaption>
+          </figure>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Rewrite a broad claim into an auditable finding</h2>
           <p>
-            Assemble the evidence developed throughout the book into a short
-            comparison brief with a reproducibility package. Choose a database,
-            broker or complete pipeline.
+            Suppose an invented worksheet says: “A is twice as fast as B.” Its
+            raw records contain five paired browser runs of one aggregation, all
+            with checked totals. The run-level medians are A: 18, 19, 20, 21, 22
+            ms and B: 36, 38, 40, 42, 44 ms. These numbers are a teaching
+            example, not a measurement of either engine in this book.
           </p>
+          <p>
+            The median of the run medians is 20 ms for A and 40 ms for B, a 2×
+            ratio for that timing boundary. This does not mean a 2× throughput
+            increase, a 2× improvement on every query or half the infrastructure
+            cost. Requests within the same run share conditions; they are not
+            automatically independent experiments. Use Chapter 6’s paired
+            analysis and intervals when making a measured magnitude claim.
+          </p>
+          <blockquote>
+            <p>
+              “In the five illustrative paired runs of this checked aggregation,
+              A’s median run time was 20 ms and B’s was 40 ms. The finding
+              applies to the saved dataset, builds, configuration and browser
+              timing boundary. We have not established server capacity,
+              concurrent response times or operating cost. The next test repeats
+              the customer’s mixed workload against the proposed server
+              topology.”
+            </p>
+          </blockquote>
+          <p>
+            For an actual customer report, replace the invented values with your
+            observations, cite the run IDs and show the independent-run
+            uncertainty. A concise recommendation starts with the decision it
+            informs, then explains the result and its limits. A customer can act
+            on a conditional finding if the remaining uncertainty and next
+            action are clear.
+          </p>
+          <div class="decision-scroll">
+            <table class="decision-table">
+              <caption>
+                Trace each sentence back to a specific artifact.
+              </caption>
+              <thead>
+                <tr>
+                  <th>Claim component</th>
+                  <th>Evidence to retain</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Equivalent useful work</th>
+                  <td>
+                    Generator/query revision, expected answers or IDs, observed
+                    checks and guarantees.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Performance difference</th>
+                  <td>
+                    Raw samples, independent run IDs, timing boundary, order,
+                    warmup, analysis and variability.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Customer relevance</th>
+                  <td>
+                    Workload source, arrival pattern, data size/skew and agreed
+                    acceptance criteria.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Deployment recommendation</th>
+                  <td>
+                    Server topology, complete-path and failure tests, dated
+                    regional cost model and sensitivity.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
-        <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
+        <section id="runner">
+          <p class="eyebrow section-number">
+            03 / A reproducible starting runner
+          </p>
+          <h2>Read, run and change a self-checking experiment</h2>
+          <p>
+            A <strong>runner</strong> is the program that prepares work, submits
+            it, checks answers and writes observations. You have already used
+            one through the browser controls. Now take control of a small
+            script. Download
+            <a href="../templates/decision-runner.py" download
+              >the Python HTTP comparison runner</a
+            >. It uses Python 3.10 or newer with no added packages and includes
+            two tiny local HTTP services. An HTTP request sends the same integer
+            array to each; each returns its sum.
+          </p>
+          <p>
+            Open a terminal, a window where you type commands. Change to the
+            download folder with <code>cd</code>. Run the following in three
+            terminals, keeping the first two open while the third compares them.
+            On systems that use <code>python</code> rather than
+            <code>python3</code>, substitute that executable.
+          </p>
+          <pre><code># Terminal 1: start A, an explicit addition loop
+python3 decision-runner.py serve --port 8011 --variant loop
+
+# Terminal 2: start B, Python's built-in sum
+python3 decision-runner.py serve --port 8012 --variant builtin
+
+# Terminal 3: submit, verify and preserve observations
+python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed 42 --output comparison.json</code></pre>
+          <p>
+            The service listens only on your own machine. Stop it with Ctrl+C
+            after the comparison. The <code>--count</code> argument sets how
+            many integers each request contains; <code>--repeats</code> repeats
+            whole A/B blocks; <code>--requests</code> sets requests per option
+            per block; <code>--seed</code> makes the random block order
+            repeatable. A JSON file is structured text you can open and inspect.
+            Attach the resulting <code>comparison.json</code> in the report
+            builder.
+          </p>
+          <p>
+            The expected sum is computed independently as
+            <code>n × (n − 1) / 2</code>. The client measures from HTTP
+            submission through response parsing and the correctness check using
+            one monotonic clock. It records warmups, errors and unfinished
+            requests separately. A request timeout defaults to five seconds.
+            Incorrect answers and interrupted/failed runs leave an artifact and
+            return a nonzero process exit status. Service startup is outside the
+            timed region.
+          </p>
+          <p>
+            This runner is one sequential, <strong>closed-loop</strong> client:
+            it waits for a response before submitting the next request. It
+            teaches correctness, boundaries, repeated blocks and artifact
+            writing. It does not generate a fixed arrival rate or establish
+            sustainable server capacity. Loopback HTTP and client work may
+            dominate the tiny sum operation. Separate blocks share the same
+            processes; use fresh process launches for independent startup
+            experiments and record that change.
+          </p>
+          <ol>
             <li>
-              Run a clean repetition from documented setup and verify the
-              expected outputs.
+              Run the script as supplied. Inspect <code>method</code>,
+              <code>samples</code> and per-repetition summaries, including
+              failures.
             </li>
             <li>
-              Check every claim against the saved conditions, observations and
-              cost assumptions.
+              Change <code>--count</code> to 10,000 while keeping the other
+              arguments fixed. State whether the observed difference belongs to
+              the service computation, network/serialization path or a
+              combination you have not isolated.
             </li>
             <li>
-              Have a reviewer challenge workload choice, guarantees, uncertainty
-              and the relevance of the recommendation.
+              Make a copy of the script. Change one service to return the wrong
+              sum. Confirm the runner reports incorrect answers and exits
+              unsuccessfully. Keep this negative control artifact.
+            </li>
+            <li>
+              Replace the request function with your customer operation,
+              preserve an independent correctness check, and record the revision
+              and exact command. Revisit the arrival model before using it for a
+              capacity question.
             </li>
           </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <details>
+            <summary>
+              For a database, broker or complete-pipeline capstone
+            </summary>
+            <p>
+              You can begin with the real
+              <a href="09-beyond-databases.html">broker harness</a> or
+              <a href="10-complete-pipeline.html">complete pipeline harness</a>
+              instead. Keep their pinned setup, configuration and verification
+              commands. Record the deployed resources and actual verified rate,
+              latency, backlog, errors and recovery. The local single-replica
+              reference deployment teaches the method; it does not establish
+              production availability. Use a tested topology that matches the
+              purchase decision.
+            </p>
+          </details>
+          <details>
+            <summary>A reproducibility package another person can use</summary>
+            <pre><code>project/
+  brief.md                  # question, criteria, plan before running
+  source-revision.txt       # exact commit and uncommitted changes
+  setup-and-reset.txt       # prerequisites, versions, topology, commands
+  configuration/            # actual settings and generated workload
+  raw/                      # all runs, including failures
+  checks/                   # oracle and verification results
+  analysis/                 # commands that regenerate the summaries
+  capacity-plan.json        # sources, assumptions, scenario exports
+  benchmark-project.json    # report text and evidence register
+  benchmark-report.md       # concise recommendation</code></pre>
+            <p>
+              Use relative artifact paths and checksums for large files. An
+              evidence link is useful only if the reviewer can access the
+              artifact. Keep sensitive customer data out of shareable exports;
+              use an approved representative dataset and describe its
+              differences.
+            </p>
+          </details>
+        </section>
+        <section id="experiment">
+          <p class="eyebrow section-number">04 / Your report workshop</p>
+          <h2>Connect the brief, observations and recommendation</h2>
+          <p>
+            Write the customer question and acceptance criteria first. Fill the
+            setup and runner fields before execution so another person can
+            follow your procedure. After running, attach the records and cite
+            their evidence IDs, such as E1, next to numerical findings. Retain
+            failed and incomplete runs; explain exclusions rather than deleting
+            inconvenient observations.
+          </p>
+          <p>
+            Attach a Chapter 2 download to retain its original fixture, engine
+            versions, phases, samples and interpretation. It is labelled browser
+            evidence. Infrastructure JSON records and Chapter 11 capacity plans
+            receive their own labels. The builder embeds parsed JSON and records
+            a SHA-256 checksum of the originally uploaded file bytes; a checksum
+            helps identify an artifact, but does not validate its contents. Add
+            references for source code, raw traces, dated prices or other
+            artifacts that live elsewhere.
+          </p>
+          <div
+            class="decision-tool"
+            id="report-builder"
+            aria-label="Benchmark report builder"
+          ></div>
+          <noscript
+            ><p class="notice">
+              Use the brief headings and reproducibility package above in a text
+              editor. Enable JavaScript for the persistent builder, evidence
+              imports and project/report downloads.
+            </p></noscript
+          >
+          <p>
+            The local draft belongs to this browser and origin. Download project
+            JSON for backup: it contains the text, evidence register and
+            embedded JSON. Markdown contains the readable report and references,
+            so share the project JSON and external artifacts alongside it.
+            Import restores a project; attach evidence adds a run to the
+            existing project. Text completeness is not a technical review or
+            automatic certification.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Independent capstone</p>
+          <h2>Design, run, recommend and challenge</h2>
           <p>
-            Submit your own benchmark and report, then review a separate
-            published comparison. Propose an experiment to address its most
-            consequential missing evidence.
+            Choose a real decision from your work: a database query path, a
+            broker delivery guarantee, an object-storage pattern, search
+            quality/latency or an end-to-end ingestion workflow. Start with one
+            customer outcome and two equivalent alternatives. Write the brief
+            before the experiment. Submit both the recommendation and the
+            artifacts that could disprove it.
+          </p>
+          <ol>
+            <li>
+              <strong>Agree:</strong> name the customer question, workload
+              source, criteria, guarantees, decision owner and constraints.
+            </li>
+            <li>
+              <strong>Implement:</strong> build or adapt the runner, independent
+              expected-output check, reset procedure and recorded setup. Prove a
+              deliberately wrong result is detected.
+            </li>
+            <li>
+              <strong>Run:</strong> collect independent repetitions with a
+              defined order, sufficient duration, original conditions, all
+              outcomes and failure accounting. Check the client and service for
+              bottlenecks.
+            </li>
+            <li>
+              <strong>Analyse:</strong> regenerate the summary from raw records.
+              Include distribution, independent-run variation, useful output and
+              unresolved uncertainty. Link capacity/TCO claims only to suitable
+              deployment evidence.
+            </li>
+            <li>
+              <strong>Recommend:</strong> write one paragraph with the decision,
+              measured finding, scope, tradeoff and next action. Give a reviewer
+              the package and ask them to reproduce one result from the
+              instructions.
+            </li>
+          </ol>
+          <details>
+            <summary>Hint 1 · Make the question testable</summary>
+            <p>
+              “Can this topology keep every uploaded record queryable within the
+              agreed end-to-end target under this arrival trace, including the
+              defined worker outage?” names an outcome, conditions and a
+              possible failure. Add the actual numerical targets and expected
+              record set.
+            </p>
+          </details>
+          <details>
+            <summary>Hint 2 · Follow a claim backwards</summary>
+            <p>
+              For every number in your recommendation, point to the raw record,
+              analysis command, timing boundary and correctness check. If one is
+              missing, label the number as an assumption or defer the claim.
+            </p>
+          </details>
+          <details>
+            <summary>Hint 3 · Decide what to test next</summary>
+            <p>
+              Choose the uncertainty most likely to reverse the recommendation.
+              A native server repetition may matter more than another browser
+              timing. A recovery test may matter more than a larger steady-state
+              peak. Explain the decision each would resolve.
+            </p>
+          </details>
+          <h3>Review a published comparison</h3>
+          <p>
+            Select a public benchmark report and record its URL, author,
+            publication date and exact claim. You may use
+            <a href="https://www.tpc.org/tpch/">TPC-H published results</a> and
+            the associated disclosure reports as a starting point, or a report
+            in your customer’s field. Read the detailed methodology as well as
+            the headline. This exercise does not assume the report is wrong.
+          </p>
+          <p>
+            Identify the workload, data size, versions, topology, guarantees,
+            client/load model, timing points, correctness checks, failures,
+            repetitions, prices and commercial context that it actually
+            supplies. Separate “not disclosed” from “known to be unfair.” Then
+            propose one fair follow-up: preserve equivalent work and guarantees,
+            change one relevant variable, define success in advance, and state
+            which decision would change. Put that review in the builder’s final
+            field.
           </p>
         </section>
-        <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>
-              Decision question, acceptance targets and workload specification
-            </li>
-            <li>
-              Runnable setup, checks, raw observations and versioned
-              configuration
-            </li>
-            <li>
-              Customer-facing claim, conditions, uncertainty and cost model
-            </li>
-          </ul>
-        </section>
         <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">
+            06 / A recommendation with boundaries
+          </p>
+          <h2>Leave the reviewer a clear route to the evidence</h2>
           <p>
-            Keep the recommendation within the evidence. Explain tradeoffs and
-            unresolved questions, and distinguish measured findings from
-            estimates and assumptions.
+            Your final paragraph should answer the customer’s question at the
+            tested conditions. Explain when the result could reverse, which
+            evidence is missing and the next action. Distinguish measured facts,
+            external claims and assumptions. Report useful outcomes alongside
+            failure and missed-target counts, and explain the practical cost of
+            each.
+          </p>
+          <p>
+            A second reader should be able to recreate the fixture, run both
+            options, detect a wrong result, collect an artifact and regenerate
+            at least one finding without private instructions from you. That is
+            the capstone’s acceptance test. The builder can organise the
+            package; a real reproduction and critical review establish whether
+            it is usable.
+          </p>
+          <p>
+            For further reading, use the
+            <a href="https://www.tpc.org/information/benchmarks5.asp"
+              >Transaction Processing Performance Council’s benchmark
+              specifications</a
+            >
+            to study formal workload and disclosure rules, the
+            <a href="https://www.spec.org/fairuse.html">SPEC fair-use rules</a>
+            for examples of comparison scope and publication requirements, and
+            the
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Sizing and TCO companion</a
+            >
+            to deepen the cost and uncertainty analysis. Each benchmark’s rules
+            apply to its own results; your customer still needs a workload and
+            acceptance contract relevant to their decision.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -290,6 +644,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/decision-report.ts"></script>
   </body>
 </html>

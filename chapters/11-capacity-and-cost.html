@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="What does it cost for both options to satisfy the same workload and service requirements? Chapter outline for Benchmarking Lab."
+      content="Translate sustainable useful throughput into complete deployment capacity and cost with an editable, sourced planning model and sensitivity analysis."
     />
     <title>
       From benchmark results to capacity and cost · Benchmarking Lab
     </title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/decision.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -60,7 +62,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -69,7 +73,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -78,7 +82,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -87,7 +93,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -95,28 +101,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -125,7 +135,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -135,7 +145,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -146,125 +156,397 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 11</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 11</span><span>Cost planner</span
+          ><span>About 45 minutes</span>
         </div>
         <h1>From benchmark results to capacity and cost</h1>
         <p class="standfirst">
-          We’ll use benchmark evidence to estimate the deployment each option
-          needs, then compare its cost. A lower price per server may still lead
-          to a higher overall bill. You’ll learn to connect measured performance
-          to a cost comparison with visible assumptions.
+          A faster service can still cost more to operate. Turn measured
+          customer work into a deployment design, then price the complete design
+          against the same targets. Keep the uncertainty visible so the customer
+          can decide which missing measurement is worth buying next.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Translate measured sustainable performance into a capacity model.
-            </li>
-            <li>Distinguish measured facts, claims and assumptions.</li>
-            <li>
-              Compare total cost and explore sensitivity to uncertain inputs.
-            </li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Build an editable capacity and total cost of ownership model, trace
+            each important input to its source, and find an assumption that
+            changes the buying decision. The browser tool performs planning
+            arithmetic. Its starting numbers and prices are invented teaching
+            inputs.
+          </p>
+        </div>
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Define the service</a
+          ><a href="#worked-example">Follow the arithmetic</a
+          ><a href="#experiment">Build your plan</a
+          ><a href="#practice">Make the decision</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / The customer decision</p>
+          <h2>What does it cost to meet the same promise?</h2>
           <p>
-            Knowing which option is faster helps, but a buying decision also
-            depends on the resources needed to deliver the required service.
-            We’ll connect the capacity measured in earlier chapters to a
-            deployment design and a cost estimate.
+            Chapter 10 followed work through an entire pipeline. Here the
+            customer asks: “What will each complete deployment cost to process
+            our forecast demand while staying correct, responsive and
+            available?” An instance price answers only one part of that
+            question. <strong>Total cost of ownership (TCO)</strong> includes
+            the resources and effort needed to deliver the service over a stated
+            period.
           </p>
           <p>
-            Suppose one option has a lower price per server but needs more
-            servers to handle the customer’s demand. Storage, networking,
-            licences and operational effort may change the comparison again.
-            <strong>Total cost of ownership (TCO)</strong> brings the relevant
-            costs together over a stated period.
+            Start with the acceptance contract. For an order dashboard, that
+            might mean correct answers, a 200 ms p99 response time measured at
+            the client, a defined error budget, and bounded backlog at a peak of
+            1,800 useful requests per second. State the query mix, dataset,
+            durability, recovery target and failure scenario too. A fast answer
+            to a different question is not equivalent capacity.
           </p>
           <p>
-            We’ll compare deployments that meet the same workload, response-time
-            and availability requirements. Each performance input will point to
-            benchmark evidence; prices and other assumptions will have their own
-            sources. You’ll then explore which uncertain inputs could change the
-            recommendation.
+            <strong>Sustainable capacity</strong> is the correct useful work
+            completed per second while those targets hold over the required
+            duration. It is not the offered rate, the best brief burst or the
+            reciprocal of a browser query time. Include maintenance, compaction,
+            backups and recovery when they matter to the service. A
+            native/server run and a priced deployment establish different inputs
+            from the browser-engine runs in Chapter 2.
+          </p>
+          <figure>
+            <div class="decision-flow">
+              <div>
+                <strong>1. Evidence</strong>
+                <p>
+                  Verified output rate, latency, failures, workload and exact
+                  topology.
+                </p>
+              </div>
+              <div>
+                <strong>2. Capacity</strong>
+                <p>
+                  Demand, spare capacity, failure domains and a testable
+                  deployment design.
+                </p>
+              </div>
+              <div>
+                <strong>3. Complete cost</strong>
+                <p>
+                  Dated regional prices, quantities, operating effort and
+                  uncertainty.
+                </p>
+              </div>
+            </div>
+            <figcaption>
+              Every arrow needs evidence or a labelled assumption. A number in
+              the last box does not validate the earlier boxes.
+            </figcaption>
+          </figure>
+          <p>
+            Use the companion
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Sizing and TCO</a
+            >
+            for deeper capacity modelling, scenario analysis and uncertainty.
+            This chapter builds the practical bridge and an exportable model you
+            can take to that discussion.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Price a complete service group</h2>
           <p>
-            Take native/server benchmark records into a capacity and cost model.
-            Link each performance input to its evidence, then add separately
-            sourced prices and operating assumptions.
+            A <strong>service group</strong> here is the smallest complete unit
+            you measured and intend to add. It could be a replicated shard plus
+            its share of worker capacity. Define its boundary before using a
+            rate. In this invented example, a group contains three replicas;
+            both the measured rate and hourly compute price already include all
+            three. Physical storage below includes all billable copies and
+            backups.
           </p>
-          <aside class="thought">
-            <span>Companion</span>
+          <div class="decision-scroll">
+            <table class="decision-table">
+              <caption>
+                Illustration only: example credits, not vendor prices or
+                measured engine results.
+              </caption>
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Option A</th>
+                  <th>Option B</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Useful capacity per complete group</th>
+                  <td>900 / second</td>
+                  <td>1,500 / second</td>
+                </tr>
+                <tr>
+                  <th scope="row">Compute per complete group per hour</th>
+                  <td>0.60 credits</td>
+                  <td>1.00 credits</td>
+                </tr>
+                <tr>
+                  <th scope="row">Peak demand / average offered demand</th>
+                  <td colspan="2">1,800 / 600 per second</td>
+                </tr>
+                <tr>
+                  <th scope="row">Headroom / group-loss reserve</th>
+                  <td colspan="2">
+                    25% unused capacity / one additional whole group
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <strong>Headroom</strong> is capacity deliberately left unused for
+            bursts, forecast error or maintenance. A 25% headroom target means
+            using at most 75% of the measured sustainable rate. Divide demand by
+            0.75; multiplying demand by 1.25 leaves only 20% of the resulting
+            capacity unused.
+          </p>
+          <pre><code>usable rate per group = measured rate × (1 − headroom fraction)
+active groups = round up(peak demand / usable rate per group)
+total priced groups = active groups + whole-group failure reserve</code></pre>
+          <p>
+            Option A provides 675 usable requests per second per group: round up
+            1,800 / 675 to three active groups, then price four including the
+            spare. Option B provides 1,125: two active groups, three priced. The
+            reserve is sized for the loss of a <em>whole group</em>. If you
+            measured an existing replicated cluster under the required failure
+            and its capacity already covers that scenario, adding the same
+            reserve again would double-count it. Set the additional reserve to
+            zero and record the evidence.
+          </p>
+          <p>
+            Do not multiply either price by three replicas again. Conversely, a
+            single-node rate cannot simply be copied onto a replicated topology:
+            replication can change writes, network use, latency and failover
+            capacity. Measure the priced topology. This simple model assumes
+            independent groups scale linearly. Shared coordinators, hot
+            partitions and serial pipeline stages can invalidate that
+            assumption.
+          </p>
+          <p>
+            With the other invented inputs below, A totals
+            <strong>35,088 credits</strong> over twelve months and B totals
+            <strong>39,768 credits</strong>. This is a worked arithmetic result.
+            If A’s sustainable capacity falls to 600 per group, its required
+            count rises to five and its total becomes 40,920 credits. B then
+            costs less in this model. One uncertain performance input changes
+            the decision.
+          </p>
+          <details>
+            <summary>Inspect the full cost equation</summary>
             <p>
-              <a href="https://snowch.github.io/sizing-and-tco/"
-                >Read Sizing and TCO</a
-              >
-              for capacity planning, cost models and uncertainty analysis.
+              Monthly cost is group compute plus physical storage,
+              deployment-wide billable operations and network, licences/support,
+              shared workers/connectors/monitoring and operating effort.
+              Multiply by months and add one-time migration and setup. Headroom
+              and the group reserve affect priced group count. Traffic
+              quantities are entered for the entire deployment: they are not
+              multiplied by group count again.
             </p>
-          </aside>
+            <p>
+              The example uses 730 hours per month, an annual average. Use
+              actual billing hours for the chosen horizon when needed. There is
+              no time-value-of-money calculation, tax engine or automatic
+              discount application here: enter effective net prices and describe
+              commitments separately.
+            </p>
+          </details>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
+          <p class="eyebrow section-number">03 / Planning lab</p>
+          <h2>Find the assumption that matters</h2>
+          <p>
+            Run the starting model before editing. Compare group counts, the
+            full cost breakdown and sensitivity rows. Then lower A’s rate from
+            900 to 600 and calculate again. Observe the discrete jump in
+            deployment size: cost does not always change smoothly with demand or
+            performance.
+          </p>
+          <p>
+            Replace the example with your own evidence when available. Capacity
+            provenance identifies a <strong>measurement</strong>,
+            <strong>vendor claim</strong>, <strong>assumption</strong> or
+            <strong>illustration</strong>. A measurement needs a linked run and
+            its conditions. A vendor claim needs its original scope and an
+            independent test plan. Prices and operating quantities have their
+            own source field; a capacity measurement does not make a price quote
+            factual.
+          </p>
+          <div
+            class="decision-tool"
+            id="capacity-planner"
+            aria-label="Capacity and cost planner"
+          ></div>
+          <noscript
+            ><p class="notice">
+              The worked arithmetic and exercises remain readable. Enable
+              JavaScript to edit, validate, save and download a capacity plan.
+            </p></noscript
+          >
+          <p>
+            Calculate saves the current valid plan locally. Download JSON to
+            back it up or attach it to the Chapter 12 report. Import accepts
+            this planner’s versioned JSON format; it does not turn Chapter 2
+            browser timings into server capacity. To use infrastructure
+            evidence, inspect its run record, extract the sustainable verified
+            rate with the service-level checks, and cite the record ID in the
+            capacity evidence field.
+          </p>
+          <details>
+            <summary>Read the JSON as a small configuration file</summary>
+            <p>
+              A configuration file is a saved set of inputs. Open the download
+              in a text editor: <code>peak</code> and
+              <code>average</code> describe demand;
+              <code>options</code> contains the two alternatives;
+              <code>rate</code> describes one complete group. Preserve the
+              <code>format</code> value. Edit a copy, import it, and confirm
+              that the displayed units, sources and results match your intent.
+              Invalid imports leave the existing plan in place.
+            </p>
+          </details>
+        </section>
+        <section id="observe">
+          <p class="eyebrow section-number">04 / Read the evidence</p>
+          <h2>Count useful outcomes and complete costs</h2>
+          <p>
+            <strong>Cost per useful result</strong> uses correct output
+            delivered within the agreed target. Dividing cost by all attempted
+            requests rewards failed or late work. The tool shows projected
+            incorrect/failed and correct-but-late output separately. Its
+            correctness and on-time fractions are explicit planning inputs; the
+            model cannot infer them from capacity. A deployment can look cheap
+            per result and still fail an acceptance criterion.
+          </p>
+          <p>
+            Use peak demand for capacity and average offered demand for the
+            volume denominator. Confirm the forecast’s duty cycle: a service
+            running all month at peak is different from a service with ten busy
+            minutes each day. Keep attempted work, correct work and on-time
+            correct work distinct in both the run record and the sales claim.
+          </p>
+          <ul>
             <li>
-              Size for demand, headroom and availability while checking where
-              replication is already included.
+              <strong>Compute:</strong> data nodes, replicas, coordinators,
+              workers, connectors, load balancers and recovery capacity.
             </li>
             <li>
-              Account for compute, storage, requests, networking, licences and
-              operational effort.
+              <strong>Storage:</strong> physical copies, indexes, retention,
+              logs, snapshots, backups and temporary space; billable operations
+              and retrieval can have separate charges.
             </li>
             <li>
-              Vary demand, prices and performance assumptions and inspect
-              whether the recommendation changes.
+              <strong>Network:</strong> ingress/egress rules, cross-zone
+              replication, cross-region recovery, retries and connector traffic.
+              A zero line needs an explained inclusion or exclusion.
             </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+            <li>
+              <strong>Commercial and human costs:</strong> licences, support,
+              monitoring, on-call work, upgrades, migration, training and
+              recurring operations. Record which are included in another line.
+            </li>
+          </ul>
+          <p>
+            For a pipeline, price every stage and the glue between them. A
+            sink’s peak rate cannot establish the capacity of object storage →
+            worker → broker → database. Verify the proposed complete deployment
+            under the same arrivals and queries, including backlog, recovery and
+            data checks. Re-run sizing when a faster stage shifts the
+            bottleneck.
+          </p>
+          <p>
+            The sensitivity table is a controlled “what if,” not a confidence
+            interval or probability forecast. It states which quantities change.
+            Demand-driven retention growth, nonlinear licence tiers and worker
+            scaling need separate scenarios. For a more complete study, export
+            the base plan and one independently justified low/high case for each
+            decision-changing input.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Independent task</p>
+          <h2>Defend the cheaper complete deployment</h2>
           <p>
-            Compare two complete deployments over a stated period. Identify the
-            uncertain input most likely to change the buying decision.
+            A customer says, “A costs less per instance, so we should buy A.”
+            Build two plans against the same workload and service contract. Use
+            real server evidence where available; otherwise leave capacity
+            explicitly assumed. Find the demand or capacity boundary where the
+            cheaper option changes. State what you would measure before the
+            customer commits.
           </p>
-        </section>
-        <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Performance evidence and capacity/deployment assumptions</li>
-            <li>Dated regional prices, discounts and operating assumptions</li>
+          <ol>
             <li>
-              Cost model, sensitivity results and costs of failures or missed
-              targets
+              Write the demand trace, target, time horizon, region and failure
+              scenario before looking at the price total.
             </li>
-          </ul>
+            <li>
+              Define each measured/priced group and identify where replication,
+              headroom and recovery are included.
+            </li>
+            <li>
+              Link performance runs and dated price sources separately. Explain
+              every zero or excluded category.
+            </li>
+            <li>
+              Export the base and a decision-changing scenario. Explain the
+              difference in useful customer outcomes and total cost.
+            </li>
+          </ol>
+          <details>
+            <summary>Hint 1 · Start with quantities</summary>
+            <p>
+              Write “four groups × complete group hourly price,” rather than
+              copying a monthly headline. Can you name what is inside a group?
+              Is traffic per group or per deployment?
+            </p>
+          </details>
+          <details>
+            <summary>Hint 2 · Test one uncertain input</summary>
+            <p>
+              Reduce A’s sustainable rate to 600 in the teaching example. Keep
+              the service target fixed. How many groups remain after losing one?
+              Which cost lines scale with that group count?
+            </p>
+          </details>
+          <details>
+            <summary>Hint 3 · Scope the recommendation</summary>
+            <p>
+              A defensible sentence is: “At this forecast and target, the
+              declared cost model favours B if A sustains only 600 useful
+              requests/second per group; the crossover depends on a server
+              measurement we have not yet run.” Link the exported scenario and
+              name the missing run.
+            </p>
+          </details>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">06 / What this establishes</p>
+          <h2>A cost estimate is a chain of claims</h2>
           <p>
-            Use the Sizing and TCO companion for deeper modelling. Browser
-            timings alone do not establish infrastructure cost. Pipeline models
-            must include workers, connectors, retention, retries and recovery
-            capacity.
+            The calculator establishes arithmetic consequences of supplied
+            inputs. It does not establish that capacity scales, that failover
+            meets the service contract or that an illustrative price is
+            commercially available. The next chapter assembles the evidence,
+            uncertainty and recommendation into a report another person can
+            challenge and reproduce.
+          </p>
+          <p>
+            Keep your capacity JSON, underlying native/server run records,
+            topology diagram, quantity calculations, dated quotes and exclusions
+            together. Record price region, price date, currency, horizon,
+            discount commitments and evidence age. The
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Sizing and TCO companion</a
+            >
+            develops this evidence-led approach further. For cost vocabulary and
+            billing checks, consult the
+            <a href="https://www.finops.org/framework/">FinOps Framework</a> and
+            the pricing documentation for the actual services you intend to buy.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -295,6 +577,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/decision-capacity.ts"></script>
   </body>
 </html>

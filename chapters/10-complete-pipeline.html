@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Does changing one component improve the complete customer outcome? Chapter outline for Benchmarking Lab."
+      content="Does changing one component improve the complete customer outcome? A worked lesson with runnable exercises and evidence for Benchmarking Lab."
     />
     <title>Benchmark the complete pipeline · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/infrastructure.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html" aria-current="page"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,133 +154,250 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 10</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 10</span><span>Service lab</span
+          ><span>Real-service lab</span>
         </div>
         <h1>Benchmark the complete pipeline</h1>
         <p class="standfirst">
-          We’ll follow uploaded sales records through storage, Kafka and a
-          database until they are ready to query. Customers depend on the whole
-          journey. You’ll learn to test whether changing one part improves the
-          time and reliability of the complete result.
+          Follow an upload until every expected record can be queried. The
+          customer experiences the complete journey, including queues and
+          verification.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Define end-to-end completion across storage, Kafka and a database.
-            </li>
-            <li>
-              Find where work waits and which stage limits the whole pipeline.
-            </li>
-            <li>
-              Measure recovery and verify the final data under continuing load.
-            </li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Measure when uploaded records become queryable, investigate a
+            constraint and verify the full customer outcome.
+          </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            The lessons and commands remain readable without JavaScript. Enable
+            JavaScript to inspect evidence and export notes.
+          </p></noscript
+        >
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Frame the decision</a
+          ><a href="#worked-example">Follow the example</a
+          ><a href="#experiment">Run the harness</a
+          ><a href="#inspector">Inspect evidence</a
+          ><a href="#practice">Practice</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / Customer question</p>
+          <h2>When is the upload usable?</h2>
           <p>
-            Chapter 9 considered technologies with different jobs. Real
-            applications often connect several of them in a
-            <strong>pipeline</strong>: a sequence of steps that turns an input
-            into a useful result. Performance at each step contributes to the
-            customer’s experience.
+            A sales team submits order files throughout the day. They need all
+            records, correctly transformed and queryable, within a time target
+            at their expected arrival rate. An upload acknowledgement only
+            confirms an intermediate step. Define the record set and
+            transformation before the run, then follow each unique run, object
+            and record ID.
           </p>
+          <div class="evidence">
+            <ol class="pipeline">
+              <li>S3-compatible object store</li>
+              <li>Python ingestion adapter reads JSON</li>
+              <li>Kafka broker</li>
+              <li>Python sink worker</li>
+              <li>Postgres query verifies values</li>
+            </ol>
+          </div>
           <p>
-            Imagine a customer uploading a file of orders. An ingestion worker,
-            a program that reads and prepares incoming data, turns its records
-            into Kafka events. A second worker writes them to a database. The
-            customer wants to know when all the expected records can be queried
-            correctly.
-          </p>
-          <p>
-            We’ll use this journey to define a complete-system benchmark. By
-            tracking the same records across the steps, we can investigate where
-            work waits, what happens after an interruption, and whether
-            improving one component improves the customer’s outcome.
+            The Python client, JSON serialization and Compose network are part
+            of this tested system. The ingestion adapter is triggered
+            synchronously after each upload; it reads the object and publishes
+            its records. The sink writes each value doubled, then commits the
+            Kafka offset. A database upsert makes repeated keys idempotent;
+            duplicate receipts are still counted. Producer retries are bounded;
+            other failures are recorded and not silently retried.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Measure the customer’s wait directly</h2>
           <p>
-            Trace an S3-compatible upload through an ingestion worker, Kafka, a
-            sink worker and a database query. Record the adapters,
-            transformation, retry behaviour and offset-commit policy.
+            Imagine 20 objects with five records each, submitted at two objects
+            per second. For each object, start at upload submission and stop at
+            the first query that finds all five expected doubled values. A 200
+            ms polling interval adds up to approximately one polling interval of
+            detection delay, plus query cost. This is per-object completion, not
+            per-record latency. The harness records both the polling count and
+            verification time.
           </p>
-          <div class="evidence">
-            <span class="small-label">Planned reference pipeline</span>
-            <ol class="pipeline">
-              <li>S3-compatible object storage</li>
-              <li>Ingestion worker</li>
-              <li>Kafka</li>
-              <li>Sink worker</li>
-              <li>Database and verification query</li>
-            </ol>
-          </div>
+          <p>
+            All trace timestamps use the same process monotonic clock; no
+            cross-host clock synchronization is needed for these observations.
+            In a distributed instrumented deployment, disclose clock
+            synchronization and uncertainty. Never add stage p99 values to
+            invent an end-to-end p99: stage delays overlap and the slowest
+            records may differ.
+          </p>
+          <p>
+            Compare compatible units. If each object has five records, two
+            objects per second means ten records per second. A sink processing
+            eight records per second will accumulate work even if the database
+            alone handles more. The illustrative rates are not measured service
+            results.
+          </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Correlate run, object and record identities from upload submission
-              to verified queryable output.
-            </li>
-            <li>
-              Slow one worker and measure stage activity, backlog and the
-              end-to-end outcome.
-            </li>
-            <li>
-              Restore the worker while arrivals continue; verify values and
-              detect missing or duplicate records.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <p class="eyebrow section-number">03 / Run and diagnose</p>
+          <h2>Slow the sink, then restore it</h2>
+          <p>
+            Run the baseline below. Repeat with
+            <code>--sink-delay 0.05</code> to add 50 ms to each sink write,
+            keeping the other settings fixed. The pause occurs while the sender
+            continues. Compare the growth and drain of the gap, verified object
+            times, errors, and completeness. A constraint change tests a
+            bottleneck explanation; it does not prove a production system will
+            behave the same way.
           </p>
+          <p>
+            <a href="../harnesses/infrastructure.zip" download
+              >Download the runnable infrastructure harness</a
+            >
+            ·
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/infrastructure-measurement.md"
+              >Measurement notes</a
+            >
+          </p>
+          <p>
+            Unzip the bundle, open a terminal in its
+            <code>infrastructure</code> directory, and use Docker Compose. First
+            startup downloads pinned images and builds the client. The trace is
+            written to <code>results/</code>.
+          </p>
+          <pre><code>docker compose up -d kafka store db
+docker compose run --rm client pipeline --count 20 --records 5 --rate 2 --pause-at 2 --pause-for 3
+ls results/*.json</code></pre>
+          <p>
+            For a clean repeat,
+            <code>docker compose down -v --remove-orphans</code> removes this
+            project’s service data. Inspect the JSON summary and event
+            observations, then import the file below. The harness uses one
+            broker, one partition and one replica: its results describe this
+            local topology, not a production deployment.
+          </p>
+          <p>
+            Check actual offered timestamps; the synchronous ingestion client
+            may fall behind its schedule. The verification query detects missing
+            or incorrect values, and the receipt trace detects duplicate
+            deliveries. A unique database key prevents duplicate rows, so
+            absence of duplicate rows alone is not proof of exactly-once
+            delivery. Timed-out objects are unfinished. Collect logs and repeat
+            runs before making a capacity claim.
+          </p>
+        </section>
+        <section id="inspector">
+          <p class="eyebrow section-number">04 / Inspect evidence</p>
+          <h2>Read a trace</h2>
+          <p>
+            This browser tool inspects evidence; it does not run a broker or
+            pipeline. Import the JSON produced by the harness or paste it below.
+            The table groups observed milestones by elapsed second. Objects and
+            records have different units.
+          </p>
+          <div id="trace-inspector" class="evidence">
+            <p class="caption">
+              Recorded local functional run · 29 October 2026. This sample shows
+              the method and verification; it does not establish sustainable
+              capacity or production performance.
+            </p>
+            <button
+              type="button"
+              id="trace-example"
+              data-example="../examples/pipeline-smoke.json"
+            >
+              Inspect a recorded local run
+            </button>
+            <p class="caption">
+              <a href="../examples/pipeline-smoke.json" download
+                >Download the recorded example</a
+              >
+              · <a href="../examples/README.md">Sample provenance</a>
+            </p>
+            <label for="trace-file">Import a harness JSON file</label
+            ><input
+              id="trace-file"
+              type="file"
+              accept="application/json,.json"
+            /><label for="trace-json">Or paste evidence JSON</label
+            ><textarea
+              id="trace-json"
+              rows="5"
+              placeholder="Paste a harness result here"
+            ></textarea
+            ><button id="trace-inspect" type="button">Inspect evidence</button>
+            <p id="trace-result" role="status">No evidence loaded.</p>
+            <div id="trace-chart"></div>
+            <label for="trace-notes">Your interpretation and caveats</label
+            ><textarea
+              id="trace-notes"
+              rows="4"
+              placeholder="What does the evidence support?"
+            ></textarea
+            ><button id="trace-download" type="button" disabled>
+              Export evidence and notes
+            </button>
+          </div>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Practice</p>
+          <h2>Test a bottleneck hypothesis</h2>
           <p>
-            Change one component or configuration. Design a repeatable
-            comparison to establish whether it improves queryable-data delay or
-            sustainable pipeline throughput.
+            The broker acknowledges quickly but queryable completion gets later
+            on every object. What would you measure and change before
+            recommending a larger database?
           </p>
+          <details>
+            <summary>Hint 1: Follow the same IDs</summary>
+            <p>
+              Compare upload, ingestion, receipt, processing and verification
+              observations for each object.
+            </p>
+          </details>
+          <details>
+            <summary>Hint 2: Compare rates in the same units</summary>
+            <p>
+              Convert objects per second to records per second and inspect
+              whether the gap keeps growing.
+            </p>
+          </details>
+          <details>
+            <summary>One possible answer</summary>
+            <p>
+              Measure the sink queue and write rate, then change sink delay or
+              worker resources with the same arrivals. If the queue drains and
+              end-to-end completion improves, that supports the sink constraint
+              hypothesis for this topology. Repeat and check correctness.
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>
-              Topology, versions, worker configuration and complete commands
-            </li>
-            <li>
-              Correlated observations, verification cost and query-polling
-              interval
-            </li>
-            <li>
-              Backlog, retries, recovery history and final correctness checks
-            </li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">06 / Take it to a customer</p>
+          <h2>Report the whole path</h2>
           <p>
-            Measure end-to-end latency directly: stage p99 values cannot be
-            added to produce an end-to-end p99. State clock assumptions and
-            detection delay. A local topology supports claims about that tested
-            deployment.
+            Keep the commands, configuration, topology, achieved input and
+            verified output, failures, queue history, recovery, identity checks,
+            polling interval and query cost. Vary object sizes, records, bursts,
+            batching, transformations and concurrent queries to match the
+            customer. This reference harness fixes some of these choices; extend
+            it or use a production-shaped test before generalizing.
+          </p>
+          <p>
+            Further reading:
+            <a href="https://kafka.apache.org/documentation/"
+              >Kafka documentation</a
+            >,
+            <a href="https://www.postgresql.org/docs/"
+              >PostgreSQL documentation</a
+            >
+            and
+            <a href="https://github.com/seaweedfs/seaweedfs"
+              >SeaweedFS documentation</a
+            >.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -300,6 +427,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/infrastructure-inspector.ts"></script>
   </body>
 </html>

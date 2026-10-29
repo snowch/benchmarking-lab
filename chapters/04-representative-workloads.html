@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Does your recommendation change when the data and usage resemble the customer’s? Chapter outline for Benchmarking Lab."
+      content="Run real SQL traces and inspect how workload mix and distribution affect the evidence."
     />
     <title>Choose a representative workload · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/methods.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page methods-page" data-method="4">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,114 +154,423 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 04</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 04</span><span>Working lab</span
+          ><span>About 35 minutes</span>
         </div>
         <h1>Choose a representative workload</h1>
         <p class="standfirst">
-          We’ll change the orders and requests in our database example to
-          resemble different customers. A system that suits a reporting team may
-          perform differently for an order screen. You’ll learn to choose tests
-          that reflect the customer’s work and explain where the results apply.
+          A benchmark can be correct and still answer the wrong business
+          question. You will execute two kinds of customer work, change their
+          frequency and data distribution, and see which parts of a
+          recommendation depend on those choices.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
+        <p>
+          Chapter 3 established that the engines must return equivalent answers.
+          Now imagine two customers considering the same product. An operations
+          team opens individual orders throughout the day. A finance team runs a
+          revenue report after each import. “Which database is faster?” hides
+          the difference between those jobs. A useful comparison says what work
+          the customer does, how often, and on what data.
         </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Describe the data and requests that represent a customer’s work.
-            </li>
-            <li>
-              Vary the types of request, the rows they need and how the data is
-              spread.
-            </li>
-            <li>Explain which scenarios the evidence represents.</li>
-          </ul>
-        </section>
-        <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+        <div class="methods-flow">
+          <strong>Your evidence:</strong> a customer workload hypothesis → a
+          deterministic ten-request trace → checked real SQL observations →
+          separate results for each job → a conditional workload finding.
+        </div>
+        <nav class="chapter-jumps" aria-label="In this chapter">
+          <a href="#workload">Describe the work</a>
+          <a href="#worked-example">Calculate a mix</a>
+          <a href="#experiment">Run the trace</a>
+          <a href="#practice">Build your own trace</a>
+        </nav>
+        <section id="workload">
+          <p class="eyebrow section-number">01 / Describe the customer</p>
+          <h2>A workload is more than a dataset size</h2>
           <p>
-            Once both options meet the same requirements, we need to ask whether
-            the example resembles the customer’s usage. A
-            <strong>workload</strong> describes the data and the work performed
-            on it: which requests arrive, how often they arrive, and which
-            records they touch.
+            A <strong>workload</strong> combines the data with the requests made
+            against it. Its description includes how many records exist, which
+            values are common, which queries arrive, how often they arrive, and
+            which responses matter. A <strong>trace</strong> is an ordered list
+            of requests. A replay executes that list so another person can
+            repeat the same work.
           </p>
           <p>
-            Our first database comparison used a simple generated set of orders.
-            Imagine a customer whose orders are concentrated in a few large
-            accounts, with frequent recent-order lookups and occasional
-            historical reports. Changing those proportions can change the work
-            each database must do.
+            Our starting workload has two jobs: an unindexed lookup of the
+            midpoint order, and an aggregation that sums revenue into
+            month-and-region groups. The lookup returns one row. The report
+            reads all orders and returns up to 48 groups. Keeping those jobs
+            separate makes an important tradeoff visible: an option can perform
+            differently for an interactive lookup and a report that scans many
+            rows.
           </p>
           <p>
-            We’ll compare several versions of the orders workload and record why
-            each was chosen. This helps you connect a benchmark result to a
-            customer scenario and identify which assumptions need checking
-            before making a recommendation.
+            <strong>Distribution</strong> means how values are spread across the
+            data. With uniform regions, orders are evenly assigned to four
+            regions. With a hotspot, nine of every ten rows are assigned to
+            region 1; the remaining rows cycle through regions 2, 3 and 4. This
+            creates exactly 90% in region 1 for our bounded sizes. These
+            synthetic patterns make a condition reproducible. They are
+            hypotheses to test against customer evidence, rather than a claim to
+            represent every business.
+          </p>
+          <div
+            class="methods-table"
+            role="region"
+            aria-label="Workload dimensions"
+            tabindex="0"
+          >
+            <table>
+              <caption>
+                Turn a broad request into conditions that can be measured
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dimension</th>
+                  <th scope="col">This executable lab</th>
+                  <th scope="col">Customer evidence to request</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Scale</td>
+                  <td>2,000 or 20,000 orders</td>
+                  <td>Current volume and expected growth</td>
+                </tr>
+                <tr>
+                  <td>Request mix</td>
+                  <td>20%, 50% or 80% lookups</td>
+                  <td>Counts by job over a stated business period</td>
+                </tr>
+                <tr>
+                  <td>Value distribution</td>
+                  <td>Uniform or 90% region-1 hotspot</td>
+                  <td>Frequency counts, common and unusual values</td>
+                </tr>
+                <tr>
+                  <td>Locality</td>
+                  <td>The same midpoint order repeatedly</td>
+                  <td>Repeated versus new order IDs</td>
+                </tr>
+                <tr>
+                  <td>Arrival pattern</td>
+                  <td>Sequential requests, one at a time</td>
+                  <td>Busy hours, bursts and simultaneous users</td>
+                </tr>
+                <tr>
+                  <td>Lifecycle</td>
+                  <td>Warm queries after fresh load</td>
+                  <td>Import frequency, startup and maintenance work</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The final three rows are deliberate limitations. A repeated midpoint
+            lookup can benefit from warm state. A sequential trace cannot
+            establish performance under a busy hour. Chapter 5 examines the
+            runner; later demand exercises add arrival rates and concurrency. A
+            useful early report keeps the missing dimensions visible.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / A worked calculation</p>
+          <h2>A recommendation depends on the mix</h2>
           <p>
-            Keep the orders scenario and compare a uniform dataset with one
-            concentrated on a small group of customers. State how the synthetic
-            data relates to the customer.
+            Before running, use an explicitly
+            <strong>invented arithmetic example</strong>. Suppose option A takes
+            1 ms for a lookup and 8 ms for a report; option B takes 3 ms and 4
+            ms. These are teaching numbers, not observations from either
+            database.
+          </p>
+          <pre class="methods-source" tabindex="0">
+80% lookups:
+A = 0.8 × 1 + 0.2 × 8 = 2.4 ms/request
+B = 0.8 × 3 + 0.2 × 4 = 3.2 ms/request
+
+20% lookups:
+A = 0.2 × 1 + 0.8 × 8 = 6.6 ms/request
+B = 0.2 × 3 + 0.8 × 4 = 3.8 ms/request</pre>
+          <p>
+            A has the lower weighted value in the lookup-heavy scenario; B has
+            the lower one in the report-heavy scenario. The weights changed
+            while the class times stayed fixed. That calculation helps explain a
+            business choice, but a mean hides individual response requirements.
+            If the order screen must respond within a target, inspect lookup
+            results directly even when the mix summary looks good.
+          </p>
+          <p>
+            The live exercise uses <strong>medians</strong>, the middle measured
+            value in each request class, as inputs to a weighted planning
+            summary. A weighted combination of class medians is neither the
+            median of the whole trace nor a measurement of concurrent capacity.
+            The actual request times and the actual trace sum remain available
+            alongside it.
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Specify data volume, key distribution, query mix and arrival
-              pattern.
-            </li>
-            <li>
-              Change one workload dimension and repeat the two-engine
-              comparison.
-            </li>
-            <li>
-              Compare separate operation types before choosing any weighted
-              summary.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
-          </p>
-        </section>
-        <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">03 / Replay real SQL</p>
+          <h2>Change one workload condition</h2>
           <p>
-            Design a workload from a customer scenario. Record the evidence for
-            its proportions and identify an assumption that could change the
-            recommendation.
+            Begin with the defaults and download the record. Keep the size and
+            distribution fixed, change only the request mix, and run again. Then
+            hold the mix fixed and change distribution or size. The
+            deterministic trace spaces lookup requests through ten positions; it
+            does not silently generate a new random order on each run.
           </p>
-        </section>
-        <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Versioned workload specification and seed</li>
-            <li>Query mix and data-distribution assumptions</li>
-            <li>Results for each workload and operation type</li>
-          </ul>
+          <div class="methods-lab">
+            <div class="methods-controls">
+              <label for="methods-size"
+                >Order count<select id="methods-size" data-method-setting>
+                  <option value="2000">2,000 orders</option>
+                  <option value="20000">20,000 orders</option>
+                </select></label
+              ><label for="methods-shape"
+                >Region distribution<select
+                  id="methods-shape"
+                  data-method-setting
+                >
+                  <option value="uniform">Uniform · four regions</option>
+                  <option value="hotspot">Hotspot · 90% in region 1</option>
+                </select></label
+              ><label for="methods-mix"
+                >Lookup share in each ten-request trace<select
+                  id="methods-mix"
+                  data-method-setting
+                >
+                  <option value="8">80% lookups · 8 lookup / 2 report</option>
+                  <option value="5">50% lookups · 5 lookup / 5 report</option>
+                  <option value="2">20% lookups · 2 lookup / 8 report</option>
+                </select></label
+              >
+            </div>
+            <details>
+              <summary>Inspect the schema, SQL and trace order</summary>
+              <pre id="methods-sql" class="methods-source" tabindex="0">
+CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
+ region_id INTEGER, amount_cents INTEGER);
+SELECT order_id, month_id, region_id, amount_cents
+FROM orders WHERE order_id = 1000;
+SELECT month_id, region_id, CAST(SUM(amount_cents) AS BIGINT)
+FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
+-- The download contains the deterministic generator and full INSERT statements.</pre>
+            </details>
+            <div class="methods-buttons">
+              <button id="methods-run" type="button" disabled>
+                Run workload comparison</button
+              ><button
+                id="methods-stop"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Stop
+              </button>
+            </div>
+            <p
+              id="methods-status"
+              class="methods-status"
+              role="status"
+              aria-live="polite"
+            >
+              Ready. No engine or measurement is loaded until you press Run.
+            </p>
+            <p class="caption">
+              Both real engines receive identical rows and queries, with no
+              indexes. Fresh in-memory workers start each run; each query is
+              verified and run once per engine before measurement. Ten measured
+              requests per engine follow the trace. At each position the first
+              engine alternates. Setup is outside query timing. Keep the tab
+              visible; first use can load about 54 MiB.
+            </p>
+            <noscript
+              ><p class="notice">
+                The lesson, workload definition and SQL are readable without
+                JavaScript. Enable JavaScript for local engine execution, saved
+                drafts and measured evidence downloads.
+              </p></noscript
+            >
+            <p id="methods-stale" class="methods-stale" hidden>
+              Controls changed. Results and download describe the completed
+              settings; run again to measure the current choices.
+            </p>
+            <div id="methods-results" hidden></div>
+            <div class="methods-buttons">
+              <button
+                id="methods-download"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Download evidence JSON
+              </button>
+            </div>
+            <p class="caption">
+              Save each record before rerunning. JSON includes the full
+              generated fixture, load statements, source, request order, exact
+              result rows, expected answers, versions, asset hashes, setup and
+              every measured duration. Notes join the completed configuration at
+              export time. Completed results are retained only in this tab until
+              the next run or exit.
+            </p>
+          </div>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">04 / Interpret a workload result</p>
+          <h2>Separate a mix effect from a data effect</h2>
           <p>
-            A synthetic workload represents the declared scenario. Its
-            representativeness needs evidence; a single composite score can hide
-            tradeoffs between operations.
+            First check that every answer passed. Read lookup and report medians
+            individually, then inspect each raw request. With only two samples
+            in a minority class, its median is fragile. A small gap or an
+            unexpected reversal needs repeated independent runs; it does not
+            justify a sweeping recommendation.
+          </p>
+          <p>
+            If you change only the mix, a weighted summary may change because
+            you counted one job more often. The engines also see a different
+            request sequence, which can affect their warm state. To isolate
+            arithmetic weighting, recompute both weights from the same saved
+            class times. To assess the full workload, replay both traces and
+            retain both records. Those are related but different experiments.
+          </p>
+          <p>
+            Changing the region distribution changes the report's groups and the
+            midpoint row's region. The independent reference is regenerated from
+            the actual rows, so both engines must return the correct answer for
+            that fixture. A hotspot does not guarantee a performance reversal:
+            the SQL still scans all rows, these datasets are small, and browser
+            request overhead can dominate. “No clear change in these runs” is a
+            useful observation when accurately bounded.
+          </p>
+          <details>
+            <summary>Hint 1 · Which pair of runs should I compare?</summary>
+            <p>
+              Use the same size and distribution with 80% and 20% lookups.
+              Download both. Identify the job that gets more weight before
+              interpreting any combined value.
+            </p>
+            <details>
+              <summary>Hint 2 · How do I explain an unchanged result?</summary>
+              <p>
+                Check the individual job times and sample count. The two jobs
+                may have similar costs at this small size, or the run-to-run
+                spread may overwhelm the effect. Increase the size while holding
+                the other settings fixed.
+              </p>
+              <details>
+                <summary>Hint 3 · What would support a recommendation?</summary>
+                <p>
+                  Customer evidence for the selected mix and data distribution,
+                  repeated correct observations in the target deployment, and
+                  direct checks of each required response target. State which
+                  dimensions remain untested.
+                </p>
+              </details>
+            </details>
+          </details>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">05 / Independent practice</p>
+          <h2>Replace a convenient workload with a justified one</h2>
+          <p>
+            Write a workload brief for an order-screen customer and a month-end
+            reporting customer. Choose which shipped trace is closer to each,
+            state why, and list the evidence you would need before using that
+            choice in a sales comparison. Avoid using confidential customer
+            rows; aggregated frequency counts often establish the first design.
+          </p>
+          <ol>
+            <li>
+              Run two mixes with the same data. Record a finding for each job
+              and explain the weighted calculation.
+            </li>
+            <li>
+              Change one data condition and run again. State what did and did
+              not change within your observations.
+            </li>
+            <li>
+              Design a new ten-request trace with a short report burst. Predict
+              which conclusion it might challenge, then implement and execute it
+              locally.
+            </li>
+          </ol>
+          <p>
+            For that final step, edit <code>trace()</code> in
+            <code>src/methods-model.ts</code>. For example, return eight
+            <code>'lookup'</code> entries followed by two
+            <code>'revenue'</code> entries. A quoted word here is a
+            request-class name; the runner uses it to select SQL and the
+            independent expected answer. Keep the total at ten and keep the
+            selected mix consistent with its counts, so the weighted summary
+            remains truthful. Then use the
+            <a href="#evidence">local reproduction commands</a> and compare your
+            burst trace with the evenly interleaved baseline.
+          </p>
+          <label class="methods-label" for="methods-notes"
+            >Your workload evidence, conditional finding and trace design</label
+          ><textarea
+            id="methods-notes"
+            class="methods-notes"
+            placeholder="For this customer, the mix should be… My evidence is… In these runs… Changing only… I would next replay…"
+          ></textarea>
+          <p class="caption">
+            Notes and selected controls save locally on this device when storage
+            is available. Each export includes your current notes with the
+            original completed settings.
+          </p>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              Your finding should name the data size, distribution, request mix,
+              warm browser boundary and sample counts. Explain why the workload
+              matches a particular customer, and which measured class satisfies
+              each response requirement. A workload hypothesis is not customer
+              evidence by itself.
+            </p>
+          </details>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">06 / Sources and reproducibility</p>
+          <h2>Keep the workload attached to the score</h2>
+          <p>
+            The deterministic generator is the Chapter 2 generator. In hotspot
+            mode, rows whose zero-based offset is not divisible by ten are
+            assigned to region 1; every tenth row cycles through regions 2, 3
+            and 4. A separate JavaScript reference scans the resulting rows and
+            calculates every expected result. Both engines load identical INSERT
+            statements, gather statistics with
+            <code>ANALYZE</code>, and use the same SQL. No query timing is
+            simulated.
+          </p>
+          <ul>
+            <li>
+              <a href="https://duckdb.org/docs/stable/clients/wasm/overview"
+                >DuckDB-Wasm overview</a
+              >
+              and
+              <a href="https://pglite.dev/docs/">PGlite documentation</a>
+              describe the execution environments.
+            </li>
+            <li>
+              <a
+                href="https://www.tpc.org/tpc_documents_current_versions/current_specifications5.asp"
+                >TPC benchmark specifications</a
+              >
+              illustrate why a benchmark defines its data, transactions, scaling
+              and reporting rules together. This exercise is not a TPC result.
+            </li>
+            <li>
+              <a
+                href="https://github.com/snowch/benchmarking-lab/blob/main/docs/methods-measurement.md"
+                >Measurement contract and local reproduction</a
+              >;
+              <a href="../engine-licenses.txt"
+                >engine source and licence notices</a
+              >.
+            </li>
+          </ul>
+          <p>
+            Next, investigate whether the program sending these requests is
+            itself limiting or distorting the observation.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -282,6 +601,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/methods-runtime.ts"></script>
   </body>
 </html>

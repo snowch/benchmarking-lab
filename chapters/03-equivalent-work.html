@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Are the systems returning equivalent answers under comparable conditions and guarantees? Chapter outline for Benchmarking Lab."
+      content="Are they doing the same work? Run and repair a real SQL equivalence check."
     />
     <title>Are they doing the same work? · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/methods.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page methods-page" data-method="3">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html" aria-current="page"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,113 +154,503 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 03</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 03</span><span>Working lab</span
+          ><span>About 30 minutes</span>
         </div>
         <h1>Are they doing the same work?</h1>
         <p class="standfirst">
-          We’ll return to the database comparison and check what each option
-          actually does. A shorter time can come from returning less information
-          or using a different configuration. You’ll learn to spot those
-          differences and decide which conditions matter for a fair customer
-          decision.
+          A fast answer helps the customer only if it answers the question they
+          asked. You will run a deliberately flawed comparison, catch the
+          mistake with a small independent reference, and repair it before
+          interpreting the clock.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
+        <p>
+          Chapter 2 gave both engines the same rows and checked their answers.
+          Now the sales operations team asks for
+          <strong
+            >January revenue and the number of orders in each region</strong
+          >. A colleague has a shorter query that appears to do the job. Your
+          task is to establish whether its result belongs in the comparison at
+          all.
         </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>Define the expected output before timing.</li>
-            <li>Audit indexes, configuration and service guarantees.</li>
-            <li>
-              Repair a comparison whose apparent advantage comes from different
-              work.
-            </li>
-          </ul>
-        </section>
-        <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+        <div class="methods-flow">
+          <strong>Your evidence:</strong> a written result contract → an
+          edge-case fixture → a real SQL run → a pass or fail on every answer →
+          a corrected comparison record.
+        </div>
+        <nav class="chapter-jumps" aria-label="In this chapter">
+          <a href="#contract">Define success</a>
+          <a href="#worked-example">Inspect the mistake</a>
+          <a href="#experiment">Run and repair</a>
+          <a href="#practice">Design your own check</a>
+        </nav>
+        <section id="contract">
+          <p class="eyebrow section-number">01 / Define success first</p>
+          <h2>Write the answer before timing it</h2>
           <p>
-            Chapter 2 checked that both engines returned the expected answers.
-            That is the first part of a fair comparison. We also need to know
-            how each system is configured and what it promises to do before
-            reporting success.
+            A <strong>comparison contract</strong> is a short agreement about
+            the work each option must complete. It names the input, output,
+            resources, permitted tuning and guarantees. “Run a revenue query” is
+            too loose: different month boundaries, missing amounts and duplicate
+            values can all change the answer.
           </p>
           <p>
-            Suppose one database finds an order quickly using an
-            <strong>index</strong>, an extra structure that helps locate rows,
-            while the other searches without one. Or suppose a faster report
-            leaves out some orders. Before quoting the time, we need to
-            establish what caused the difference and whether both options meet
-            the customer’s requirements.
+            For this exercise, January means <code>month_id = 1</code>. Every
+            row is a separate order. An unknown amount, represented by SQL
+            <code>NULL</code>, still counts as an order and contributes zero
+            cents to the total. Repeated amounts remain separate purchases.
+            Return the region, order count and revenue in integer cents; sort
+            the result by region. Integer cents keep this example free of
+            currency rounding differences.
           </p>
+          <div
+            class="methods-table"
+            role="region"
+            aria-label="The comparison contract"
+            tabindex="0"
+          >
+            <table>
+              <caption>
+                The contract for this customer question
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Condition</th>
+                  <th scope="col">Required in this exercise</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Input</td>
+                  <td>The same eight orders, including every edge case</td>
+                </tr>
+                <tr>
+                  <td>Output</td>
+                  <td>
+                    January only; all orders counted; revenue summed by region
+                  </td>
+                </tr>
+                <tr>
+                  <td>Resources</td>
+                  <td>One connection and one execution thread per engine</td>
+                </tr>
+                <tr>
+                  <td>Tuning policy</td>
+                  <td>
+                    Both unindexed, or the same month index statement on both
+                  </td>
+                </tr>
+                <tr>
+                  <td>Timing boundary</td>
+                  <td>Send SQL through receipt of all ordered string rows</td>
+                </tr>
+                <tr>
+                  <td>Guarantees tested</td>
+                  <td>Correct reads from a local in-memory database</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p>
-            We’ll inspect a comparison with missing details and build a
-            checklist for the inputs, expected answers, configuration, resources
-            and guarantees. The aim is to define a comparison another person can
-            understand and repeat.
+            <strong>An index</strong> is an extra structure that can help find
+            selected rows. Building it costs time and memory. Equal index
+            statements are a documented tuning policy; they do not force the
+            engines to use identical physical plans. A different customer
+            question may permit each option's best supported configuration under
+            equal cost or resource limits. Choose that policy before seeing the
+            winner.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / A worked example</p>
+          <h2>Three small changes, one wrong report</h2>
           <p>
-            Inspect a deliberately incomplete comparison brief. Separate query
-            correctness, tuning choices, deployment constraints and guarantees,
-            then document the comparison being made.
+            Our eight orders include two separate purchases for 100 cents, an
+            unknown amount, a zero amount, a refund of −100 cents, and rows
+            outside January. An <strong>edge case</strong> is an input that
+            tests a boundary or an unusual but permitted value. Small fixtures
+            make mistakes easy to inspect before scaling up.
+          </p>
+          <div
+            class="methods-table"
+            role="region"
+            aria-label="Eight-order fixture"
+            tabindex="0"
+          >
+            <table>
+              <caption>
+                The complete fixture; row identity is the order ID
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Order</th>
+                  <th scope="col">Month</th>
+                  <th scope="col">Region</th>
+                  <th scope="col">Cents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>100</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>100</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>NULL</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>2</td>
+                  <td>1</td>
+                  <td>700</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>2</td>
+                  <td>1</td>
+                  <td>−100</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>12</td>
+                  <td>2</td>
+                  <td>900</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>250</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Work through January by hand. Region 1 has orders 1, 2 and 8:
+            <strong>3 orders, 450 cents</strong>. Region 2 has orders 3 and 4:
+            <strong>2 orders, 0 cents</strong>. Those two rows are our expected
+            answer, computed independently of either database.
+          </p>
+          <pre class="methods-source" tabindex="0">
+-- The colleague's candidate
+SELECT region_id, COUNT(amount_cents),
+       COALESCE(SUM(DISTINCT amount_cents), 0)
+FROM orders
+WHERE month_id &lt;= 2
+GROUP BY region_id ORDER BY region_id;</pre>
+          <p>
+            <code>COUNT(amount_cents)</code> counts known amounts, so it omits
+            the unknown one. <code>DISTINCT</code> removes repeated monetary
+            values before adding, even when they belong to separate orders. The
+            month condition includes February.
+            <code>COALESCE(value, 0)</code> substitutes zero when an aggregate
+            is unknown; it does not repair the other errors.
+          </p>
+          <p>
+            The candidate returns region 1 as
+            <strong>5 orders and 950 cents</strong>, and region 2 as
+            <strong>1 order and 0 cents</strong>. A report can therefore look
+            plausible and still answer another question. The correct query uses
+            <code>COUNT(*)</code>, ordinary <code>SUM(amount_cents)</code>, and
+            <code>month_id = 1</code>.
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Check results against a deterministic fixture, including nulls,
-              duplicates and boundary values.
-            </li>
-            <li>
-              Record index creation and input preparation separately from query
-              execution.
-            </li>
-            <li>
-              Change one configuration while preserving the stated comparison
-              contract.
-            </li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
-          </p>
-        </section>
-        <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">03 / Execute the contract</p>
+          <h2>Catch the wrong work, then repair it</h2>
           <p>
-            Produce a fairness checklist for your database comparison. Name
-            which conditions must match and which differences are legitimate
-            parts of the decision.
+            Run the candidate first. The result should fail in both engines
+            regardless of which takes less time. Then select the repaired query
+            and run again. Optionally add the month index to both options and
+            inspect its preparation time separately. Predicting is optional; you
+            can also read the complete SQL before running.
           </p>
-        </section>
-        <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Expected outputs and correctness checks</li>
-            <li>Index, resource and configuration records</li>
-            <li>A statement of the guarantees and permitted differences</li>
-          </ul>
+          <div class="methods-lab">
+            <div class="methods-controls">
+              <label for="methods-candidate"
+                >Query to execute<select
+                  id="methods-candidate"
+                  data-method-setting
+                >
+                  <option value="incomplete">
+                    Colleague's candidate · intentionally flawed
+                  </option>
+                  <option value="repaired">Repaired January report</option>
+                </select></label
+              ><label for="methods-index"
+                >Index policy for both engines<select
+                  id="methods-index"
+                  data-method-setting
+                >
+                  <option value="no">No index</option>
+                  <option value="yes">Build an index on month_id</option>
+                </select></label
+              >
+            </div>
+            <details>
+              <summary>Inspect the complete SQL and expected rows</summary>
+              <pre id="methods-sql" class="methods-source" tabindex="0">
+CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
+ region_id INTEGER, amount_cents INTEGER);
+-- All eight rows are shown above.
+-- Expected rows: [1, 3, 450], [2, 2, 0].
+-- The repaired query counts every row and filters month_id = 1.</pre>
+            </details>
+            <div class="methods-buttons">
+              <button id="methods-run" type="button" disabled>
+                Run equivalence check</button
+              ><button
+                id="methods-stop"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Stop
+              </button>
+            </div>
+            <p
+              id="methods-status"
+              class="methods-status"
+              role="status"
+              aria-live="polite"
+            >
+              Ready. Engines load only when you press Run. No timings have been
+              recorded.
+            </p>
+            <p class="caption">
+              Real DuckDB-Wasm 1.32.0 and PGlite 0.5.13 package builds run
+              locally in fresh workers. First use can load about 54 MiB. Setup
+              runs DuckDB first; three candidate requests per engine alternate
+              which engine goes first. These include first-use effects; this is
+              a correctness exercise, with no separate query warm-up. Keep the
+              tab visible.
+            </p>
+            <noscript
+              ><p class="notice">
+                The complete lesson and fixture are readable without JavaScript.
+                Enable JavaScript to execute the SQL engines, save a draft and
+                download a measured record.
+              </p></noscript
+            >
+            <p id="methods-stale" class="methods-stale" hidden>
+              Controls changed. Results and download describe the completed
+              settings; run again to measure the current choices.
+            </p>
+            <div id="methods-results" hidden></div>
+            <div class="methods-buttons">
+              <button
+                id="methods-download"
+                type="button"
+                class="secondary"
+                disabled
+              >
+                Download evidence JSON
+              </button>
+            </div>
+            <p class="caption">
+              The download keeps the completed configuration, exact SQL, full
+              fixture, expected and actual rows, runtime versions, asset hashes,
+              raw times and your current notes. A failed check is retained
+              visibly as a failed check. Completed records stay in this tab only
+              until the next run or page exit; download before rerunning.
+            </p>
+          </div>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">04 / Read the evidence</p>
+          <h2>Correctness is an admission rule</h2>
           <p>
-            Equal option names do not establish equal guarantees. A correctness
-            check on a fixture supports that fixture; describe additional checks
-            needed for the intended workload.
+            A failed answer is excluded from a speed claim about the agreed
+            work. It is not a slower answer with a penalty attached: it is
+            different work. The repaired run supports only the stated fixture
+            and contract. Eight rows are enough to expose these defects; they
+            are too few to evaluate an index's performance value or realistic
+            query scaling.
+          </p>
+          <div class="methods-checks">
+            <div>
+              <h3>Equivalent result</h3>
+              <p>
+                The same ordered values under the same meaning of missing data,
+                duplicates, units and boundaries. Different SQL can satisfy one
+                contract.
+              </p>
+            </div>
+            <div>
+              <h3>Declared tuning</h3>
+              <p>
+                Report index build and load costs, memory, defaults and
+                permitted changes. An index advantage can be relevant when its
+                cost is allowed.
+              </p>
+            </div>
+            <div>
+              <h3>Equivalent promises</h3>
+              <p>
+                Durability means acknowledged changes survive a stated failure.
+                An in-memory read exercise supplies no crash-survival evidence.
+              </p>
+            </div>
+          </div>
+          <p>
+            For a server purchase, ask when a write is acknowledged, how
+            replicas participate, what consistency a reader sees, and which
+            failure the design must survive. Two systems can return the same
+            rows today while offering different recovery behaviour. Test those
+            guarantees in the intended deployment before using performance to
+            choose between them.
+          </p>
+          <details>
+            <summary>Hint 1 · I see a mismatch. Where should I start?</summary>
+            <p>
+              Check the expected January rows against the eight input rows.
+              Region 2 is useful: an unknown amount belongs in its order count.
+            </p>
+            <details>
+              <summary>Hint 2 · Why is region 1 also wrong?</summary>
+              <p>
+                The candidate includes February. It also merges the two 100-cent
+                values before adding them. Removing February alone leaves a
+                350-cent January total.
+              </p>
+              <details>
+                <summary>Hint 3 · What is the complete repair?</summary>
+                <p>
+                  Use <code>COUNT(*)</code>,
+                  <code>SUM(amount_cents)</code> without <code>DISTINCT</code>,
+                  and <code>WHERE month_id = 1</code>. Keep the sort and zero
+                  substitution. Choose the repaired query to execute that change
+                  in both engines.
+                </p>
+              </details>
+            </details>
+          </details>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">05 / Independent practice</p>
+          <h2>Design an adversarial fixture</h2>
+          <p>
+            Your next customer asks for “orders paid in January.” Before adding
+            a timing chart to a proposal, write a five-line contract and invent
+            three rows that would reveal an incorrect implementation. Choose at
+            least one case absent from this fixture: an empty month, a missing
+            region, two currencies, a timestamp at midnight, or repeated order
+            identities. State the required handling before calling either query
+            correct.
+          </p>
+          <ol>
+            <li>
+              Download the failing record and repaired record; explain the exact
+              answer difference.
+            </li>
+            <li>
+              Write expected rows for your three new inputs by hand. Explain why
+              each row could change the recommendation.
+            </li>
+            <li>
+              Choose a tuning policy and a required service guarantee. Separate
+              a directly measured fact from a guarantee this browser cannot
+              establish.
+            </li>
+          </ol>
+          <p>
+            To take the next programming step, open the source and change
+            <code>EDGE_ROWS</code> in <code>src/methods-model.ts</code>, then
+            update <code>fairReference()</code> if your contract changes. A
+            <strong>reference</strong> is a simple independent implementation of
+            the expected result. Keep it readable enough to review by hand.
+            Follow the repository's
+            <a href="#evidence">reproduction instructions</a> and run your
+            edited fixture locally. For timestamps or currency, extend the
+            schema and both SQL and reference; changing just the displayed
+            labels does not test that contract.
+          </p>
+          <label class="methods-label" for="methods-notes"
+            >Your contract, observed mismatch, repaired finding and next
+            fixture</label
+          ><textarea
+            id="methods-notes"
+            class="methods-notes"
+            placeholder="The required output is… The candidate failed because… My repaired run showed… My next edge case is…"
+          ></textarea>
+          <p class="caption">
+            Draft and selected controls save on this device when local storage
+            is available. Notes join the completed evidence at download time.
+          </p>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              A colleague should be able to compute your expected result without
+              running either engine. Your speed claim should use a passing
+              record, name the allowed tuning, and avoid implying that the
+              browser tested persistence or recovery.
+            </p>
+          </details>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">06 / Sources and reproducibility</p>
+          <h2>Make the contract inspectable</h2>
+          <p>
+            The exercise uses the same pinned local engine resources as Chapter
+            2. Request timing includes dispatch, worker scheduling, engine
+            execution, conversion to plain string rows and response delivery.
+            Answer comparison happens after the clock. Startup, loading,
+            optional index creation and <code>ANALYZE</code> (gathering
+            query-planner statistics) are recorded separately. Stop, a hidden
+            tab, worker errors or request time limits leave an incomplete record
+            with its error visible.
+          </p>
+          <ul>
+            <li>
+              <a
+                href="https://www.postgresql.org/docs/current/functions-aggregate.html"
+                >Postgres aggregate functions</a
+              >
+              explains null handling and counting.
+            </li>
+            <li>
+              <a
+                href="https://duckdb.org/docs/stable/sql/functions/aggregates.html"
+                >DuckDB aggregate functions</a
+              >
+              documents aggregation semantics.
+            </li>
+            <li>
+              <a
+                href="https://www.postgresql.org/docs/current/wal-reliability.html"
+                >Postgres reliability and write-ahead logging</a
+              >
+              introduces failure guarantees beyond this read lab.
+            </li>
+            <li>
+              <a
+                href="https://github.com/snowch/benchmarking-lab/blob/main/docs/methods-measurement.md"
+                >Method, source locations and reproduction commands</a
+              >;
+              <a href="../engine-licenses.txt"
+                >engine source and licence notices</a
+              >.
+            </li>
+          </ul>
+          <p>
+            Next, keep the answer contract and ask whether these inputs resemble
+            the customer's real work.
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
@@ -281,6 +681,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/methods-runtime.ts"></script>
   </body>
 </html>

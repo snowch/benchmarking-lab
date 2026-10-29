@@ -1,0 +1,73 @@
+/* Copyright © 2026 Christopher Snow */
+/* Completed lessons keep the same reading rhythm as the opening chapters. */
+.lesson-page h1 {
+  font-size: clamp(40px, 4.1vw, 60px);
+  letter-spacing: -1.5px;
+  overflow-wrap: anywhere;
+}
+.lesson-page main > p:not([class]),
+.lesson-page main > section > p {
+  max-width: 720px;
+}
+.lesson-page main > section > h2 {
+  max-width: 740px;
+  text-wrap: balance;
+}
+.lesson-page main > section > ul,
+.lesson-page main > section > ol {
+  padding-left: 24px;
+  font:
+    18px/1.75 Georgia,
+    serif;
+}
+.lesson-page main > section > ul > li,
+.lesson-page main > section > ol > li {
+  padding: 6px 0;
+}
+.lesson-page main > section > p a,
+.lesson-page main > section > li a {
+  overflow-wrap: anywhere;
+}
+.lesson-page pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 750px) {
+  .lesson-page .sidebar {
+    margin-bottom: 25px;
+  }
+  .lesson-page h1 {
+    font-size: 42px;
+  }
+  .lesson-page main > section > ul,
+  .lesson-page main > section > ol {
+    font-size: 17px;
+  }
+}
+
+.lesson-page nav[aria-label="In this chapter"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding-top: 22px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.lesson-page nav[aria-label="In this chapter"] a {
+  text-decoration: none;
+}
+.lesson-page nav[aria-label="In this chapter"] a:hover {
+  text-decoration: underline;
+}
+
+.lesson-page main > p:not([class]) {
+  font:
+    18px/1.75 Georgia,
+    serif;
+}
+@media (max-width: 750px) {
+  .lesson-page main > p:not([class]) {
+    font-size: 17px;
+  }
+}

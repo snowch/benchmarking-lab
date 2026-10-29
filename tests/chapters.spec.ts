@@ -46,7 +46,7 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
   await expect(page.locator(".book-contents summary")).toHaveText("Chapters");
 });
 
-test("introduction, working chapters and outlines open and reload without JavaScript", async ({
+test("the introduction and all complete chapters open and reload without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
@@ -101,19 +101,18 @@ test("introduction, working chapters and outlines open and reload without JavaSc
       "href",
       "start-here.html",
     );
-    if (i > 1) {
-      await expect(page.locator("main > .notice")).toContainText(
-        "chapter outline",
-      );
-      await expect(page.locator("#practice")).toContainText(
-        "Start your benchmark brief",
-      );
-    } else {
-      await expect(page.locator("#practice")).toBeVisible();
-      await expect(
-        page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
-      ).toContainText("Working lab");
-    }
+    await expect(page.locator("#practice")).toBeVisible();
+    await expect(page.locator("main")).not.toContainText(
+      "This is a chapter outline",
+    );
+    await expect(page.locator(".chapter-meta")).not.toContainText(
+      "Lab planned",
+    );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     await expect(
       page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
     ).toHaveAttribute(
@@ -137,7 +136,7 @@ test("introduction, working chapters and outlines open and reload without JavaSc
   await context.close();
 });
 
-test("introduction and outlines work on phones with shared theme and no benchmark loading", async ({
+test("reading across service and cost chapters keeps theme and does not load engines", async ({
   page,
 }) => {
   const errors: string[] = [],
@@ -166,7 +165,9 @@ test("introduction and outlines work on phones with shared theme and no benchmar
   );
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(
-    page.locator("main").getByRole("link", { name: "Read Sizing and TCO" }),
+    page
+      .locator('main a[href="https://snowch.github.io/sizing-and-tco/"]')
+      .first(),
   ).toHaveAttribute("href", "https://snowch.github.io/sizing-and-tco/");
   expect(
     await page.evaluate(

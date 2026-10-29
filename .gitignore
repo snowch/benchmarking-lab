@@ -3,3 +3,8 @@ dist/
 test-results/
 playwright-report/
 public/engines/
+
+# Generated local infrastructure evidence and Python caches.
+harnesses/**/results/
+__pycache__/
+*.pyc

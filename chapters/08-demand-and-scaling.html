@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Where do capacity limits and crossover points appear as the workload grows? Chapter outline for Benchmarking Lab."
+      content="Where do capacity limits and crossover points appear as the workload grows? Interactive evidence lab for Benchmarking Lab."
     />
     <title>What happens as demand grows? · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/lesson.css" />
+    <link rel="stylesheet" href="/src/statistics-style.css" />
   </head>
-  <body class="outline-page">
+  <body class="lesson-page" data-statistics="8">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="start-here.html"
@@ -58,7 +60,9 @@
                 <a href="03-equivalent-work.html"
                   ><span>03</span
                   ><span
-                    >Are they doing the same work?<small>Outline</small></span
+                    >Are they doing the same work?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -67,7 +71,7 @@
                   ><span>04</span
                   ><span
                     >Choose a representative workload<small
-                      >Outline</small
+                      >Working lab</small
                     ></span
                   ></a
                 >
@@ -76,7 +80,9 @@
                 <a href="05-trust-the-benchmark.html"
                   ><span>05</span
                   ><span
-                    >Can you trust your benchmark?<small>Outline</small></span
+                    >Can you trust your benchmark?<small
+                      >Working lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -85,7 +91,7 @@
                   ><span>06</span
                   ><span
                     >How much faster—and how certain?<small
-                      >Outline</small
+                      >Analysis lab</small
                     ></span
                   ></a
                 >
@@ -93,28 +99,32 @@
               <li>
                 <a href="07-beyond-the-average.html"
                   ><span>07</span
-                  ><span>Beyond the average<small>Outline</small></span></a
+                  ><span>Beyond the average<small>Analysis lab</small></span></a
                 >
               </li>
               <li>
                 <a href="08-demand-and-scaling.html" aria-current="page"
                   ><span>08</span
                   ><span
-                    >What happens as demand grows?<small>Outline</small></span
+                    >What happens as demand grows?<small
+                      >Analysis lab</small
+                    ></span
                   ></a
                 >
               </li>
               <li>
                 <a href="09-beyond-databases.html"
                   ><span>09</span
-                  ><span>Beyond databases<small>Outline</small></span></a
+                  ><span>Beyond databases<small>Service lab</small></span></a
                 >
               </li>
               <li>
                 <a href="10-complete-pipeline.html"
                   ><span>10</span
                   ><span
-                    >Benchmark the complete pipeline<small>Outline</small></span
+                    >Benchmark the complete pipeline<small
+                      >Service lab</small
+                    ></span
                   ></a
                 >
               </li>
@@ -123,7 +133,7 @@
                   ><span>11</span
                   ><span
                     >From benchmark results to capacity and cost<small
-                      >Outline</small
+                      >Cost planner</small
                     ></span
                   ></a
                 >
@@ -133,7 +143,7 @@
                   ><span>12</span
                   ><span
                     >Present a comparison you can defend<small
-                      >Outline</small
+                      >Final project</small
                     ></span
                   ></a
                 >
@@ -144,113 +154,358 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 08</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 08</span><span>Analysis lab</span
+          ><span>About 35 minutes</span>
         </div>
         <h1>What happens as demand grows?</h1>
         <p class="standfirst">
-          We’ll increase the amount of data and the demand on our example
-          systems. A result from a quiet test may change as customers grow or
-          become busier. You’ll learn to find the demand each option can sustain
-          while still meeting the customer’s targets.
+          A quiet test can choose the wrong system for a busy month. We’ll
+          separate data growth from incoming demand, inspect where completed
+          work falls behind, and decide what operating range the evidence
+          supports before adding resources.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Plan tests that increase data size, request arrival rate or
-              requests in progress.
-            </li>
-            <li>Identify the capacity that meets the service target.</li>
-            <li>
-              Investigate a suspected bottleneck through a controlled change.
-            </li>
-          </ul>
-        </section>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Find passing load points from reconciled evidence, explain the
+            difference between rate and concurrency, and design a controlled
+            experiment that tests a suspected bottleneck.
+          </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            You can read the worked examples and design tasks without
+            JavaScript. Enable JavaScript to calculate, import, save and
+            download lab evidence.
+          </p></noscript
+        >
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#question">Frame the decision</a
+          ><a href="#worked-example">Follow the example</a
+          ><a href="#experiment">Analyse evidence</a
+          ><a href="#practice">Design your test</a>
+        </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+          <p class="eyebrow section-number">01 / The decision</p>
+          <h2>How much work can the deployment sustain?</h2>
           <p>
-            Earlier chapters examined results for a stated workload. Now we’ll
-            ask how those results change as the work grows.
-            <strong>Capacity</strong> here means the amount of work a deployment
-            can sustain while meeting its response-time and correctness
-            requirements.
+            Chapter 7 defined latency, successful throughput and unfinished
+            work. A customer now expects demand to double.
+            <strong>Sustainable capacity</strong> is the work rate a specified
+            deployment can maintain while meeting its correctness, latency and
+            failure requirements, with bounded queues over a relevant duration.
+            The highest completed rate from a short burst does not establish it.
           </p>
           <p>
-            Imagine a customer preparing for more orders and a seasonal rush.
-            The engine that answers fastest in a small, quiet test may reach its
-            limits sooner as demand increases. We need to find where waits,
-            errors or unfinished work begin to grow.
+            Keep three growth questions separate.
+            <strong>Data size</strong> changes how much stored information a
+            query examines. <strong>Arrival rate</strong> changes how many new
+            requests arrive per second. <strong>Concurrency</strong> is how many
+            requests are in progress at once. A <strong>sweep</strong> repeats a
+            test at several values of one variable while controlling the others.
           </p>
           <p>
-            We’ll increase data size and request demand in separate tests so we
-            can interpret each change. Later tests against server deployments
-            will also vary <strong>concurrency</strong>, the number of requests
-            in progress at once. The goal is to identify useful operating limits
-            and investigate what constrains them.
+            A larger data table may change scans and cache behaviour. More
+            arrivals can create queues even with an unchanged table. Raising a
+            closed-loop client count changes the number of waiting users, rather
+            than directly setting an arrival rate. Run separate sweeps first so
+            that the cause of a change is interpretable.
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Find the range that passes the customer’s target</h2>
           <p>
-            Extend the orders benchmark across increasing data sizes, then use
-            native/server runs to examine concurrent demand. Keep these sweeps
-            separate so the cause of a change remains interpretable.
+            Consider two illustrative deployment options with the same correct
+            workload and service guarantees. The target is successful-request
+            p99 ≤ 150 ms, errors plus timeouts ≤ 1% of offered requests, and no
+            growth in pending work. Each supplied observation lasts 60 seconds,
+            starts empty and uses a fixed intended arrival rate.
           </p>
+          <p>
+            At 200 requests/s, A receives 12,000 arrivals and completes all
+            12,000 correctly, with p99 120 ms and no failures or pending work.
+            Its successful throughput is 12,000 ÷ 60 = 200/s. This point passes
+            the screen.
+          </p>
+          <p>
+            At the same offered rate, B completes 11,400 successes, reaches 300
+            timeouts and ends with 300 pending requests. The account reconciles:
+            12,000 = 11,400 + 300 + 300. Successful throughput is 190/s, timeout
+            fraction is 2.5%, and pending growth is 300 ÷ 60 = 5/s. Its supplied
+            p99 of 180 ms is also above target. A good mean time would not
+            rescue this point.
+          </p>
+          <p>
+            At 300/s, A achieves 250 successful requests/s, but p99 reaches 400
+            ms and pending work grows. Its highest successful throughput is
+            therefore above its highest passing supplied load. The supplied
+            screen yields A at 200/s and B at 100/s. It does not prove their
+            precise capacity limits, the behaviour between points, or stability
+            across hours.
+          </p>
+          <details>
+            <summary>
+              Relate concurrency to time without confusing cause and effect
+            </summary>
+            <p>
+              For a stable system, Little’s law relates average work in progress
+              L, throughput λ and average time in system W: L = λW. At 100
+              completed requests/s and an average 0.05 seconds in the same
+              system boundary, average work in progress is 5 requests. Units
+              cancel: requests/s × seconds = requests.
+            </p>
+            <p>
+              Use means and matching populations over a stable interval. p99
+              cannot replace the mean in this equation. Growing backlog violates
+              the steady-state premise, and changing the number of clients can
+              change both throughput and time. The identity does not predict
+              that doubling clients will double capacity.
+            </p>
+          </details>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              State latency, correctness and error targets before increasing
-              load.
-            </li>
-            <li>
-              Plot achieved work, response time and backlog as demand rises.
-            </li>
-            <li>
-              Change a suspected limiting resource and repeat the relevant
-              points.
-            </li>
-          </ol>
+          <p class="eyebrow section-number">03 / Evidence lab</p>
+          <h2>Change the target and inspect the constraint</h2>
+          <p>
+            Analyse the supplied steps, then relax the p99 target to 200 ms. B’s
+            200/s point still fails because timeouts and pending work exceed the
+            rule. Inspect the counts before editing them: every arrival must end
+            as success, error, timeout or pending in this accounting boundary.
+          </p>
+          <div class="statistics-lab">
+            <p class="caption">
+              All starter values below are authored illustrative data for
+              learning the method. No database, server or customer was measured
+              to produce them. Editing and analysing these values runs
+              calculations locally in this tab.
+            </p>
+            <label for="statistics-target"
+              >Maximum successful-request p99 (ms)</label
+            ><input
+              id="statistics-target"
+              data-statistics-control
+              type="number"
+              min="1"
+              value="150"
+            /><label for="statistics-errors"
+              >Maximum errors + timeouts (% of offered arrivals)</label
+            ><input
+              id="statistics-errors"
+              data-statistics-control
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              value="1"
+            /><label for="statistics-input"
+              >Load-step evidence (plain CSV; one row per independent
+              observation)</label
+            ><textarea id="statistics-input" rows="10" spellcheck="false">
+option,offered_rps,seconds,ok,error,timeout,start_pending,end_pending,p99_ms,server_cpu_pct,client_cpu_pct
+A,100,60,6000,0,0,0,0,40,35,20
+A,200,60,12000,0,0,0,0,120,70,35
+A,300,60,15000,300,0,0,2700,400,98,45
+B,100,60,6000,0,0,0,0,60,50,20
+B,200,60,11400,0,300,0,300,180,96,35
+B,300,60,12000,0,1800,0,4200,600,99,45</textarea>
+            <div class="run-row">
+              <button type="button" class="primary" id="statistics-analyse">
+                Analyse evidence</button
+              ><button type="button" id="statistics-reset">
+                Restore illustrative data</button
+              ><button type="button" id="statistics-download" disabled>
+                Download evidence
+              </button>
+            </div>
+            <p
+              class="status"
+              id="statistics-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <div class="statistics-output" id="statistics-output"></div>
+            <label for="statistics-notes"
+              >Your experiment design, finding and next check</label
+            ><textarea
+              id="statistics-notes"
+              rows="7"
+              placeholder="Decision and target; source and conditions; what changed; what the evidence supports; what to test next."
+            ></textarea>
+            <p class="caption">
+              Input and notes save in this browser when storage is available.
+              Downloads include the raw CSV, controls, calculations, notes and
+              any imported original records. Keep a download for your benchmark
+              brief.
+            </p>
+          </div>
           <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+            Server and client CPU columns are context for hypotheses, not proof
+            of a bottleneck. The p99 is a supplied successful-request summary;
+            the original request records and percentile method are required for
+            a real report. A timeout leaves this caller’s pending count even if
+            server work continues, so measure server queues separately.
+          </p>
+        </section>
+        <section id="observe">
+          <p class="eyebrow section-number">04 / Diagnose</p>
+          <h2>Test a bottleneck explanation with one controlled change</h2>
+          <p>
+            A <strong>bottleneck</strong> is a constraint that limits the useful
+            work of the tested path. Near-full server CPU with growing queues
+            suggests CPU pressure; it does not establish it. CPU sampling can
+            miss bursts, a single saturated core can hide within a low
+            whole-host average, and the runner or network may limit arrival
+            delivery.
+          </p>
+          <p>
+            State a testable explanation: “At 200/s, B is limited by server CPU
+            for this query mix.” Repeat a baseline around 150–200/s, then change
+            only the available CPU while holding data, query mix, durability,
+            memory, client capacity and versions fixed. Measure the actual
+            delivered rate, server CPU and queues, client scheduling delay,
+            failures and latency. Alternate baseline and changed configurations
+            to expose time trends.
+          </p>
+          <p>
+            If extra CPU moves the passing range and reduces the relevant queue
+            under otherwise comparable conditions, that supports the
+            explanation. If it does not, inspect plans, storage, lock waits,
+            network and generator headroom before adding more resources. Adding
+            memory and CPU while also removing persistence would prevent you
+            from attributing the improvement.
+          </p>
+          <p>
+            A <strong>crossover</strong> is a point where the ordering of the
+            options changes as a variable grows. Two isolated measurements do
+            not locate it. Add closely spaced points around the suspected
+            region, repeat them, and retain uncertainty as in Chapter 6. An
+            option can have lower latency at low demand while another supports a
+            higher sustainable rate.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">05 / Run and design</p>
+          <h2>Build a growth experiment you can defend</h2>
           <p>
-            Recommend a tested operating range and identify which growth
-            assumption requires another experiment.
+            First run a real data-size sweep using
+            <a href="02-duckdb-postgres.html#experiment"
+              >Chapter 2’s database lab</a
+            >. Keep the query and repeat count fixed; collect at least five
+            fresh run exports at 2,000 rows and five at 20,000 rows. Analyse
+            each size separately in
+            <a href="06-differences-and-uncertainty.html#experiment"
+              >Chapter 6</a
+            >. This measures data growth for these browser builds, with one
+            request at a time. Record the two sizes as tested points rather than
+            projecting a line to a million rows.
           </p>
+          <p>
+            For a real service load sweep, use the runnable
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/harnesses/infrastructure/README.md"
+              >infrastructure harness and its declared service configuration</a
+            >
+            introduced in Chapters 9–10. Its configured arrival rate is a
+            target: verify actual request timestamps, matched output and queue
+            growth in every run. Do not convert its broker or pipeline records
+            into database capacity claims. To test databases under concurrent
+            demand, run an equivalent native/server workload and record its
+            driver, deployment and guarantees.
+          </p>
+          <ol>
+            <li>
+              Choose a customer job, representative data and correctness check.
+              Define a p99 target, allowed failure fraction, backlog boundary
+              and duration before seeing results.
+            </li>
+            <li>
+              Start at a low rate. Increase one variable at a time, retain
+              actual arrivals and completions, and verify the generator is
+              keeping up. Observe long enough to include relevant background
+              work.
+            </li>
+            <li>
+              Repeat closely spaced points near a failure or crossover. Test
+              recovery while arrivals continue; a queue that drains only after
+              arrivals stop does not demonstrate sustainable capacity.
+            </li>
+            <li>
+              Change one suspected resource constraint, repeat baseline and
+              changed configurations, and compare complete service outcomes.
+            </li>
+          </ol>
+          <p>
+            In your notes, recommend a tested operating range and state headroom
+            separately. For example, choosing 150/s below a repeatedly verified
+            200/s operating point uses 25% of that tested rate as margin. It
+            does not prove that every burst or failure can be absorbed. Chapter
+            11 turns verified service capacity and explicit headroom into a
+            deployment and cost comparison.
+          </p>
+          <details>
+            <summary>Hint 1 · Reconcile before interpreting</summary>
+            <p>
+              For each lab row: starting pending + rate × seconds = success +
+              error + timeout + ending pending. The lab rejects rows that cannot
+              satisfy this identity.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Hint 2 · Distinguish a target from delivered demand
+            </summary>
+            <p>
+              A configured 300/s runner may send only 180/s if it stalls. Keep
+              intended arrivals, sent requests and completed work. Report
+              dropped or queued submissions.
+            </p>
+          </details>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              A’s supplied passing points are 100/s and 200/s. B’s only passing
+              supplied point is 100/s. A’s 300/s point completes 250 successes/s
+              but fails latency, failure and pending-growth requirements.
+              Relaxing latency alone does not make B’s 200/s point pass. Neither
+              option has a measured precise maximum from these three
+              illustrative steps.
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>Sweep values, fixed conditions and service targets</li>
-            <li>Resource observations, backlog and completed work</li>
-            <li>Repeated measurements around a limit or crossover</li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <h2>Keep the curve and the conditions</h2>
           <p>
-            An untested maximum is not established capacity. Explain whether
-            backlog remains bounded and whether results include the effects of
-            background work over a suitable duration.
+            Retain the offered and achieved rates, duration, per-request
+            outcomes, queue observations, resource measurements, configuration
+            and repeat IDs for every point. State the changed variable and what
+            stayed fixed. A short screen identifies points worth repeating; a
+            deployment capacity claim needs representative sustained
+            measurements and recovery checks.
           </p>
+          <h3>Further reading</h3>
+          <ul class="statistics-reading">
+            <li>
+              <a href="https://sre.google/sre-book/handling-overload/"
+                >Google SRE: Handling Overload</a
+              >
+              explains queue growth, overload and useful service.
+            </li>
+            <li>
+              <a href="https://doi.org/10.1287/opre.9.3.383"
+                >Little: A Proof for the Queuing Formula L = λW</a
+              >
+              provides the foundation for relating average time, throughput and
+              work in progress.
+            </li>
+            <li>
+              <a href="https://www.brendangregg.com/usemethod.html"
+                >Brendan Gregg: the USE Method</a
+              >
+              structures resource investigation around utilisation, saturation
+              and errors.
+            </li>
+          </ul>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
           <a rel="prev" href="07-beyond-the-average.html"
@@ -279,6 +534,6 @@
         </footer>
       </main>
     </div>
-    <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/statistics-labs.ts"></script>
   </body>
 </html>
