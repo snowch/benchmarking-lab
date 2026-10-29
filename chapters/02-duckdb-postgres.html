@@ -141,7 +141,7 @@
           <span>Chapter 02</span><span>Working lab</span
           ><span>About 25 minutes</span>
         </div>
-        <h1>DuckDB or Postgres?</h1>
+        <h1>DuckDB <em>or</em> Postgres?</h1>
         <p class="standfirst">
           A customer asks which database is faster. Start with two useful jobs,
           run the same work, and make your first claim small enough to defend.
@@ -160,6 +160,12 @@
             JavaScript to run the engines and inspect the generated fixture.
           </p></noscript
         >
+        <nav class="db-chapter-nav" aria-label="In this chapter">
+          <a href="#worked-example">Understand the work</a>
+          <a href="#experiment">Run the comparison</a>
+          <a href="#observe">Read the evidence</a>
+          <a href="#practice">Make your claim</a>
+        </nav>
         <section id="question">
           <p class="eyebrow section-number">01 / The customer decision</p>
           <h2>Two jobs can lead to different answers</h2>
@@ -180,20 +186,57 @@
             Here you will run <strong>DuckDB-Wasm</strong> and
             <strong>PGlite</strong>, a WebAssembly build of Postgres.
             WebAssembly lets compiled engine code run inside a browser. Both
-            engines execute real SQL locally. This is a first browser
-            experiment; a customer’s server deployment needs its own
-            measurements.
+            engines use <strong>SQL</strong>, the language used to ask a
+            database for rows. Everything runs locally in this tab; a customer’s
+            server deployment needs its own measurements.
           </p>
-          <ol class="db-roadmap" aria-label="Experiment sequence">
-            <li><strong>1. Define</strong>Two jobs, one fixture.</li>
-            <li><strong>2. Run</strong>Check, warm up, measure.</li>
-            <li>
-              <strong>3. Observe</strong>Read requests and setup separately.
-            </li>
-            <li>
-              <strong>4. Explain</strong>State conditions and the next check.
-            </li>
-          </ol>
+          <figure class="db-comparison-map" aria-labelledby="db-map-title">
+            <figcaption id="db-map-title">
+              <span class="small-label">The experiment at a glance</span>
+              <strong>Same input. Two questions. Checked answers.</strong>
+            </figcaption>
+            <div class="db-map-lanes">
+              <div class="db-map-input">
+                <span class="db-map-kicker">Shared input</span>
+                <svg
+                  class="db-table-symbol"
+                  viewBox="0 0 108 68"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M1 1h106v66H1zM1 17h106M1 34h106M1 51h106M28 1v66M55 1v66M82 1v66"
+                  />
+                  <path class="db-symbol-fill" d="M2 2h104v14H2z" />
+                </svg>
+                <strong>One orders table</strong>
+                <p>2,000 or 20,000 identical rows in each engine.</p>
+              </div>
+              <div class="db-map-jobs">
+                <span class="db-map-kicker">Ask both questions</span>
+                <div>
+                  <strong>Find one order</strong><span>One ID → one row</span>
+                </div>
+                <div>
+                  <strong>Total the revenue</strong
+                  ><span>All orders → 48 groups</span>
+                </div>
+              </div>
+              <div class="db-map-engines">
+                <span class="db-map-kicker">Run each in both</span>
+                <strong>DuckDB-Wasm</strong>
+                <span class="db-map-engine-rule">and</span>
+                <strong>PGlite <small>Postgres in the browser</small></strong>
+              </div>
+            </div>
+            <p class="db-map-check">
+              <span aria-hidden="true">✓</span> Match every answer to an
+              independent reference, then compare the request times.
+            </p>
+            <p class="caption">
+              A map of the method, not a measured result. A
+              <strong>fixture</strong> is the fixed input shared by the tests.
+            </p>
+          </figure>
         </section>
         <section id="worked-example">
           <p class="eyebrow section-number">02 / Worked example</p>
@@ -205,30 +248,36 @@
             including revenue in cents, so decimal rounding and time zones
             cannot change the answer.
           </p>
-          <figure class="figure">
-            <div class="small-label">
-              The same fixture goes into both engines
+          <figure class="figure db-fixture">
+            <div class="figure-heading">
+              <span class="small-label">Inside the shared fixture</span>
+              <span class="db-figure-note">One row = one order</span>
             </div>
-            <div class="db-table-wrap">
+            <div
+              class="db-table-wrap"
+              role="region"
+              aria-labelledby="db-fixture-caption"
+              tabindex="0"
+            >
               <table>
-                <caption>
-                  Five example rows. IDs 1 and 49 belong to the same month and
-                  region; their amounts contribute to the same dashboard total.
+                <caption id="db-fixture-caption">
+                  Five example rows from the generated table. The marked rows
+                  share month 1 and region 1.
                 </caption>
                 <thead>
                   <tr>
-                    <th>order_id</th>
-                    <th>month_id</th>
-                    <th>region_id</th>
-                    <th>amount_cents</th>
+                    <th scope="col">order_<wbr />id</th>
+                    <th scope="col">month_<wbr />id</th>
+                    <th scope="col">region_<wbr />id</th>
+                    <th scope="col">amount_<wbr />cents</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr class="db-related-row">
                     <td>1</td>
                     <td>1</td>
                     <td>1</td>
-                    <td>137</td>
+                    <td class="db-amount">137</td>
                   </tr>
                   <tr>
                     <td>2</td>
@@ -248,24 +297,33 @@
                     <td>4</td>
                     <td>248</td>
                   </tr>
-                  <tr>
+                  <tr class="db-related-row">
                     <td>49</td>
                     <td>1</td>
                     <td>1</td>
-                    <td>1,913</td>
+                    <td class="db-amount">1,913</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="db-flow">
-              <p>
-                <strong>Order screen → one row</strong>Find an exact ID. Return
-                its four fields.
-              </p>
-              <p>
-                <strong>Revenue dashboard → 48 rows</strong>Add cents for each
-                of 12 months × 4 regions. Return every group in a fixed order.
-              </p>
+              <div>
+                <span class="small-label">Job 01 · Find</span>
+                <h3>The order screen</h3>
+                <p>
+                  Find an exact ID and return its four fields. The answer is
+                  <strong>one row</strong>.
+                </p>
+              </div>
+              <div>
+                <span class="small-label">Job 02 · Summarise</span>
+                <h3>The revenue dashboard</h3>
+                <p>
+                  Rows 1 and 49 contribute 137 + 1,913 cents to the same group.
+                  Add every order into 12 months × 4 regions:
+                  <strong>48 rows</strong>.
+                </p>
+              </div>
             </div>
             <figcaption class="caption">
               These are synthetic order amounts and numbered months, not a
@@ -273,14 +331,6 @@
               combination.
             </figcaption>
           </figure>
-          <p>
-            <strong>SQL</strong> is the language used to ask for rows.
-            <code>SELECT</code> names what to return, <code>FROM</code> names
-            the table, and <code>WHERE</code> restricts the rows.
-            <code>SUM</code> adds values, <code>GROUP BY</code> forms the
-            month/region groups, and <code>ORDER BY</code> fixes the output
-            order so we can compare answers exactly.
-          </p>
           <p>
             An <strong>index</strong> is an additional structure that can help
             locate rows without examining the whole table. This first baseline
@@ -294,34 +344,40 @@
               See the complete schema and deterministic data recipe
             </summary>
             <p>
-              A <strong>fixture</strong> is the fixed input used for the
-              experiment. IDs start at 1. The recipe cycles through four regions
-              and twelve months; amounts repeat a fixed integer formula. No
-              random seed, external data, or clock is involved.
+              IDs start at 1. The recipe cycles through four regions and twelve
+              months; amounts repeat a fixed integer formula. No random seed,
+              external data, or clock is involved.
             </p>
+            <div class="db-source-label">
+              <span>01 / Schema</span> SQL · define the four integer columns
+            </div>
             <pre><code>CREATE TABLE orders (
   order_id INTEGER,
   month_id INTEGER,
   region_id INTEGER,
   amount_cents INTEGER
-);
-
-// JavaScript recipe, for offsets 0 through count - 1:
-const id = offset + 1;
+);</code></pre>
+            <div class="db-source-label">
+              <span>02 / Fixture recipe</span> JavaScript · repeat for offsets 0
+              through count − 1
+            </div>
+            <pre><code>const id = offset + 1;
 const row = [
   id,
   Math.floor(offset / 4) % 12 + 1,
   offset % 4 + 1,
   id * 37 % 10000 + 100
-];
-
-// Identical load transaction in each engine:
-BEGIN;
-// CREATE TABLE above, then INSERT INTO orders VALUES (...), (...);
-// One INSERT statement per 500 generated rows, in ID order.
+];</code></pre>
+            <div class="db-source-label">
+              <span>03 / Load and prepare</span> SQL · the same sequence in each
+              engine
+            </div>
+            <pre><code>BEGIN;
+-- CREATE TABLE above, then INSERT INTO orders VALUES (...), (...);
+-- One INSERT statement per 500 generated rows, in ID order.
 COMMIT;
 
-// Separate setup after loading:
+-- Timed separately after loading:
 ANALYZE orders;</code></pre>
             <p>
               <code>ANALYZE</code> collects table statistics that help an engine
@@ -339,27 +395,34 @@ Enable JavaScript to expand the deterministic recipe into all INSERT statements.
         </section>
         <section id="experiment">
           <p class="eyebrow section-number">03 / Your experiment</p>
-          <h2>Make a prediction, then run the work</h2>
+          <h2>Inspect the requests. Run the comparison.</h2>
           <p>
-            Try 2,000 orders first. Read the two queries, optionally write a
-            prediction, and run the comparison. Then change to 20,000 orders.
-            The question is whether the observed relationship changes with this
-            small increase in work.
+            Start with 2,000 orders. Read the two requests below and, if you
+            like, write a prediction. Then run again with 20,000 orders. Does
+            the relationship between the engines change when there is more work?
           </p>
           <div class="experiment">
             <div class="figure-heading">
-              <span class="small-label">Real engines · local execution</span
-              ><span class="badge">No server or account</span>
+              <span class="small-label">Your experiment bench</span>
+              <span class="db-figure-note"
+                >Real engines · runs in this tab</span
+              >
             </div>
             <div class="db-controls">
               <label for="db-size"
-                >Orders in each engine<select id="db-size">
+                ><span
+                  ><span class="db-control-number">01</span> Orders in each
+                  engine</span
+                ><select id="db-size">
                   <option value="2000">2,000 orders</option>
                   <option value="20000">20,000 orders</option>
                 </select></label
               >
               <label for="db-repeats"
-                >Measured pairs per query<select id="db-repeats">
+                ><span
+                  ><span class="db-control-number">02</span> Measured pairs per
+                  query</span
+                ><select id="db-repeats">
                   <option value="5">5 pairs</option>
                   <option value="9">9 pairs</option>
                 </select></label
@@ -371,26 +434,50 @@ Enable JavaScript to expand the deterministic recipe into all INSERT statements.
               <strong>both queries</strong>; the SQL below is a source view of
               these presets.
             </p>
-            <details open>
-              <summary>Read the two SQL requests</summary>
-              <p>
-                One order lookup. Changing the size chooses the midpoint order
-                ID.
+            <div class="db-query-source">
+              <h3>Read the two SQL requests</h3>
+              <p class="db-small">
+                These are the exact requests run by both engines. Read each as a
+                description of the work the customer needs.
               </p>
-              <pre
-                id="db-lookup-sql"
-              ><code>SELECT order_id, month_id, region_id, amount_cents
+              <div class="db-query">
+                <div class="db-query-heading">
+                  <span class="small-label">Job 01 · Order screen</span
+                  ><span>Returns 1 row</span>
+                </div>
+                <h4>Find the midpoint order</h4>
+                <p>
+                  Changing the fixture size chooses the midpoint order ID.
+                  <code>SELECT</code> names the fields, <code>FROM</code> names
+                  the table, and <code>WHERE</code> restricts the rows.
+                </p>
+                <pre
+                  id="db-lookup-sql"
+                ><code>SELECT order_id, month_id, region_id, amount_cents
 FROM orders WHERE order_id = 1000;</code></pre>
-              <p>
-                Revenue by month and region. <code>BIGINT</code> is a 64-bit
-                integer; the sum stays exact for these fixtures.
-              </p>
-              <pre id="db-revenue-sql"><code>SELECT month_id, region_id,
+              </div>
+              <div class="db-query db-query-revenue">
+                <div class="db-query-heading">
+                  <span class="small-label">Job 02 · Revenue dashboard</span
+                  ><span>Returns 48 rows</span>
+                </div>
+                <h4>Total every month and region</h4>
+                <p>
+                  <code>SUM</code> adds the cents; <code>GROUP BY</code> forms
+                  the month/region groups. <code>ORDER BY</code> fixes their
+                  order so the answers can be compared exactly.
+                </p>
+                <pre id="db-revenue-sql"><code>SELECT month_id, region_id,
        CAST(SUM(amount_cents) AS BIGINT) AS revenue_cents
 FROM orders
 GROUP BY month_id, region_id
 ORDER BY month_id, region_id;</code></pre>
-            </details>
+                <p class="db-query-note">
+                  <code>BIGINT</code> is a 64-bit integer. The total stays exact
+                  for these fixtures.
+                </p>
+              </div>
+            </div>
             <details>
               <summary>
                 Prediction and observations (optional, saved on this device)
@@ -410,6 +497,13 @@ ORDER BY month_id, region_id;</code></pre>
               MiB or more of free memory; mobile devices may need the smaller
               size. Closing the tab or pressing Stop discards engine memory.
             </p>
+            <div class="db-run-boundary">
+              <span class="small-label">What this run compares</span>
+              <p>
+                Warm browser requests · one client · one thread per engine ·
+                in-memory tables · no indexes
+              </p>
+            </div>
             <div class="db-actions">
               <button id="db-run" type="button" disabled>
                 Run database comparison</button
@@ -458,26 +552,61 @@ Enable JavaScript to inspect all reference rows.</pre>
           <p class="eyebrow section-number">04 / Read your result</p>
           <h2>First check what the clock included</h2>
           <p>
-            The query clock starts on this page just before dispatching
-            <strong>one SQL request</strong>. It stops when all returned fields
-            have been converted into plain integer strings and received back on
-            the page. That includes browser scheduling, worker messages, engine
-            execution, result conversion, and transfer. It is an end-to-end
-            browser request time, not an isolated engine execution time.
+            The useful number depends on where you start and stop the clock.
+            Here, each sample measures
+            <strong>one complete browser request</strong>: from sending the SQL
+            to receiving all returned fields as plain integer strings.
           </p>
+          <figure class="db-clock" aria-labelledby="db-clock-title">
+            <figcaption id="db-clock-title">
+              <span class="small-label">The measurement boundary</span
+              ><strong>One warm SQL request, end to end</strong>
+            </figcaption>
+            <p class="db-clock-outside">
+              <span>Before the measured requests</span> Start engines → load
+              rows → ANALYZE → verify → warm up
+            </p>
+            <div class="db-clock-range">
+              <div class="db-clock-ends">
+                <span>Clock starts</span><span>Clock stops</span>
+              </div>
+              <ol class="db-clock-track">
+                <li><span>Page</span><strong>Send SQL</strong></li>
+                <li>
+                  <span>Worker + engine</span><strong>Execute query</strong>
+                </li>
+                <li>
+                  <span>Worker wrapper</span><strong>Convert rows</strong>
+                </li>
+                <li><span>Page</span><strong>Receive strings</strong></li>
+              </ol>
+            </div>
+            <p class="db-clock-outside">
+              <span>After the clock stops</span> Check every returned field
+              against the independent reference
+            </p>
+            <p class="caption">
+              Method illustration, not a time scale. Scheduling, worker messages
+              and result transfer are inside the clock; setup is reported
+              separately.
+            </p>
+          </figure>
           <p>
             DuckDB returns an Arrow table, a column-oriented result format;
             PGlite returns JavaScript rows. Their wrappers take different paths
-            to produce the same plain result. A common boundary makes the
-            product-level question clearer, while leaving wrapper overhead
-            inside the measurement. Tiny requests can spend much of their time
-            there.
+            to produce the same plain result. Wrapper work stays inside this
+            common boundary and can dominate tiny requests, so these timings
+            describe the whole browser request rather than engine execution
+            alone.
           </p>
           <div id="db-results" hidden>
-            <h3 class="db-results-heading">Your measured requests</h3>
-            <p class="caption">
-              On a narrow screen, scroll each table sideways to inspect all
-              columns.
+            <div class="db-results-title">
+              <span class="small-label">Evidence from your browser</span>
+              <h3 class="db-results-heading">Your measured requests</h3>
+            </div>
+            <p class="caption db-scroll-hint">
+              The detailed timing tables below scroll sideways on narrow
+              screens.
             </p>
             <label class="db-label" for="db-history"
               >Completed run to inspect (up to four retained in this tab)</label
@@ -488,24 +617,33 @@ Enable JavaScript to inspect all reference rows.</pre>
               describe the selected completed run. Run again to measure the new
               settings.
             </p>
-            <div class="db-table-wrap">
-              <table>
-                <caption>
+            <div
+              class="db-table-wrap db-summary-wrap"
+              role="region"
+              aria-labelledby="db-summary-caption"
+              tabindex="0"
+            >
+              <table
+                class="db-summary-table"
+                role="table"
+                aria-labelledby="db-summary-caption"
+              >
+                <caption id="db-summary-caption">
                   Warm request times in milliseconds. Median is the middle
                   sample; range shows the smallest and largest. The repeated
                   requests are individual queries, with no batching or division
                   by a batch size.
                 </caption>
-                <thead>
-                  <tr>
-                    <th>Query</th>
-                    <th>Engine</th>
-                    <th>Median ms</th>
-                    <th>Range ms</th>
-                    <th>Requests</th>
+                <thead role="rowgroup">
+                  <tr role="row">
+                    <th scope="col" role="columnheader">Query</th>
+                    <th scope="col" role="columnheader">Engine</th>
+                    <th scope="col" role="columnheader">Median ms</th>
+                    <th scope="col" role="columnheader">Range ms</th>
+                    <th scope="col" role="columnheader">Requests</th>
                   </tr>
                 </thead>
-                <tbody id="db-summary"></tbody>
+                <tbody id="db-summary" role="rowgroup"></tbody>
               </table>
             </div>
             <p class="db-small">
@@ -525,9 +663,14 @@ Enable JavaScript to inspect all reference rows.</pre>
                 two request times, one per query; they are not measured query
                 samples.
               </p>
-              <div class="db-table-wrap">
+              <div
+                class="db-table-wrap"
+                role="region"
+                aria-labelledby="db-phases-caption"
+                tabindex="0"
+              >
                 <table>
-                  <caption>
+                  <caption id="db-phases-caption">
                     Setup phases in milliseconds. Setup runs sequentially,
                     DuckDB first.
                   </caption>
@@ -544,9 +687,14 @@ Enable JavaScript to inspect all reference rows.</pre>
             </details>
             <details>
               <summary>Every measured request and its order</summary>
-              <div class="db-table-wrap">
+              <div
+                class="db-table-wrap"
+                role="region"
+                aria-labelledby="db-samples-caption"
+                tabindex="0"
+              >
                 <table>
-                  <caption>
+                  <caption id="db-samples-caption">
                     Position 1 ran first within that query’s pair. Every request
                     returned either one order or all 48 revenue groups.
                   </caption>
@@ -622,27 +770,34 @@ Enable JavaScript to inspect all reference rows.</pre>
         <section id="interpret">
           <p class="eyebrow section-number">05 / Keep the comparison honest</p>
           <h2>The same data is only the beginning</h2>
-          <p>
-            The experiment holds the generated rows, SQL requests, output order,
-            single-thread choice and timing boundary constant. It verifies
-            answers and alternates the first engine in measured pairs. Those
-            choices help you explain exactly what was compared.
-          </p>
-          <p>
-            There are still limits. Setup always runs DuckDB first. Both engines
-            remain in memory during measured queries. The engines have different
-            storage layouts, optimisers, runtime defaults and wrappers. Earlier
-            verification and warm-up affect caches; later pairs can see a warmer
-            browser or a busier device. Alternating order helps distribute some
-            effects, but it does not remove them.
-          </p>
-          <p>
-            These are tiny, synthetic, warm, unindexed workloads with one
-            client. No network round trip, persistent disk, concurrent users or
-            native server process is involved. A result here supports a claim
-            about these browser builds and conditions. It cannot establish which
-            deployed database is best for a customer.
-          </p>
+          <div class="db-method-ledger">
+            <div>
+              <h3>Held constant</h3>
+              <p>
+                Generated rows, SQL, output order, one thread and the request
+                timing boundary. Answers are verified; the first engine
+                alternates in measured pairs.
+              </p>
+            </div>
+            <div>
+              <h3>Still different</h3>
+              <p>
+                Storage layouts, optimisers, defaults and wrappers. Both engines
+                stay in memory. Setup runs DuckDB first; warm-up, caches and a
+                busy device can affect later requests. Alternating order
+                distributes some effects without removing them.
+              </p>
+            </div>
+            <div>
+              <h3>Not yet tested</h3>
+              <p>
+                Network round trips, persistent disk, concurrent users,
+                realistic customer data or native server deployments. The tiny
+                browser baseline gives you a starting observation and a reason
+                to choose the next experiment.
+              </p>
+            </div>
+          </div>
           <p>
             Later chapters turn these limits into design choices: equivalent
             work, representative workloads, trustworthy measurement, uncertainty
@@ -654,13 +809,25 @@ Enable JavaScript to inspect all reference rows.</pre>
           <p class="eyebrow section-number">06 / Independent practice</p>
           <h2>Write a claim someone else can check</h2>
           <p>
-            Complete two runs, one at each size. Use the evidence to write an
-            initial finding for the sales operations team. Include the query,
-            fixture size, browser builds, warm request boundary and observed
-            result. Distinguish query time from startup and loading. Then name
-            one condition you would check next before making a customer
-            recommendation, and explain why it could change the decision.
+            Complete two runs, one at each size. Write an initial finding for
+            the sales operations team that a colleague could reproduce. Use your
+            measurements to make a conditional claim.
           </p>
+          <ol class="db-practice-steps">
+            <li>
+              <strong>Name the conditions.</strong> Include the query, fixture
+              size, browser builds and warm request boundary.
+            </li>
+            <li>
+              <strong>Point to the evidence.</strong> Describe the observed
+              result and its spread. Keep query time separate from startup and
+              loading.
+            </li>
+            <li>
+              <strong>Choose the next check.</strong> Name one condition that
+              could change the customer’s decision, and explain why.
+            </li>
+          </ol>
           <label class="db-label" for="db-claim"
             >Your conditional finding and next experiment</label
           ><textarea
@@ -693,7 +860,7 @@ Enable JavaScript to inspect all reference rows.</pre>
             exit terminate them. Each successful run closes both engines before
             releasing its workers.
           </p>
-          <ul>
+          <ul class="db-sources">
             <li>
               <a href="https://duckdb.org/docs/stable/clients/wasm/overview"
                 >DuckDB-Wasm documentation</a
