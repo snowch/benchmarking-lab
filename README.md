@@ -56,7 +56,10 @@ are required. Wasm and the compiler are loaded into a worker only when Run is pr
 
 - [Review of six companion books](docs/design-review.md): the selected patterns and their sources.
 - [Measurement contract](docs/measurement.md): timing boundaries, limits and validation.
-- [Course plan](docs/plan.md): progression and future work.
+- [Course plan](docs/plan.md): twelve chapters, from the first database comparison
+  through Kafka, complete pipelines, capacity and cost, and a defensible report.
+- [Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/): capacity
+  planning and cost modelling, linked from the planned cost chapter.
 - `index.html`: the readable chapter, also available without JavaScript.
 - `src/kernel.wat`: the original scalar Wasm loop.
 - `src/benchmark.ts`, `src/worker.ts`: compilation and measurement.
