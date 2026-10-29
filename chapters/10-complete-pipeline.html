@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Does changing one component improve the complete customer outcome? Chapter outline for Benchmarking Lab."
+    />
+    <title>Benchmark the complete pipeline · Benchmarking Lab</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="outline-page">
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="../"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      ><span class="tagline">A field guide to performance</span
+      ><button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme</button
+      ><a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <details class="book-contents" open>
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="../"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="03-equivalent-work.html"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="06-differences-and-uncertainty.html"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="07-beyond-the-average.html"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="10-complete-pipeline.html" aria-current="page"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+        </details>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Chapter 10</span><span>Chapter outline</span
+          ><span>Lab planned</span>
+        </div>
+        <h1>Benchmark the complete pipeline</h1>
+        <p class="standfirst">
+          Does changing one component improve the complete customer outcome?
+        </p>
+        <p class="notice">
+          This is a chapter outline. The worked example and executable lab are
+          planned. You can use the design task below to start your benchmark
+          brief.
+        </p>
+        <section class="outline-objectives">
+          <h2>What you will learn</h2>
+          <ul>
+            <li>
+              Define end-to-end completion across storage, Kafka and a database.
+            </li>
+            <li>Locate queues, backpressure and limiting stages.</li>
+            <li>
+              Measure recovery and verify the final data under continuing load.
+            </li>
+          </ul>
+        </section>
+        <section id="question">
+          <p class="eyebrow section-number">01 / The question</p>
+          <h2>Start with a customer decision</h2>
+          <p>
+            Files arrive in object storage, become events, and are written into
+            a database. The customer needs to know when the uploaded records can
+            be queried.
+          </p>
+        </section>
+        <section id="worked-example">
+          <p class="eyebrow section-number">02 / Worked example · planned</p>
+          <h2>The comparison to build</h2>
+          <p>
+            Trace an S3-compatible upload through an ingestion worker, Kafka, a
+            sink worker and a database query. Record the adapters,
+            transformation, retry behaviour and offset-commit policy.
+          </p>
+          <div class="evidence">
+            <span class="small-label">Planned reference pipeline</span>
+            <ol class="pipeline">
+              <li>S3-compatible object storage</li>
+              <li>Ingestion worker</li>
+              <li>Kafka</li>
+              <li>Sink worker</li>
+              <li>Database and verification query</li>
+            </ol>
+          </div>
+        </section>
+        <section id="experiment">
+          <p class="eyebrow section-number">03 / Experiment · planned</p>
+          <h2>How the lab will work</h2>
+          <ol class="outline-steps">
+            <li>
+              Correlate run, object and record identities from upload submission
+              to verified queryable output.
+            </li>
+            <li>
+              Slow one worker and measure stage activity, backlog and the
+              end-to-end outcome.
+            </li>
+            <li>
+              Restore the worker while arrivals continue; verify values and
+              detect missing or duplicate records.
+            </li>
+          </ol>
+          <p class="caption">
+            The executable lab, reference outputs and progressive hints will be
+            added when this chapter is implemented.
+          </p>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">04 / Design task</p>
+          <h2>Start your benchmark brief</h2>
+          <p>
+            Change one component or configuration. Design a repeatable
+            comparison to establish whether it improves queryable-data delay or
+            sustainable pipeline throughput.
+          </p>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">05 / Keep the evidence</p>
+          <h2>What your record should contain</h2>
+          <ul>
+            <li>
+              Topology, versions, worker configuration and complete commands
+            </li>
+            <li>
+              Correlated observations, verification cost and query-polling
+              interval
+            </li>
+            <li>
+              Backlog, retries, recovery history and final correctness checks
+            </li>
+          </ul>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">06 / Interpret</p>
+          <h2>What the evidence can support</h2>
+          <p>
+            Measure end-to-end latency directly: stage p99 values cannot be
+            added to produce an end-to-end p99. State clock assumptions and
+            detection delay. A local topology supports claims about that tested
+            deployment.
+          </p>
+        </section>
+        <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <a rel="prev" href="09-beyond-databases.html"
+            ><span class="small-label">Previous · 09</span>← Beyond databases</a
+          ><a rel="next" href="11-capacity-and-cost.html"
+            ><span class="small-label">Next · 11</span>From benchmark results to
+            capacity and cost →</a
+          >
+        </nav>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/plan.md"
+              >Course plan</a
+            >
+            ·
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Companion: Sizing and TCO</a
+            >
+          </p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a href="../third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/chapter.ts"></script>
+  </body>
+</html>

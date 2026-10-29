@@ -14,20 +14,20 @@ with downloadable harnesses and recorded deployment conditions.
 
 ## Chapters
 
-| Chapter                                         | Question                                                                                        | Status      |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
-| 1. Same work, different order                   | How do we turn “faster” into a specific comparison question?                                    | Implemented |
-| 2. DuckDB or Postgres?                          | What does a first comparison of DuckDB-Wasm and PGlite show, and what must we check next?       | Planned     |
-| 3. Are they doing the same work?                | Do inputs, answers, configuration and service guarantees make the comparison fair?              | Planned     |
-| 4. Choose a representative workload             | Does the recommendation change with the customer's data and usage?                              | Planned     |
-| 5. Can you trust your benchmark?                | Is the harness measuring the intended work, or limiting and distorting it?                      | Planned     |
-| 6. How much faster—and how certain?             | What do repeated runs and their variation support?                                              | Planned     |
-| 7. Beyond the average                           | What do response-time distributions, errors and throughput tell us?                             | Planned     |
-| 8. What happens as demand grows?                | Where do capacity limits and crossover points appear?                                           | Planned     |
-| 9. Beyond databases                             | Which methods transfer to Kafka, object storage and search, and which measurements must change? | Planned     |
-| 10. Benchmark the complete pipeline             | How do storage, brokers, connectors and databases combine to determine the customer's result?   | Planned     |
-| 11. From benchmark results to capacity and cost | What does it cost to meet the same workload and service requirements?                           | Planned     |
-| 12. Present a comparison you can defend         | Can another reader reproduce, challenge and use the recommendation?                             | Planned     |
+| Chapter                                                                                  | Question                                                                                        | Status               |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------- |
+| 1. Same work, different order                                                            | How do we turn “faster” into a specific comparison question?                                    | Implemented          |
+| 2. [DuckDB or Postgres?](../chapters/02-duckdb-postgres.html)                            | What does a first comparison of DuckDB-Wasm and PGlite show, and what must we check next?       | Outline; lab planned |
+| 3. [Are they doing the same work?](../chapters/03-equivalent-work.html)                  | Do inputs, answers, configuration and service guarantees make the comparison fair?              | Outline; lab planned |
+| 4. [Choose a representative workload](../chapters/04-representative-workloads.html)      | Does the recommendation change with the customer's data and usage?                              | Outline; lab planned |
+| 5. [Can you trust your benchmark?](../chapters/05-trust-the-benchmark.html)              | Is the harness measuring the intended work, or limiting and distorting it?                      | Outline; lab planned |
+| 6. [How much faster—and how certain?](../chapters/06-differences-and-uncertainty.html)   | What do repeated runs and their variation support?                                              | Outline; lab planned |
+| 7. [Beyond the average](../chapters/07-beyond-the-average.html)                          | What do response-time distributions, errors and throughput tell us?                             | Outline; lab planned |
+| 8. [What happens as demand grows?](../chapters/08-demand-and-scaling.html)               | Where do capacity limits and crossover points appear?                                           | Outline; lab planned |
+| 9. [Beyond databases](../chapters/09-beyond-databases.html)                              | Which methods transfer to Kafka, object storage and search, and which measurements must change? | Outline; lab planned |
+| 10. [Benchmark the complete pipeline](../chapters/10-complete-pipeline.html)             | How do storage, brokers, connectors and databases combine to determine the customer's result?   | Outline; lab planned |
+| 11. [From benchmark results to capacity and cost](../chapters/11-capacity-and-cost.html) | What does it cost to meet the same workload and service requirements?                           | Outline; lab planned |
+| 12. [Present a comparison you can defend](../chapters/12-defensible-comparison.html)     | Can another reader reproduce, challenge and use the recommendation?                             | Outline; lab planned |
 
 Chapter 1 introduces “two options, one question” through the existing memory-order
 lab. Chapter 2 provides an early database comparison. Subsequent chapters improve
@@ -193,5 +193,7 @@ eventually build their own harness, not just operate preset controls.
 Before expanding, try chapter 1 with readers: can they explain the address orders,
 distinguish a model from a measurement, identify the timed region, and state a
 conditional conclusion from their own run? Automated checks do not establish this.
-All chapters after chapter 1 remain planned. No unfinished lab is presented as
-implemented.
+Chapters 2–12 have published skeleton pages; their worked examples and executable
+labs remain planned. Each outline contains objectives, a proposed experiment, an
+independent design task, an evidence checklist and an interpretation boundary.
+No unfinished lab is presented as implemented.

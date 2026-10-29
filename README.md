@@ -13,7 +13,10 @@ Course URL: <https://snowch.github.io/benchmarking-lab/>.
 
 One complete chapter: **Same work, different order**. It includes a working
 benchmark, optional predictions and notes, five practice hints, and a deliberate
-fault-and-repair exercise. The remaining chapters are explicitly marked as planned.
+fault-and-repair exercise. Chapters 2–12 have navigable skeleton pages with
+objectives, planned experiments, design tasks and evidence checklists. Their labs
+are explicitly marked as planned. Book contents and previous/next links connect
+all twelve chapters, including direct loads without JavaScript.
 The address diagram is explanatory; elapsed times come only from executed Wasm.
 
 The benchmark uses the same scalar function for both traversal orders. Compilation
@@ -60,7 +63,9 @@ are required. Wasm and the compiler are loaded into a worker only when Run is pr
   through Kafka, complete pipelines, capacity and cost, and a defensible report.
 - [Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/): capacity
   planning and cost modelling, linked from the planned cost chapter.
-- `index.html`: the readable chapter, also available without JavaScript.
+- `index.html`: the working first chapter, also available without JavaScript.
+- `chapters/`: editable static HTML skeletons for chapters 2–12.
+- `src/theme.ts`, `src/chapter.ts`: shared theme and lightweight outline-page behaviour.
 - `src/kernel.wat`: the original scalar Wasm loop.
 - `src/benchmark.ts`, `src/worker.ts`: compilation and measurement.
 - `src/main.ts`: address explorer, controls, results and local drafts.
@@ -72,3 +77,16 @@ The design review explains why the fixed ten-section runtime is not used here.
 WABT 1.0.39 compiles WAT locally; its Apache-2.0 licence ships in
 `public/third-party-notices.txt`. No lesson text or application code is copied
 from the reference books.
+
+## Editing chapter outlines
+
+Edit the corresponding HTML file in `chapters/`. Keep its question, objectives,
+planned example, planned experiment, independent design task, evidence checklist
+and interpretation boundary together. Update the book-contents lists and
+previous/next links when changing chapter order or titles. Vite discovers all
+chapter HTML entry points during the production build. These pages load the
+shared theme without loading the benchmark worker or compiler.
+
+An outline becomes a working chapter only after its real execution path, checks,
+evidence and explanatory text are implemented and verified. Until then retain
+the outline notice and planned-lab labels.

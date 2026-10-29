@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="What do slow requests, errors and completed work reveal that a single average hides? Chapter outline for Benchmarking Lab."
+    />
+    <title>Beyond the average · Benchmarking Lab</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="outline-page">
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="../"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      ><span class="tagline">A field guide to performance</span
+      ><button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme</button
+      ><a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <details class="book-contents" open>
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="../"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="03-equivalent-work.html"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="06-differences-and-uncertainty.html"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="07-beyond-the-average.html" aria-current="page"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="10-complete-pipeline.html"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+        </details>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Chapter 07</span><span>Chapter outline</span
+          ><span>Lab planned</span>
+        </div>
+        <h1>Beyond the average</h1>
+        <p class="standfirst">
+          What do slow requests, errors and completed work reveal that a single
+          average hides?
+        </p>
+        <p class="notice">
+          This is a chapter outline. The worked example and executable lab are
+          planned. You can use the design task below to start your benchmark
+          brief.
+        </p>
+        <section class="outline-objectives">
+          <h2>What you will learn</h2>
+          <ul>
+            <li>
+              Define latency measurement points and percentile populations.
+            </li>
+            <li>Read throughput and latency together.</li>
+            <li>Account for failures, timeouts and unfinished requests.</li>
+          </ul>
+        </section>
+        <section id="question">
+          <p class="eyebrow section-number">01 / The question</p>
+          <h2>Start with a customer decision</h2>
+          <p>
+            Two systems have similar typical response times. One produces
+            occasional long waits and misses more customer requests during a
+            burst.
+          </p>
+        </section>
+        <section id="worked-example">
+          <p class="eyebrow section-number">02 / Worked example · planned</p>
+          <h2>The comparison to build</h2>
+          <p>
+            Inspect request-level observations from a controlled workload. Show
+            the latency distribution alongside completion counts, timeouts and
+            the observation window.
+          </p>
+        </section>
+        <section id="experiment">
+          <p class="eyebrow section-number">03 / Experiment · planned</p>
+          <h2>How the lab will work</h2>
+          <ol class="outline-steps">
+            <li>
+              Collect individual request timestamps under a declared arrival
+              model.
+            </li>
+            <li>
+              Report typical and tail latency with offered and achieved
+              throughput.
+            </li>
+            <li>
+              Inspect what changes when timeouts and outstanding requests are
+              accounted for.
+            </li>
+          </ol>
+          <p class="caption">
+            The executable lab, reference outputs and progressive hints will be
+            added when this chapter is implemented.
+          </p>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">04 / Design task</p>
+          <h2>Start your benchmark brief</h2>
+          <p>
+            Choose metrics for an interactive lookup and a batch report. Explain
+            why the same headline metric may not serve both decisions.
+          </p>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">05 / Keep the evidence</p>
+          <h2>What your record should contain</h2>
+          <ul>
+            <li>Request-level observations and measurement points</li>
+            <li>Error, timeout and incomplete-work counts</li>
+            <li>Percentile method and throughput observation window</li>
+          </ul>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">06 / Interpret</p>
+          <h2>What the evidence can support</h2>
+          <p>
+            A percentile describes a specified population. Omitting failed or
+            unfinished requests can change the story. Do not average percentiles
+            or substitute batch averages for request observations.
+          </p>
+        </section>
+        <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <a rel="prev" href="06-differences-and-uncertainty.html"
+            ><span class="small-label">Previous · 06</span>← How much faster—and
+            how certain?</a
+          ><a rel="next" href="08-demand-and-scaling.html"
+            ><span class="small-label">Next · 08</span>What happens as demand
+            grows? →</a
+          >
+        </nav>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/plan.md"
+              >Course plan</a
+            >
+            ·
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Companion: Sizing and TCO</a
+            >
+          </p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a href="../third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/chapter.ts"></script>
+  </body>
+</html>

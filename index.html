@@ -41,25 +41,111 @@
           <a href="#interpret">Read the evidence</a>
           <a href="#practice">Try it yourself</a>
         </nav>
-        <details class="roadmap">
-          <summary>The book ahead</summary>
-          <p>Planned chapters</p>
-          <ol start="2">
-            <li>DuckDB or Postgres?</li>
-            <li>Are they doing the same work?</li>
-            <li>Choose a representative workload</li>
-            <li>Can you trust your benchmark?</li>
-            <li>How much faster—and how certain?</li>
-            <li>Beyond the average</li>
-            <li>What happens as demand grows?</li>
-            <li>Beyond databases</li>
-            <li>Benchmark the complete pipeline</li>
-            <li>From benchmark results to capacity and cost</li>
-            <li>Present a comparison you can defend</li>
-          </ol>
-          <a href="https://snowch.github.io/sizing-and-tco/"
-            >Companion: Sizing and TCO</a
-          >
+        <details class="roadmap book-contents">
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="./" aria-current="page"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/03-equivalent-work.html"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/06-differences-and-uncertainty.html"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/07-beyond-the-average.html"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/10-complete-pipeline.html"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="./chapters/12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+          <p>Chapters 2–12 are outlines; their labs are planned.</p>
         </details>
         <div class="sidebar-note">
           <span class="live-dot"></span> Runs on your device
@@ -69,7 +155,7 @@
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
           <span>Chapter 01</span><span>Memory access</span
-          ><span>First edition · one chapter</span>
+          ><span>1 working lab · 11 outlines</span>
         </div>
         <h1>Same work,<br /><em>different order.</em></h1>
         <p class="standfirst">
@@ -459,6 +545,11 @@
             </li>
           </ul>
         </section>
+        <nav class="chapter-pagination" aria-label="Next chapter">
+          <a rel="next" href="./chapters/02-duckdb-postgres.html"
+            ><span class="small-label">Next · 02</span>DuckDB or Postgres? →</a
+          >
+        </nav>
         <footer>
           <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
           <p>

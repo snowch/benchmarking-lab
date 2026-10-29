@@ -1,4 +1,5 @@
 // Copyright © 2026 Christopher Snow
+import "./theme";
 import original from "./kernel.wat?raw";
 import { median } from "./stats";
 import type { Result, Settings } from "./benchmark";
@@ -11,7 +12,6 @@ const source = el<HTMLTextAreaElement>("source");
 const notes = el<HTMLTextAreaElement>("notes");
 const settings = el<HTMLFieldSetElement>("settings");
 const status = el("status");
-const themeButton = el<HTMLButtonElement>("theme");
 const storageKey = "benchmarking-lab:chapter-01:v1";
 source.value = original;
 try {
@@ -48,39 +48,6 @@ function save() {
       "Browser storage is unavailable. Download your notes and run record to keep them.";
   }
 }
-const systemTheme = matchMedia("(prefers-color-scheme: dark)");
-let explicitTheme = false;
-function setTheme(dark: boolean) {
-  document.documentElement.dataset.theme = dark ? "dark" : "light";
-  themeButton.textContent = dark ? "Light theme" : "Dark theme";
-  themeButton.setAttribute(
-    "aria-label",
-    `Switch to ${dark ? "light" : "dark"} theme`,
-  );
-}
-try {
-  const saved = localStorage.getItem("benchmarking-lab:theme");
-  explicitTheme = saved === "dark" || saved === "light";
-  setTheme(explicitTheme ? saved === "dark" : systemTheme.matches);
-} catch {
-  setTheme(systemTheme.matches);
-}
-themeButton.onclick = () => {
-  explicitTheme = true;
-  setTheme(document.documentElement.dataset.theme !== "dark");
-  try {
-    localStorage.setItem(
-      "benchmarking-lab:theme",
-      document.documentElement.dataset.theme!,
-    );
-  } catch {
-    /* Theme still works for this tab. */
-  }
-};
-systemTheme.addEventListener("change", () => {
-  if (!explicitTheme) setTheme(systemTheme.matches);
-});
-
 const step = el<HTMLInputElement>("step");
 function renderTrace() {
   const order = document.querySelector<HTMLInputElement>(

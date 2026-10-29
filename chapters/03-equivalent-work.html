@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Are the systems returning equivalent answers under comparable conditions and guarantees? Chapter outline for Benchmarking Lab."
+    />
+    <title>Are they doing the same work? · Benchmarking Lab</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="outline-page">
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="../"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      ><span class="tagline">A field guide to performance</span
+      ><button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme</button
+      ><a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <details class="book-contents" open>
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="../"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="03-equivalent-work.html" aria-current="page"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="06-differences-and-uncertainty.html"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="07-beyond-the-average.html"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="10-complete-pipeline.html"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+        </details>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Chapter 03</span><span>Chapter outline</span
+          ><span>Lab planned</span>
+        </div>
+        <h1>Are they doing the same work?</h1>
+        <p class="standfirst">
+          Are the systems returning equivalent answers under comparable
+          conditions and guarantees?
+        </p>
+        <p class="notice">
+          This is a chapter outline. The worked example and executable lab are
+          planned. You can use the design task below to start your benchmark
+          brief.
+        </p>
+        <section class="outline-objectives">
+          <h2>What you will learn</h2>
+          <ul>
+            <li>Define the expected output before timing.</li>
+            <li>Audit indexes, configuration and service guarantees.</li>
+            <li>
+              Repair a comparison whose apparent advantage comes from different
+              work.
+            </li>
+          </ul>
+        </section>
+        <section id="question">
+          <p class="eyebrow section-number">01 / The question</p>
+          <h2>Start with a customer decision</h2>
+          <p>
+            One query looks faster, but one database has an index and the other
+            does not. A second comparison returns fewer rows on one side.
+          </p>
+        </section>
+        <section id="worked-example">
+          <p class="eyebrow section-number">02 / Worked example · planned</p>
+          <h2>The comparison to build</h2>
+          <p>
+            Inspect a deliberately incomplete comparison brief. Separate query
+            correctness, tuning choices, deployment constraints and guarantees,
+            then document the comparison being made.
+          </p>
+        </section>
+        <section id="experiment">
+          <p class="eyebrow section-number">03 / Experiment · planned</p>
+          <h2>How the lab will work</h2>
+          <ol class="outline-steps">
+            <li>
+              Check results against a deterministic fixture, including nulls,
+              duplicates and boundary values.
+            </li>
+            <li>
+              Record index creation and input preparation separately from query
+              execution.
+            </li>
+            <li>
+              Change one configuration while preserving the stated comparison
+              contract.
+            </li>
+          </ol>
+          <p class="caption">
+            The executable lab, reference outputs and progressive hints will be
+            added when this chapter is implemented.
+          </p>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">04 / Design task</p>
+          <h2>Start your benchmark brief</h2>
+          <p>
+            Produce a fairness checklist for your database comparison. Name
+            which conditions must match and which differences are legitimate
+            parts of the decision.
+          </p>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">05 / Keep the evidence</p>
+          <h2>What your record should contain</h2>
+          <ul>
+            <li>Expected outputs and correctness checks</li>
+            <li>Index, resource and configuration records</li>
+            <li>A statement of the guarantees and permitted differences</li>
+          </ul>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">06 / Interpret</p>
+          <h2>What the evidence can support</h2>
+          <p>
+            Equal option names do not establish equal guarantees. A correctness
+            check on a fixture supports that fixture; describe additional checks
+            needed for the intended workload.
+          </p>
+        </section>
+        <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <a rel="prev" href="02-duckdb-postgres.html"
+            ><span class="small-label">Previous · 02</span>← DuckDB or
+            Postgres?</a
+          ><a rel="next" href="04-representative-workloads.html"
+            ><span class="small-label">Next · 04</span>Choose a representative
+            workload →</a
+          >
+        </nav>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/plan.md"
+              >Course plan</a
+            >
+            ·
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Companion: Sizing and TCO</a
+            >
+          </p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a href="../third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/chapter.ts"></script>
+  </body>
+</html>

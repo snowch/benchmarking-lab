@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="What difference do repeated experiments support, and how uncertain is that estimate? Chapter outline for Benchmarking Lab."
+    />
+    <title>How much faster—and how certain? · Benchmarking Lab</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="outline-page">
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="../"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      ><span class="tagline">A field guide to performance</span
+      ><button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme</button
+      ><a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <details class="book-contents" open>
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="../"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="03-equivalent-work.html"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="06-differences-and-uncertainty.html"
+                  aria-current="page"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="07-beyond-the-average.html"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="10-complete-pipeline.html"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+        </details>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Chapter 06</span><span>Chapter outline</span
+          ><span>Lab planned</span>
+        </div>
+        <h1>How much faster—and how certain?</h1>
+        <p class="standfirst">
+          What difference do repeated experiments support, and how uncertain is
+          that estimate?
+        </p>
+        <p class="notice">
+          This is a chapter outline. The worked example and executable lab are
+          planned. You can use the design task below to start your benchmark
+          brief.
+        </p>
+        <section class="outline-objectives">
+          <h2>What you will learn</h2>
+          <ul>
+            <li>
+              Distinguish repeated independent runs from samples within one run.
+            </li>
+            <li>Compare distributions and calculate clearly defined ratios.</li>
+            <li>
+              Describe uncertainty without treating an inconclusive result as a
+              win.
+            </li>
+          </ul>
+        </section>
+        <section id="question">
+          <p class="eyebrow section-number">01 / The question</p>
+          <h2>Start with a customer decision</h2>
+          <p>
+            The median looks better in one run, but another run narrows or
+            reverses the difference. You need to decide what evidence to collect
+            next.
+          </p>
+        </section>
+        <section id="worked-example">
+          <p class="eyebrow section-number">02 / Worked example · planned</p>
+          <h2>The comparison to build</h2>
+          <p>
+            Compare several independent runs of the orders benchmark. Keep
+            warm-up and reset conditions recorded, and distinguish the ratio of
+            medians from other possible summaries.
+          </p>
+        </section>
+        <section id="experiment">
+          <p class="eyebrow section-number">03 / Experiment · planned</p>
+          <h2>How the lab will work</h2>
+          <ol class="outline-steps">
+            <li>
+              Repeat the experiment with a recorded reset procedure and rotated
+              execution order.
+            </li>
+            <li>
+              Inspect raw samples, run-level summaries and unusual observations.
+            </li>
+            <li>
+              Estimate the difference and its uncertainty using a method whose
+              assumptions are explained.
+            </li>
+          </ol>
+          <p class="caption">
+            The executable lab, reference outputs and progressive hints will be
+            added when this chapter is implemented.
+          </p>
+        </section>
+        <section id="practice">
+          <p class="eyebrow section-number">04 / Design task</p>
+          <h2>Start your benchmark brief</h2>
+          <p>
+            Write a conditional comparison claim. Explain what variation remains
+            and what further experiment would help resolve it.
+          </p>
+        </section>
+        <section id="evidence">
+          <p class="eyebrow section-number">05 / Keep the evidence</p>
+          <h2>What your record should contain</h2>
+          <ul>
+            <li>All samples and their run identities</li>
+            <li>Reset, execution-order and environment records</li>
+            <li>Calculation method, assumptions and uncertainty estimate</li>
+          </ul>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">06 / Interpret</p>
+          <h2>What the evidence can support</h2>
+          <p>
+            Closely spaced samples can be dependent. More samples from one run
+            do not automatically replace independent repetitions. Statistical
+            evidence and customer relevance are separate questions.
+          </p>
+        </section>
+        <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <a rel="prev" href="05-trust-the-benchmark.html"
+            ><span class="small-label">Previous · 05</span>← Can you trust your
+            benchmark?</a
+          ><a rel="next" href="07-beyond-the-average.html"
+            ><span class="small-label">Next · 07</span>Beyond the average →</a
+          >
+        </nav>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/plan.md"
+              >Course plan</a
+            >
+            ·
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Companion: Sizing and TCO</a
+            >
+          </p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a href="../third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/chapter.ts"></script>
+  </body>
+</html>

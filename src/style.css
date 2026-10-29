@@ -764,7 +764,6 @@ code {
   .sidebar-title,
   .sidebar > .eyebrow,
   .sidebar-note,
-  .roadmap,
   .sidebar nav a:not(.chapter-link) {
     display: none;
   }
@@ -846,5 +845,114 @@ code {
     transition:
       background 0.12s,
       border-color 0.12s;
+  }
+}
+
+/* Chapter outlines share the reading layout with the working lab. */
+.book-contents {
+  padding: 14px 0;
+}
+.book-contents nav {
+  max-height: 55vh;
+  overflow-y: auto;
+  margin-top: 14px;
+}
+.book-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar nav .book-list a {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px 8px;
+  border-left: 2px solid transparent;
+  line-height: 1.5;
+}
+.book-list a > span:first-child {
+  font:
+    11px/1.8 ui-monospace,
+    monospace;
+}
+.book-list small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: normal;
+}
+.sidebar nav .book-list [aria-current="page"] {
+  border-color: var(--green);
+  background: var(--soft);
+  color: var(--ink);
+}
+.outline-page h1 {
+  font-size: clamp(40px, 4.1vw, 60px);
+  letter-spacing: -1.5px;
+  overflow-wrap: anywhere;
+}
+.outline-page section ul,
+.outline-steps {
+  font:
+    18px/1.75 Georgia,
+    serif;
+  padding-left: 24px;
+}
+.outline-page section li {
+  padding: 6px 0;
+}
+.outline-objectives {
+  padding-top: 24px;
+}
+.outline-objectives h2 {
+  font-size: 27px;
+}
+.chapter-pagination {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  margin-top: 45px;
+  padding-top: 25px;
+}
+.chapter-pagination a {
+  font:
+    18px/1.5 Georgia,
+    serif;
+  text-decoration: none;
+}
+.chapter-pagination .small-label {
+  display: block;
+  margin-bottom: 10px;
+}
+.pipeline {
+  font:
+    15px/1.6 Arial,
+    sans-serif;
+  padding-left: 24px;
+}
+@media (max-width: 750px) {
+  .roadmap {
+    display: block;
+    margin-top: 16px;
+  }
+  .book-contents nav {
+    max-height: 300px;
+  }
+  .sidebar nav .book-list a {
+    display: grid;
+  }
+  .outline-page .sidebar {
+    margin-bottom: 25px;
+  }
+  .outline-page h1 {
+    font-size: 42px;
+  }
+  .outline-page section ul,
+  .outline-steps {
+    font-size: 17px;
+  }
+  .chapter-pagination {
+    grid-template-columns: 1fr;
   }
 }
