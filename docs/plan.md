@@ -17,7 +17,7 @@ with downloadable harnesses and recorded deployment conditions.
 | Chapter                                                                                  | Question                                                                                        | Status               |
 | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------- |
 | 1. Same work, different order                                                            | How do we turn “faster” into a specific comparison question?                                    | Implemented          |
-| 2. [DuckDB or Postgres?](../chapters/02-duckdb-postgres.html)                            | What does a first comparison of DuckDB-Wasm and PGlite show, and what must we check next?       | Outline; lab planned |
+| 2. [DuckDB or Postgres?](../chapters/02-duckdb-postgres.html)                            | What does a first comparison of DuckDB-Wasm and PGlite show, and what must we check next?       | Implemented          |
 | 3. [Are they doing the same work?](../chapters/03-equivalent-work.html)                  | Do inputs, answers, configuration and service guarantees make the comparison fair?              | Outline; lab planned |
 | 4. [Choose a representative workload](../chapters/04-representative-workloads.html)      | Does the recommendation change with the customer's data and usage?                              | Outline; lab planned |
 | 5. [Can you trust your benchmark?](../chapters/05-trust-the-benchmark.html)              | Is the harness measuring the intended work, or limiting and distorting it?                      | Outline; lab planned |
@@ -193,7 +193,7 @@ eventually build their own harness, not just operate preset controls.
 Before expanding, try chapter 1 with readers: can they explain the address orders,
 distinguish a model from a measurement, identify the timed region, and state a
 conditional conclusion from their own run? Automated checks do not establish this.
-Chapters 2–12 have published skeleton pages; their worked examples and executable
+Chapters 3–12 have published skeleton pages; their worked examples and executable
 labs remain planned. Each outline contains objectives, a proposed experiment, an
 independent design task, an evidence checklist and an interpretation boundary.
 No unfinished lab is presented as implemented.

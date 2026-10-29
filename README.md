@@ -11,24 +11,31 @@ Course URL: <https://snowch.github.io/benchmarking-lab/>.
 
 ## Current scope
 
-One complete chapter: **Same work, different order**. It includes a working
-benchmark, optional predictions and notes, five practice hints, and a deliberate
-fault-and-repair exercise. Chapters 2–12 have navigable skeleton pages with
-objectives, planned experiments, design tasks and evidence checklists. Their labs
-are explicitly marked as planned. Book contents and previous/next links connect
-all twelve chapters, including direct loads without JavaScript.
-The address diagram is explanatory; elapsed times come only from executed Wasm.
+Two executable chapters:
 
-The benchmark uses the same scalar function for both traversal orders. Compilation
+- **Same work, different order:** sum a grid using a real scalar Wasm loop,
+  inspect memory addresses, and explore how traversal order affects measured time.
+- **DuckDB or Postgres?:** run the same order lookup and revenue aggregation in
+  DuckDB-Wasm and PGlite. Verify the answers, inspect setup and query timings,
+  change the dataset size, and download the run conditions and raw samples.
+
+Chapters 3–12 have navigable skeleton pages with objectives, planned experiments,
+design tasks and evidence checklists. Their labs are explicitly marked as planned.
+Book contents and previous/next links connect all twelve chapters, including direct
+loads without JavaScript. Explanatory diagrams stay distinct from measured outputs.
+
+The chapter 1 benchmark uses the same scalar function for both traversal orders. Compilation
 and input setup happen before timing. It warms both orders, calibrates a common
 batch size, alternates the starting order, checks every returned checksum, and
 shows all samples alongside medians. Edited code must satisfy the fixture checksum;
 that check cannot prove that arbitrary code performs equivalent work.
 
-Runs stop when the tab becomes hidden, on request, or after 30 seconds. Source,
+Chapter 1 runs stop when the tab becomes hidden, on request, or after 30 seconds. Source,
 settings and notes save locally when browser storage is available. Run records
 remain in the current tab until replaced or reloaded; download them to retain
 raw samples, source, hashes, browser identifier and build. Results are never uploaded.
+Chapter 2’s timing boundaries, setup conditions, interruption behaviour and evidence
+format are described in [its measurement contract](docs/database-measurement.md).
 No offline installation or cross-device synchronisation is implemented.
 
 ## Develop and verify
@@ -53,18 +60,21 @@ Tests validate behaviour and arithmetic, never a device-specific timing ratio.
 `.github/workflows/deploy.yml` checks pushes and pull requests. Successful pushes
 to `main` publish `dist/` using GitHub Pages Actions. The repository's Pages source
 must be **GitHub Actions**. No backend, secret, external CDN or isolation headers
-are required. Wasm and the compiler are loaded into a worker only when Run is pressed.
+are required. Wasm engines and compilers are loaded into workers only when Run is pressed.
+`prebuild` and `predev` copy the pinned database resources into ignored
+`public/engines/`; the production build self-hosts them under the Pages base path.
 
 ## Design and implementation
 
 - [Review of six companion books](docs/design-review.md): the selected patterns and their sources.
-- [Measurement contract](docs/measurement.md): timing boundaries, limits and validation.
+- [Chapter 1 measurement contract](docs/measurement.md): timing boundaries, limits and validation.
+- [Database comparison measurement contract](docs/database-measurement.md): engine builds, correctness, setup and query timing.
 - [Course plan](docs/plan.md): twelve chapters, from the first database comparison
   through Kafka, complete pipelines, capacity and cost, and a defensible report.
 - [Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/): capacity
   planning and cost modelling, linked from the planned cost chapter.
 - `index.html`: the working first chapter, also available without JavaScript.
-- `chapters/`: editable static HTML skeletons for chapters 2–12.
+- `chapters/`: the working database chapter and static HTML outlines for chapters 3–12.
 - `src/theme.ts`, `src/chapter.ts`: shared theme and lightweight outline-page behaviour.
 - `src/kernel.wat`: the original scalar Wasm loop.
 - `src/benchmark.ts`, `src/worker.ts`: compilation and measurement.
@@ -74,8 +84,9 @@ are required. Wasm and the compiler are loaded into a worker only when Run is pr
 This first chapter follows GPU Lab's small standalone approach and the shared
 books' interaction vocabulary. It does not vendor or modify `learning-platform`.
 The design review explains why the fixed ten-section runtime is not used here.
-WABT 1.0.39 compiles WAT locally; its Apache-2.0 licence ships in
-`public/third-party-notices.txt`. No lesson text or application code is copied
+WABT 1.0.39 compiles chapter 1’s WAT locally; its Apache-2.0 licence ships in
+`public/third-party-notices.txt`. Chapter 2 ships DuckDB-Wasm, PGlite and wrapper
+dependency notices in `public/engine-licenses.txt`. No lesson text or application code is copied
 from the reference books.
 
 ## Editing chapter outlines

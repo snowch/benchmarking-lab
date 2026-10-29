@@ -1,6 +1,8 @@
-# Measurement contract
+# Chapter 1 measurement contract
 
 Copyright © 2026 Christopher Snow.
+
+For the database comparison, see [Chapter 2’s measurement contract](database-measurement.md).
 
 ## The question
 

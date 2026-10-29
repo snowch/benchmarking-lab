@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 import { test, expect } from "@playwright/test";
 
-test("the complete reading path opens and reloads without JavaScript", async ({
+test("working chapters and outlines open and reload without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
@@ -21,12 +21,19 @@ test("the complete reading path opens and reloads without JavaScript", async ({
     const response = await page.goto(links[i].href);
     expect(response?.status()).toBe(200);
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("main > .notice")).toContainText(
-      "chapter outline",
-    );
-    await expect(page.locator("#practice")).toContainText(
-      "Start your benchmark brief",
-    );
+    if (i > 1) {
+      await expect(page.locator("main > .notice")).toContainText(
+        "chapter outline",
+      );
+      await expect(page.locator("#practice")).toContainText(
+        "Start your benchmark brief",
+      );
+    } else {
+      await expect(page.locator("#practice")).toBeVisible();
+      await expect(
+        page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
+      ).toContainText("Working lab");
+    }
     await expect(
       page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
     ).toHaveAttribute(

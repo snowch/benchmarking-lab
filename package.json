@@ -8,9 +8,14 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
-    "check": "prettier --check . && npm run build && npm test"
+    "check": "prettier --check . && npm run build && npm test",
+    "prepare:engines": "node scripts/prepare-engines.mjs",
+    "prebuild": "npm run prepare:engines",
+    "predev": "npm run prepare:engines"
   },
   "dependencies": {
+    "@duckdb/duckdb-wasm": "1.32.0",
+    "@electric-sql/pglite": "0.5.13",
     "wabt": "1.0.39"
   },
   "devDependencies": {

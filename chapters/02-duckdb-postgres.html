@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="What does a first database comparison show, and what should you check before recommending either option? Chapter outline for Benchmarking Lab."
+      content="What does a first database comparison show, and what should you check before recommending either option? Run two real browser database engines, verify answers, and retain reproducible measurements."
     />
     <title>DuckDB or Postgres? · Benchmarking Lab</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/database.css" />
   </head>
-  <body class="outline-page">
+  <body class="database-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="../"
@@ -44,7 +45,7 @@
               <li>
                 <a href="02-duckdb-postgres.html" aria-current="page"
                   ><span>02</span
-                  ><span>DuckDB or Postgres?<small>Outline</small></span></a
+                  ><span>DuckDB or Postgres?<small>Working lab</small></span></a
                 >
               </li>
               <li>
@@ -137,90 +138,584 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 02</span><span>Chapter outline</span
-          ><span>Lab planned</span>
+          <span>Chapter 02</span><span>Working lab</span
+          ><span>About 25 minutes</span>
         </div>
         <h1>DuckDB or Postgres?</h1>
         <p class="standfirst">
-          What does a first database comparison show, and what should you check
-          before recommending either option?
+          A customer asks which database is faster. Start with two useful jobs,
+          run the same work, and make your first claim small enough to defend.
         </p>
-        <p class="notice">
-          This is a chapter outline. The worked example and executable lab are
-          planned. You can use the design task below to start your benchmark
-          brief.
-        </p>
-        <section class="outline-objectives">
-          <h2>What you will learn</h2>
-          <ul>
-            <li>
-              Run a lookup and an aggregation against the same orders dataset.
-            </li>
-            <li>Check that both engines produce equivalent answers.</li>
-            <li>Write an initial finding tied to the measured conditions.</li>
-          </ul>
-        </section>
-        <section id="question">
-          <p class="eyebrow section-number">01 / The question</p>
-          <h2>Start with a customer decision</h2>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
           <p>
-            A customer needs both individual order lookups and monthly revenue
-            totals. You want evidence about which database suits those jobs.
+            Run two real database engines in this browser, check their answers,
+            separate setup from query time, and write a conditional finding. No
+            database experience is required.
           </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            The chapter and SQL are readable without JavaScript. Enable
+            JavaScript to run the engines and inspect the generated fixture.
+          </p></noscript
+        >
+        <section id="question">
+          <p class="eyebrow section-number">01 / The customer decision</p>
+          <h2>Two jobs can lead to different answers</h2>
+          <p>
+            A sales operations team needs an order screen and a revenue
+            dashboard. The order screen fetches one known order. The dashboard
+            adds up all orders by month and region. “Faster” is incomplete until
+            you say which job the customer needs, with how much data, and under
+            what conditions.
+          </p>
+          <p>
+            DuckDB is often used for analytical work: reading and summarising
+            sets of data. Postgres is a general-purpose relational database used
+            for many applications. Those descriptions suggest questions to
+            investigate; they do not supply a result for this experiment.
+          </p>
+          <p>
+            Here you will run <strong>DuckDB-Wasm</strong> and
+            <strong>PGlite</strong>, a WebAssembly build of Postgres.
+            WebAssembly lets compiled engine code run inside a browser. Both
+            engines execute real SQL locally. This is a first browser
+            experiment; a customer’s server deployment needs its own
+            measurements.
+          </p>
+          <ol class="db-roadmap" aria-label="Experiment sequence">
+            <li><strong>1. Define</strong>Two jobs, one fixture.</li>
+            <li><strong>2. Run</strong>Check, warm up, measure.</li>
+            <li>
+              <strong>3. Observe</strong>Read requests and setup separately.
+            </li>
+            <li>
+              <strong>4. Explain</strong>State conditions and the next check.
+            </li>
+          </ol>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example · planned</p>
-          <h2>The comparison to build</h2>
+          <p class="eyebrow section-number">02 / Worked example</p>
+          <h2>Follow an order through the comparison</h2>
           <p>
-            Compare DuckDB-Wasm and PGlite, a browser build of Postgres, using
-            one generated orders dataset. Introduce the two queries before the
-            performance results.
+            A <strong>table</strong> stores rows of records and named columns.
+            Our table has one row per order. A <strong>schema</strong> defines
+            its column names and types. Every value here is an integer,
+            including revenue in cents, so decimal rounding and time zones
+            cannot change the answer.
           </p>
+          <figure class="figure">
+            <div class="small-label">
+              The same fixture goes into both engines
+            </div>
+            <div class="db-table-wrap">
+              <table>
+                <caption>
+                  Five example rows. IDs 1 and 49 belong to the same month and
+                  region; their amounts contribute to the same dashboard total.
+                </caption>
+                <thead>
+                  <tr>
+                    <th>order_id</th>
+                    <th>month_id</th>
+                    <th>region_id</th>
+                    <th>amount_cents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>137</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>174</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>211</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>1</td>
+                    <td>4</td>
+                    <td>248</td>
+                  </tr>
+                  <tr>
+                    <td>49</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1,913</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="db-flow">
+              <p>
+                <strong>Order screen → one row</strong>Find an exact ID. Return
+                its four fields.
+              </p>
+              <p>
+                <strong>Revenue dashboard → 48 rows</strong>Add cents for each
+                of 12 months × 4 regions. Return every group in a fixed order.
+              </p>
+            </div>
+            <figcaption class="caption">
+              These are synthetic order amounts and numbered months, not a
+              customer workload. Both sizes contain every month/region
+              combination.
+            </figcaption>
+          </figure>
+          <p>
+            <strong>SQL</strong> is the language used to ask for rows.
+            <code>SELECT</code> names what to return, <code>FROM</code> names
+            the table, and <code>WHERE</code> restricts the rows.
+            <code>SUM</code> adds values, <code>GROUP BY</code> forms the
+            month/region groups, and <code>ORDER BY</code> fixes the output
+            order so we can compare answers exactly.
+          </p>
+          <p>
+            An <strong>index</strong> is an additional structure that can help
+            locate rows without examining the whole table. This first baseline
+            creates <strong>no indexes or constraints</strong> in either engine.
+            The lookup therefore asks how these configurations find one order;
+            it is not a test of a tuned, indexed application. Chapter 3 will
+            help you decide what equivalent work requires.
+          </p>
+          <details>
+            <summary>
+              See the complete schema and deterministic data recipe
+            </summary>
+            <p>
+              A <strong>fixture</strong> is the fixed input used for the
+              experiment. IDs start at 1. The recipe cycles through four regions
+              and twelve months; amounts repeat a fixed integer formula. No
+              random seed, external data, or clock is involved.
+            </p>
+            <pre><code>CREATE TABLE orders (
+  order_id INTEGER,
+  month_id INTEGER,
+  region_id INTEGER,
+  amount_cents INTEGER
+);
+
+// JavaScript recipe, for offsets 0 through count - 1:
+const id = offset + 1;
+const row = [
+  id,
+  Math.floor(offset / 4) % 12 + 1,
+  offset % 4 + 1,
+  id * 37 % 10000 + 100
+];
+
+// Identical load transaction in each engine:
+BEGIN;
+// CREATE TABLE above, then INSERT INTO orders VALUES (...), (...);
+// One INSERT statement per 500 generated rows, in ID order.
+COMMIT;
+
+// Separate setup after loading:
+ANALYZE orders;</code></pre>
+            <p>
+              <code>ANALYZE</code> collects table statistics that help an engine
+              plan a query. We time it separately. Identical SQL does not
+              guarantee identical execution plans or memory use.
+            </p>
+            <details>
+              <summary>
+                Inspect every INSERT statement for the selected size
+              </summary>
+              <pre id="db-load-sql" tabindex="0">
+Enable JavaScript to expand the deterministic recipe into all INSERT statements.</pre>
+            </details>
+          </details>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Experiment · planned</p>
-          <h2>How the lab will work</h2>
-          <ol class="outline-steps">
-            <li>
-              Load identical data and record engine versions, storage and
-              configuration.
-            </li>
-            <li>
-              Verify answers, then measure startup, loading and query execution
-              separately.
-            </li>
-            <li>Change the dataset size and retain both run records.</li>
-          </ol>
-          <p class="caption">
-            The executable lab, reference outputs and progressive hints will be
-            added when this chapter is implemented.
+          <p class="eyebrow section-number">03 / Your experiment</p>
+          <h2>Make a prediction, then run the work</h2>
+          <p>
+            Try 2,000 orders first. Read the two queries, optionally write a
+            prediction, and run the comparison. Then change to 20,000 orders.
+            The question is whether the observed relationship changes with this
+            small increase in work.
+          </p>
+          <div class="experiment">
+            <div class="figure-heading">
+              <span class="small-label">Real engines · local execution</span
+              ><span class="badge">No server or account</span>
+            </div>
+            <div class="db-controls">
+              <label for="db-size"
+                >Orders in each engine<select id="db-size">
+                  <option value="2000">2,000 orders</option>
+                  <option value="20000">20,000 orders</option>
+                </select></label
+              >
+              <label for="db-repeats"
+                >Measured pairs per query<select id="db-repeats">
+                  <option value="5">5 pairs</option>
+                  <option value="9">9 pairs</option>
+                </select></label
+              >
+            </div>
+            <p class="db-small">
+              Each pair runs one request on each engine. The first engine
+              alternates between pairs. Each run measures
+              <strong>both queries</strong>; the SQL below is a source view of
+              these presets.
+            </p>
+            <details open>
+              <summary>Read the two SQL requests</summary>
+              <p>
+                One order lookup. Changing the size chooses the midpoint order
+                ID.
+              </p>
+              <pre
+                id="db-lookup-sql"
+              ><code>SELECT order_id, month_id, region_id, amount_cents
+FROM orders WHERE order_id = 1000;</code></pre>
+              <p>
+                Revenue by month and region. <code>BIGINT</code> is a 64-bit
+                integer; the sum stays exact for these fixtures.
+              </p>
+              <pre id="db-revenue-sql"><code>SELECT month_id, region_id,
+       CAST(SUM(amount_cents) AS BIGINT) AS revenue_cents
+FROM orders
+GROUP BY month_id, region_id
+ORDER BY month_id, region_id;</code></pre>
+            </details>
+            <details>
+              <summary>
+                Prediction and observations (optional, saved on this device)
+              </summary>
+              <label class="db-label" for="db-notes"
+                >What do you expect for each query, and why? Add observations
+                after the run.</label
+              ><textarea
+                id="db-notes"
+                placeholder="I expect… because… One thing that could change that is…"
+              ></textarea>
+            </details>
+            <p class="caption">
+              Engines download only when you press Run: about 54 MiB of
+              Wasm/data plus JavaScript, cached according to your browser. Both
+              use one thread and fresh in-memory databases. Allow roughly 300
+              MiB or more of free memory; mobile devices may need the smaller
+              size. Closing the tab or pressing Stop discards engine memory.
+            </p>
+            <div class="db-actions">
+              <button id="db-run" type="button" disabled>
+                Run database comparison</button
+              ><button id="db-stop" type="button" disabled>
+                Stop comparison
+              </button>
+            </div>
+            <p id="db-status" role="status" aria-live="polite">
+              Ready. No database engine has been loaded. Your browser will
+              perform every measurement.
+            </p>
+            <p class="caption">
+              Limits: 60 seconds for each engine’s startup, 30 seconds for each
+              load, and 15 seconds per setup/query request. Keep this tab
+              visible: switching away stops the run to avoid accepting
+              background measurements. A time limit or failed answer rejects the
+              run and terminates its workers.
+            </p>
+            <details>
+              <summary>
+                How answers are checked, before trusting any timing
+              </summary>
+              <p>
+                A separate JavaScript reference finds the midpoint row and
+                accumulates all cents by month and region using a map. It does
+                not ask either engine for the expected answer. Both queries are
+                verified before warm-up, during one unmeasured warm-up request,
+                and after every measured request. Every field and row must
+                match, including the 48 groups’ order.
+              </p>
+              <p>
+                Expected values for the current controls, represented as decimal
+                strings to compare integer types consistently:
+              </p>
+              <pre id="db-expected" tabindex="0">
+Enable JavaScript to inspect all reference rows.</pre>
+              <p>
+                Full reference source and actual output rows are included in the
+                JSON evidence. An incorrect answer produces an error and no new
+                completed record.
+              </p>
+            </details>
+          </div>
+        </section>
+        <section id="observe">
+          <p class="eyebrow section-number">04 / Read your result</p>
+          <h2>First check what the clock included</h2>
+          <p>
+            The query clock starts on this page just before dispatching
+            <strong>one SQL request</strong>. It stops when all returned fields
+            have been converted into plain integer strings and received back on
+            the page. That includes browser scheduling, worker messages, engine
+            execution, result conversion, and transfer. It is an end-to-end
+            browser request time, not an isolated engine execution time.
+          </p>
+          <p>
+            DuckDB returns an Arrow table, a column-oriented result format;
+            PGlite returns JavaScript rows. Their wrappers take different paths
+            to produce the same plain result. A common boundary makes the
+            product-level question clearer, while leaving wrapper overhead
+            inside the measurement. Tiny requests can spend much of their time
+            there.
+          </p>
+          <div id="db-results" hidden>
+            <h3 class="db-results-heading">Your measured requests</h3>
+            <p class="caption">
+              On a narrow screen, scroll each table sideways to inspect all
+              columns.
+            </p>
+            <label class="db-label" for="db-history"
+              >Completed run to inspect (up to four retained in this tab)</label
+            ><select id="db-history"></select>
+            <p id="db-run-label" class="caption"></p>
+            <p id="db-stale" hidden>
+              The controls have changed. These results and their export still
+              describe the selected completed run. Run again to measure the new
+              settings.
+            </p>
+            <div class="db-table-wrap">
+              <table>
+                <caption>
+                  Warm request times in milliseconds. Median is the middle
+                  sample; range shows the smallest and largest. The repeated
+                  requests are individual queries, with no batching or division
+                  by a batch size.
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Query</th>
+                    <th>Engine</th>
+                    <th>Median ms</th>
+                    <th>Range ms</th>
+                    <th>Requests</th>
+                  </tr>
+                </thead>
+                <tbody id="db-summary"></tbody>
+              </table>
+            </div>
+            <p class="db-small">
+              Every returned row matched the reference. These few warm samples
+              describe this run’s spread; they do not establish statistical
+              confidence or a universal winner. Compare the raw requests before
+              treating a small gap as meaningful.
+            </p>
+            <details>
+              <summary>Startup, loading and preparation times</summary>
+              <p>
+                Startup includes lazy imports, download/cache access, Wasm
+                compilation, database creation, and reading the runtime version.
+                Loading includes table creation and all inserts in one
+                transaction. The separate <code>analyze</code> phase gathers
+                planner statistics. Verification and warm-up rows are sums of
+                two request times, one per query; they are not measured query
+                samples.
+              </p>
+              <div class="db-table-wrap">
+                <table>
+                  <caption>
+                    Setup phases in milliseconds. Setup runs sequentially,
+                    DuckDB first.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Engine</th>
+                      <th>Phase</th>
+                      <th>Elapsed ms</th>
+                    </tr>
+                  </thead>
+                  <tbody id="db-phases"></tbody>
+                </table>
+              </div>
+            </details>
+            <details>
+              <summary>Every measured request and its order</summary>
+              <div class="db-table-wrap">
+                <table>
+                  <caption>
+                    Position 1 ran first within that query’s pair. Every request
+                    returned either one order or all 48 revenue groups.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Query</th>
+                      <th>Pair</th>
+                      <th>Position</th>
+                      <th>Engine</th>
+                      <th>Elapsed ms</th>
+                      <th>Answer check</th>
+                    </tr>
+                  </thead>
+                  <tbody id="db-samples"></tbody>
+                </table>
+              </div>
+            </details>
+            <details>
+              <summary>Engine package and runtime versions</summary>
+              <p id="db-versions"></p>
+              <p>
+                Package versions identify the shipped JavaScript wrappers.
+                Runtime versions come from <code>SELECT version()</code> inside
+                each running database. Both belong in a reproducible claim.
+              </p>
+            </details>
+            <button id="db-download" type="button" disabled>
+              Download database run record
+            </button>
+            <p class="caption">
+              JSON includes exact SQL, all INSERT statements, fixture/reference
+              source, asset hashes, configuration, engine versions, browser
+              details, setup phases, every checked sample, and your current
+              interpretation. Earlier completed runs stay available here until
+              you leave the tab. Download both sizes before leaving.
+            </p>
+          </div>
+          <p class="db-callout">
+            Before reading the table as a recommendation: how would the decision
+            change if the order screen needs an index, or the dashboard runs
+            only once after each data load? Query time alone cannot answer
+            either question.
+          </p>
+          <details>
+            <summary>Hint 1 · What should I observe first?</summary>
+            <p>
+              Start with correctness. Then read the lookup and revenue rows
+              separately. Say which median was lower in this run, how large the
+              sample ranges were, and whether a tiny difference could be request
+              overhead.
+            </p>
+            <details>
+              <summary>Hint 2 · What changes with the larger fixture?</summary>
+              <p>
+                Run the second size and retain both records. Compare the change
+                for each engine and each query. If a warm query is fast but
+                loading is expensive, consider how often the customer pays each
+                cost.
+              </p>
+              <details>
+                <summary>Hint 3 · How cautious should the claim be?</summary>
+                <p>
+                  Use “In this browser run, with [size], [query] and
+                  [configuration]…” Then describe the observation. A next
+                  experiment should test one condition that matters for the
+                  customer, such as indexing, more realistic data, or the
+                  intended server deployment.
+                </p>
+              </details>
+            </details>
+          </details>
+        </section>
+        <section id="interpret">
+          <p class="eyebrow section-number">05 / Keep the comparison honest</p>
+          <h2>The same data is only the beginning</h2>
+          <p>
+            The experiment holds the generated rows, SQL requests, output order,
+            single-thread choice and timing boundary constant. It verifies
+            answers and alternates the first engine in measured pairs. Those
+            choices help you explain exactly what was compared.
+          </p>
+          <p>
+            There are still limits. Setup always runs DuckDB first. Both engines
+            remain in memory during measured queries. The engines have different
+            storage layouts, optimisers, runtime defaults and wrappers. Earlier
+            verification and warm-up affect caches; later pairs can see a warmer
+            browser or a busier device. Alternating order helps distribute some
+            effects, but it does not remove them.
+          </p>
+          <p>
+            These are tiny, synthetic, warm, unindexed workloads with one
+            client. No network round trip, persistent disk, concurrent users or
+            native server process is involved. A result here supports a claim
+            about these browser builds and conditions. It cannot establish which
+            deployed database is best for a customer.
+          </p>
+          <p>
+            Later chapters turn these limits into design choices: equivalent
+            work, representative workloads, trustworthy measurement, uncertainty
+            and demand. For now, learning to name a missing condition is part of
+            doing the benchmark well.
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">04 / Design task</p>
-          <h2>Start your benchmark brief</h2>
+          <p class="eyebrow section-number">06 / Independent practice</p>
+          <h2>Write a claim someone else can check</h2>
           <p>
-            Write your initial recommendation and three questions you would
-            investigate before using it in a customer discussion.
+            Complete two runs, one at each size. Use the evidence to write an
+            initial finding for the sales operations team. Include the query,
+            fixture size, browser builds, warm request boundary and observed
+            result. Distinguish query time from startup and loading. Then name
+            one condition you would check next before making a customer
+            recommendation, and explain why it could change the decision.
           </p>
+          <label class="db-label" for="db-claim"
+            >Your conditional finding and next experiment</label
+          ><textarea
+            id="db-claim"
+            placeholder="Under these conditions… I observed… The evidence is… Before recommending a deployment, I would test… because…"
+          ></textarea>
+          <p class="caption">
+            Saved as a draft on this device when storage is available; included
+            with the selected run at export time. A measured record always keeps
+            its original SQL, configuration and samples.
+          </p>
+          <details>
+            <summary>Check your work</summary>
+            <p>
+              Could a colleague recreate your input and timing boundary from the
+              JSON? Have you named one query rather than declaring an overall
+              winner? Have you distinguished this browser baseline from an
+              indexed server deployment? Does your next check address the
+              customer’s decision?
+            </p>
+          </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">05 / Keep the evidence</p>
-          <h2>What your record should contain</h2>
-          <ul>
-            <li>SQL, dataset generator and expected answers</li>
-            <li>Engine configuration and timing boundaries</li>
-            <li>Raw observations and the initial recommendation</li>
-          </ul>
-        </section>
-        <section id="interpret">
-          <p class="eyebrow section-number">06 / Interpret</p>
-          <h2>What the evidence can support</h2>
+          <p class="eyebrow section-number">07 / Sources and method</p>
+          <h2>Keep the experiment open to inspection</h2>
           <p>
-            Browser-build measurements describe those builds and conditions.
-            Later chapters will revisit fairness, workload choice and
-            uncertainty. Native/server runs will supply deployment evidence.
+            The engine code, worker scripts, data bundle and WebAssembly
+            binaries are served by this site. No CDN or database backend is
+            used. Fresh workers isolate each run; Stop, time limits and page
+            exit terminate them. Each successful run closes both engines before
+            releasing its workers.
           </p>
+          <ul>
+            <li>
+              <a href="https://duckdb.org/docs/stable/clients/wasm/overview"
+                >DuckDB-Wasm documentation</a
+              >
+              · npm package <code>@duckdb/duckdb-wasm 1.32.0</code>
+            </li>
+            <li>
+              <a href="https://pglite.dev/docs/">PGlite documentation</a> · npm
+              package <code>@electric-sql/pglite 0.5.13</code>
+            </li>
+            <li>
+              <a
+                href="https://github.com/snowch/benchmarking-lab/blob/main/docs/database-measurement.md"
+                >Detailed measurement contract and reproduction</a
+              >
+            </li>
+            <li>
+              <a href="../engine-licenses.txt"
+                >Engine source and licence notices</a
+              >
+            </li>
+          </ul>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
           <a rel="prev" href="../"
@@ -251,5 +746,6 @@
       </main>
     </div>
     <script type="module" src="/src/chapter.ts"></script>
+    <script type="module" src="/src/database.ts"></script>
   </body>
 </html>

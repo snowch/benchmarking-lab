@@ -1,5 +1,8 @@
 Benchmarking Lab third-party notices
 
+Chapter 2 database engines and wrapper dependencies: see engine-licenses.txt
+(shipped alongside this file).
+
 WABT (WebAssembly Binary Toolkit), npm package wabt 1.0.39
 Project: https://github.com/WebAssembly/wabt
 Copyright the WABT authors. Distributed under Apache-2.0.
