@@ -83,3 +83,20 @@ The `benchmarking-lab-databases-v1` JSON includes build identifier, times, exact
 This experiment holds input values, query text, output order, thread choice and outer timing boundary constant. It does **not** equalize storage layouts, optimizers, physical plans, memory consumption, runtime defaults or wrapper overhead. Sequential setup always starts DuckDB first. Both resident engines compete for the same browser memory budget. Browser caching affects startup; JIT, thermal state, browser work and query warm-up affect later requests. Alternating measured order distributes some order effects but does not remove them.
 
 The fixtures are synthetic, tiny, single-client, warm and unindexed. There is no persistent disk, database network, native server process, customer distribution or concurrent-user traffic. Browser-build findings cannot establish native/server performance, durability, capacity, or customer cost. Indexed workloads, realistic distributions, deployment configuration, repeated independent runs and uncertainty belong in the next benchmark design.
+
+## Reading the comparison plots
+
+Each query has a horizontal plot of the selected completed run. Both engines share
+one zero-based time scale within that query; different queries may have different
+scales. Every measured request is a dot. Vertical offsets keep repeated values
+visible and do not represent another measured quantity. A diamond below each row
+marks the median; the horizontal line spans the observed minimum and maximum.
+The observed range is not a confidence interval.
+
+Exact medians, observed ranges and counts remain available in an expandable table;
+the request table and JSON export retain all samples and their execution order.
+The plots redraw at the available width without scaling down their text. Choosing
+a different completed run updates the plots, exact values and generated finding
+together. Findings describe lower medians in the selected browser run. Equal
+medians at the displayed three-decimal precision are described as equal at that
+precision. They do not establish statistical confidence or a general winner.

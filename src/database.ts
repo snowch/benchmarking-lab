@@ -21,6 +21,7 @@ import {
   type Request,
 } from "./database-model";
 import fixtureSource from "./database-model.ts?raw";
+import { comparisonFinding, createComparisonCharts } from "./database-charts";
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
 const size = element<HTMLSelectElement>("db-size");
@@ -32,6 +33,7 @@ const status = element("db-status");
 const notes = element<HTMLTextAreaElement>("db-notes");
 const claim = element<HTMLTextAreaElement>("db-claim");
 const history = element<HTMLSelectElement>("db-history");
+const showCharts = createComparisonCharts(element("db-plots"));
 interface RunRecord {
   format: "benchmarking-lab-databases-v1";
   startedAt: string;
@@ -234,6 +236,8 @@ function showRecord(record: RunRecord) {
   element("db-results").hidden = false;
   element("db-run-label").textContent =
     `${record.settings.rows.toLocaleString()} orders · ${record.settings.repeats} measured pairs per query · ${new Date(record.completedAt).toLocaleString()}`;
+  showCharts(record.samples);
+  element("db-finding").textContent = comparisonFinding(record.samples);
   const summary = element("db-summary");
   const phases = element("db-phases");
   const samples = element("db-samples");

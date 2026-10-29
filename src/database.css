@@ -517,10 +517,6 @@
 .db-scroll-hint {
   display: none;
 }
-.db-summary-wrap {
-  container-type: inline-size;
-  container-name: db-summary;
-}
 .db-summary-table {
   min-width: 570px;
 }
@@ -858,88 +854,120 @@
   }
 }
 
-/* Keep the same five measured cells readable when the result area is narrow. */
-@container db-summary (max-width: 569px) {
-  .database-page .db-summary-table {
-    display: block;
-    min-width: 0;
-    width: 100%;
-  }
-  .db-summary-table caption {
-    display: block;
-  }
-  .db-summary-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  .db-summary-table tbody {
-    display: grid;
-    gap: 12px;
-  }
-  .database-page .db-summary-table tbody tr {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    padding: 16px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-  }
-  .database-page .db-summary-table tbody tr:nth-child(odd) {
-    border-top: 2px solid var(--green);
-    margin-top: 8px;
-  }
-  .database-page .db-summary-table tbody tr td {
-    padding: 0;
-    border: 0;
-    text-align: left;
-  }
-  .database-page .db-summary-table td:first-child {
-    color: var(--muted);
-    font:
-      12px/1.6 Arial,
-      sans-serif;
-    font-weight: 600;
-  }
-  .database-page .db-summary-table td:nth-child(2) {
-    padding: 4px 0 12px;
-    font:
-      normal 21px/1.4 Georgia,
-      serif;
-  }
-  .database-page .db-summary-table td:nth-child(n + 3) {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 14px;
-    padding-top: 7px;
-    white-space: normal;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-  .database-page .db-summary-table td:nth-child(n + 3)::before {
-    flex: 0 0 auto;
-    color: var(--muted);
-    font:
-      12px/1.6 Arial,
-      sans-serif;
-    text-align: left;
-  }
-  .database-page .db-summary-table td:nth-child(3) {
-    border-top: 1px solid var(--line);
-    font-size: 23px;
-    font-weight: 600;
-  }
-  .db-summary-table td:nth-child(3)::before {
-    content: "Median · ms";
-  }
-  .db-summary-table td:nth-child(4)::before {
-    content: "Range · ms";
-  }
-  .db-summary-table td:nth-child(5)::before {
-    content: "Requests";
-  }
+/* Both engine rows use the same zero-based horizontal scale in each query. */
+.db-plot-guide {
+  margin: 24px 0 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.db-plot-guide strong {
+  display: block;
+  color: var(--ink);
+}
+.db-plot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  padding: 0;
+  margin: 0 0 14px;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+.db-plot-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.db-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.db-legend-median {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  border: 2px solid var(--ink);
+  background: var(--surface);
+}
+.db-legend-range {
+  width: 22px;
+  height: 10px;
+  border-left: 1px solid var(--ink);
+  border-right: 1px solid var(--ink);
+  background: linear-gradient(var(--ink), var(--ink)) center / 100% 1px
+    no-repeat;
+}
+.database-page main .db-comparison-plot {
+  margin: 20px 0;
+  padding: 18px 16px 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--green);
+}
+.db-comparison-plot h4 {
+  margin: 0 0 12px;
+  font:
+    normal 22px/1.3 Georgia,
+    serif;
+  color: var(--ink);
+}
+.db-comparison-plot svg {
+  display: block;
+  width: 100%;
+  height: 238px;
+  overflow: visible;
+}
+.db-plot-grid {
+  stroke: var(--line);
+  stroke-dasharray: 2 4;
+}
+.db-plot-tick {
+  fill: var(--muted);
+  font:
+    11px ui-monospace,
+    monospace;
+}
+.db-plot-duckdb {
+  color: var(--row);
+}
+.db-plot-pglite {
+  color: var(--column);
+}
+.db-plot-engine-name {
+  fill: currentColor;
+  font:
+    600 13px Arial,
+    sans-serif;
+}
+.db-plot-median-label {
+  fill: var(--ink);
+  font:
+    12px ui-monospace,
+    monospace;
+}
+.db-plot-range {
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.db-plot-sample {
+  fill: currentColor;
+  stroke: var(--surface);
+  stroke-width: 0.8;
+}
+.db-plot-median {
+  fill: var(--surface);
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.db-finding {
+  margin: 24px 0;
+  padding-left: 18px;
+  border-left: 2px solid var(--green);
+  font:
+    19px/1.6 Georgia,
+    serif;
 }

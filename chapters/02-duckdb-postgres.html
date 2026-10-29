@@ -626,10 +626,6 @@ Enable JavaScript to inspect all reference rows.</pre>
               <span class="small-label">Evidence from your browser</span>
               <h3 class="db-results-heading">Your measured requests</h3>
             </div>
-            <p class="caption db-scroll-hint">
-              The detailed timing tables below scroll sideways on narrow
-              screens.
-            </p>
             <label class="db-label" for="db-history"
               >Completed run to inspect (up to four retained in this tab)</label
             ><select id="db-history"></select>
@@ -639,35 +635,70 @@ Enable JavaScript to inspect all reference rows.</pre>
               describe the selected completed run. Run again to measure the new
               settings.
             </p>
-            <div
-              class="db-table-wrap db-summary-wrap"
-              role="region"
-              aria-labelledby="db-summary-caption"
-              tabindex="0"
-            >
-              <table
-                class="db-summary-table"
-                role="table"
-                aria-labelledby="db-summary-caption"
+            <p class="db-plot-guide">
+              <strong
+                >Warm request time · milliseconds. Lower is faster.</strong
               >
-                <caption id="db-summary-caption">
-                  Warm request times in milliseconds. Median is the middle
-                  sample; range shows the smallest and largest. The repeated
-                  requests are individual queries, with no batching or division
-                  by a batch size.
-                </caption>
-                <thead role="rowgroup">
-                  <tr role="row">
-                    <th scope="col" role="columnheader">Query</th>
-                    <th scope="col" role="columnheader">Engine</th>
-                    <th scope="col" role="columnheader">Median ms</th>
-                    <th scope="col" role="columnheader">Range ms</th>
-                    <th scope="col" role="columnheader">Requests</th>
-                  </tr>
-                </thead>
-                <tbody id="db-summary" role="rowgroup"></tbody>
-              </table>
-            </div>
+              Both engines share a zero-based scale within each plot; the two
+              queries can have different scales.
+            </p>
+            <ul class="db-plot-legend" aria-label="How to read the plots">
+              <li>
+                <span class="db-legend-dot" aria-hidden="true"></span>One
+                request
+              </li>
+              <li>
+                <span class="db-legend-median" aria-hidden="true"></span>Median
+              </li>
+              <li>
+                <span class="db-legend-range" aria-hidden="true"></span>Observed
+                range
+              </li>
+            </ul>
+            <p class="caption">
+              Dots are separated vertically to keep repeated values visible.
+              Their horizontal position shows the time.
+            </p>
+            <div id="db-plots"></div>
+            <p id="db-finding" class="db-finding"></p>
+            <details id="db-exact-values">
+              <summary>
+                Exact values: medians, observed ranges and request counts
+              </summary>
+              <p class="caption db-scroll-hint">
+                The detailed timing tables below scroll sideways on narrow
+                screens.
+              </p>
+              <div
+                class="db-table-wrap db-summary-wrap"
+                role="region"
+                aria-labelledby="db-summary-caption"
+                tabindex="0"
+              >
+                <table
+                  class="db-summary-table"
+                  role="table"
+                  aria-labelledby="db-summary-caption"
+                >
+                  <caption id="db-summary-caption">
+                    Warm request times in milliseconds. Median is the middle
+                    sample; observed range shows the smallest and largest. The
+                    repeated requests are individual queries, with no batching
+                    or division by a batch size.
+                  </caption>
+                  <thead role="rowgroup">
+                    <tr role="row">
+                      <th scope="col" role="columnheader">Query</th>
+                      <th scope="col" role="columnheader">Engine</th>
+                      <th scope="col" role="columnheader">Median ms</th>
+                      <th scope="col" role="columnheader">Observed range ms</th>
+                      <th scope="col" role="columnheader">Requests</th>
+                    </tr>
+                  </thead>
+                  <tbody id="db-summary" role="rowgroup"></tbody>
+                </table>
+              </div>
+            </details>
             <p class="db-small">
               Every returned row matched the reference. These few warm samples
               describe this run’s spread; they do not establish statistical

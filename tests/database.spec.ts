@@ -1,5 +1,5 @@
 // Copyright © 2026 Christopher Snow
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import {
@@ -8,7 +8,54 @@ import {
   loadStatements,
   queries,
   ENGINES,
+  type Sample,
 } from "../src/database-model";
+
+async function expectPlottedSamples(page: Page, samples: Sample[]) {
+  await expect(page.locator("#db-plots svg")).toHaveCount(2);
+  for (const query of ["lookup", "revenue"]) {
+    const plot = page.locator(`#db-plots [data-query="${query}"]`);
+    const axis = await plot.locator("svg").evaluate((svg: SVGSVGElement) => {
+      const ticks = svg.querySelectorAll<SVGTextElement>(".db-plot-tick");
+      return {
+        origin: Number(ticks[0].getAttribute("x")),
+        end: Number(ticks[ticks.length - 1].getAttribute("x")),
+        maximum: Number(svg.dataset.maximumMs),
+      };
+    });
+    expect(axis.maximum).toBeGreaterThan(0);
+    for (const engine of ENGINES) {
+      const group = plot.locator(`[data-engine="${engine}"]`);
+      const values = samples
+        .filter((sample) => sample.query === query && sample.engine === engine)
+        .map((sample) => sample.elapsedMs);
+      const points = await group.locator("circle").evaluateAll((circles) =>
+        circles.map((circle) => ({
+          value: Number(circle.getAttribute("data-elapsed-ms")),
+          x: Number(circle.getAttribute("cx")),
+        })),
+      );
+      expect(points.map((point) => point.value)).toEqual(values);
+      for (const point of points)
+        expect((point.x - axis.origin) / (axis.end - axis.origin)).toBeCloseTo(
+          point.value / axis.maximum,
+          8,
+        );
+      const sorted = [...values].sort((a, b) => a - b);
+      const middle = sorted[Math.floor(sorted.length / 2)];
+      await expect(group.locator(".db-plot-median")).toHaveAttribute(
+        "data-median-ms",
+        String(middle),
+      );
+      await expect(group.locator(".db-plot-median-label")).toHaveText(
+        `Median ${middle.toFixed(3)} ms`,
+      );
+    }
+  }
+  await expect(page.locator("#db-finding")).toContainText(
+    "in this browser run",
+  );
+}
 
 test("real shipped database engines verify both queries and export the measured snapshot", async ({
   page,
@@ -53,6 +100,8 @@ test("real shipped database engines verify both queries and export the measured 
   const record = JSON.parse(
     await readFile((await (await downloading).path())!, "utf8"),
   );
+  await expectPlottedSamples(page, record.samples);
+  await expect(page.locator("#db-exact-values")).not.toHaveAttribute("open");
   expect(record.format).toBe("benchmarking-lab-databases-v1");
   expect(record.settings.rows).toBe(2000);
   expect(record.settings.sql).toEqual(queries(2000));
@@ -137,6 +186,7 @@ test("real shipped database engines verify both queries and export the measured 
       secondExpected[sample.query as keyof typeof secondExpected],
     );
   await page.locator("#db-history").selectOption("1");
+  await expectPlottedSamples(page, record.samples);
   await expect(page.locator("#db-run-label")).toContainText("2,000 orders");
   await expect(page.locator("#db-stale")).toBeVisible();
   expect(errors).toEqual([]);
@@ -210,8 +260,52 @@ test("phone layout keeps the source readable and preserves the practice draft", 
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await page.locator("#db-summary").scrollIntoViewIfNeeded();
+  await expect(page.locator("#db-plots circle")).toHaveCount(36);
+  for (const width of [390, 320, 768, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect
+      .poll(() =>
+        page.locator("#db-plots svg").evaluateAll((nodes) =>
+          nodes.every((node) => {
+            const svg = node as SVGSVGElement;
+            return Math.abs(svg.viewBox.baseVal.width - svg.clientWidth) < 1;
+          }),
+        ),
+      )
+      .toBe(true);
+    expect(
+      await page.locator("#db-plots svg").evaluateAll((nodes) =>
+        nodes.every((node) => {
+          const svg = node as SVGSVGElement,
+            bounds = svg.getBoundingClientRect();
+          return (
+            Math.abs(svg.getScreenCTM()!.a - 1) < 0.01 &&
+            [...svg.querySelectorAll("text")].every((text) => {
+              const rect = text.getBoundingClientRect();
+              return (
+                rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1
+              );
+            })
+          );
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator("#db-plots").scrollIntoViewIfNeeded();
   await page.screenshot({ path: "/tmp/database-phone-results.png" });
+  await page.locator("#db-exact-values > summary").click();
+  await expect(page.locator("#db-summary")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });
 
 test("the full lesson, schema and SQL remain readable without JavaScript", async ({
