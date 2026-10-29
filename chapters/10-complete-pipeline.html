@@ -142,7 +142,10 @@
         </div>
         <h1>Benchmark the complete pipeline</h1>
         <p class="standfirst">
-          Does changing one component improve the complete customer outcome?
+          We’ll follow uploaded sales records through storage, Kafka and a
+          database until they are ready to query. Customers depend on the whole
+          journey. You’ll learn to test whether changing one part improves the
+          time and reliability of the complete result.
         </p>
         <p class="notice">
           This is a chapter outline. The worked example and executable lab are
@@ -155,7 +158,9 @@
             <li>
               Define end-to-end completion across storage, Kafka and a database.
             </li>
-            <li>Locate queues, backpressure and limiting stages.</li>
+            <li>
+              Find where work waits and which stage limits the whole pipeline.
+            </li>
             <li>
               Measure recovery and verify the final data under continuing load.
             </li>
@@ -165,9 +170,24 @@
           <p class="eyebrow section-number">01 / The question</p>
           <h2>Start with a customer decision</h2>
           <p>
-            Files arrive in object storage, become events, and are written into
-            a database. The customer needs to know when the uploaded records can
-            be queried.
+            Chapter 9 considered technologies with different jobs. Real
+            applications often connect several of them in a
+            <strong>pipeline</strong>: a sequence of steps that turns an input
+            into a useful result. Performance at each step contributes to the
+            customer’s experience.
+          </p>
+          <p>
+            Imagine a customer uploading a file of orders. An ingestion worker,
+            a program that reads and prepares incoming data, turns its records
+            into Kafka events. A second worker writes them to a database. The
+            customer wants to know when all the expected records can be queried
+            correctly.
+          </p>
+          <p>
+            We’ll use this journey to define a complete-system benchmark. By
+            tracking the same records across the steps, we can investigate where
+            work waits, what happens after an interruption, and whether
+            improving one component improves the customer’s outcome.
           </p>
         </section>
         <section id="worked-example">

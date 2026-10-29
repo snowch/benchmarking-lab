@@ -142,8 +142,10 @@
         </div>
         <h1>Beyond databases</h1>
         <p class="standfirst">
-          Which benchmarking methods transfer to Kafka, object storage and
-          search, and what must change?
+          We’ll apply the comparison method to Kafka, which carries streams of
+          events between applications. We’ll also consider object storage and
+          search. You’ll learn which checks carry over from databases and which
+          definitions of success must change for a different technology.
         </p>
         <p class="notice">
           This is a chapter outline. The worked example and executable lab are
@@ -157,7 +159,8 @@
               Define completion and service guarantees for a new technology.
             </li>
             <li>
-              Design a Kafka workload with delivery and backlog measurements.
+              Design a Kafka test that tracks events delivered and work waiting
+              to be read.
             </li>
             <li>Adapt the benchmark brief to object storage or search.</li>
           </ul>
@@ -166,9 +169,24 @@
           <p class="eyebrow section-number">01 / The question</p>
           <h2>Start with a customer decision</h2>
           <p>
-            A customer needs a stream of events delivered within a target time.
-            An acknowledgement to the producer is only one possible measurement
-            point.
+            The earlier chapters gave us a way to define useful work, check
+            answers and measure performance. Those habits also apply outside
+            databases, but the work and the point at which we call it complete
+            can change.
+          </p>
+          <p>
+            <strong>Kafka</strong> stores streams of events, such as new orders,
+            so applications can read and process them. A sending application is
+            a <strong>producer</strong>; a reading application is a
+            <strong>consumer</strong>. A broker is a server that stores and
+            serves those events.
+          </p>
+          <p>
+            Imagine a customer who needs each new order to reach a fulfilment
+            application within a target time. Kafka accepting an event and the
+            application processing it are different milestones. We’ll use this
+            distinction to design a comparison, then consider how success
+            changes again for storing files or returning useful search results.
           </p>
         </section>
         <section id="worked-example">

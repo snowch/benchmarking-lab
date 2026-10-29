@@ -142,8 +142,11 @@
         </div>
         <h1>Are they doing the same work?</h1>
         <p class="standfirst">
-          Are the systems returning equivalent answers under comparable
-          conditions and guarantees?
+          We’ll return to the database comparison and check what each option
+          actually does. A shorter time can come from returning less information
+          or using a different configuration. You’ll learn to spot those
+          differences and decide which conditions matter for a fair customer
+          decision.
         </p>
         <p class="notice">
           This is a chapter outline. The worked example and executable lab are
@@ -165,8 +168,24 @@
           <p class="eyebrow section-number">01 / The question</p>
           <h2>Start with a customer decision</h2>
           <p>
-            One query looks faster, but one database has an index and the other
-            does not. A second comparison returns fewer rows on one side.
+            Chapter 2 checked that both engines returned the expected answers.
+            That is the first part of a fair comparison. We also need to know
+            how each system is configured and what it promises to do before
+            reporting success.
+          </p>
+          <p>
+            Suppose one database finds an order quickly using an
+            <strong>index</strong>, an extra structure that helps locate rows,
+            while the other searches without one. Or suppose a faster report
+            leaves out some orders. Before quoting the time, we need to
+            establish what caused the difference and whether both options meet
+            the customer’s requirements.
+          </p>
+          <p>
+            We’ll inspect a comparison with missing details and build a
+            checklist for the inputs, expected answers, configuration, resources
+            and guarantees. The aim is to define a comparison another person can
+            understand and repeat.
           </p>
         </section>
         <section id="worked-example">

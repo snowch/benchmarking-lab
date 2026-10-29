@@ -142,8 +142,10 @@
         </div>
         <h1>Can you trust your benchmark?</h1>
         <p class="standfirst">
-          Is the runner measuring the intended work, or limiting and distorting
-          it?
+          We’ll look at the program that sends requests and records their times.
+          Its own limits can make a database appear slower or hide work that is
+          waiting. You’ll learn to check the measuring process before using its
+          numbers to compare systems.
         </p>
         <p class="notice">
           This is a chapter outline. The worked example and executable lab are
@@ -154,16 +156,36 @@
           <h2>What you will learn</h2>
           <ul>
             <li>Define what belongs inside the timed interval.</li>
-            <li>Distinguish offered load, completed work and pending work.</li>
-            <li>Identify a load-generator bottleneck and missing latency.</li>
+            <li>
+              Distinguish work submitted, work completed and work still waiting.
+            </li>
+            <li>
+              Recognise when the request-sending program limits the test or
+              omits waiting time.
+            </li>
           </ul>
         </section>
         <section id="question">
           <p class="eyebrow section-number">01 / The question</p>
           <h2>Start with a customer decision</h2>
           <p>
-            A system appears to stop scaling. You need to establish whether the
-            system is saturated or the client cannot generate more work.
+            So far, we’ve focused on the systems and the work we ask them to do.
+            Now we’ll examine the <strong>benchmark runner</strong>: the program
+            that prepares the test, sends requests and collects results. It is
+            part of the experiment and can affect what we observe.
+          </p>
+          <p>
+            Imagine that completed requests stop increasing as we ask for more
+            work. The database might be at its limit, or the runner might be
+            unable to send requests quickly enough. A runner that waits for
+            every response before sending the next request also changes the
+            demand when responses slow down.
+          </p>
+          <p>
+            We’ll inspect where the clock starts and stops, count work sent and
+            completed, and investigate the runner’s limits. These checks help
+            establish whether a measured difference belongs to the systems being
+            compared or to the way we tested them.
           </p>
         </section>
         <section id="worked-example">

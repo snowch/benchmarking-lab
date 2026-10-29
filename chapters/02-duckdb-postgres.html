@@ -143,15 +143,18 @@
         </div>
         <h1>DuckDB <em>or</em> Postgres?</h1>
         <p class="standfirst">
-          A customer asks which database is faster. Start with two useful jobs,
-          run the same work, and make your first claim small enough to defend.
+          We’ll now compare two databases using a small set of sales orders.
+          You’ll ask each to find one order and total the revenue, then check
+          the answers and measure the time. These two everyday jobs show why a
+          useful comparison starts with what the customer needs to do.
         </p>
         <div class="chapter-intro">
           <span class="small-label">Your outcome</span>
           <p>
-            Run two real database engines in this browser, check their answers,
-            separate setup from query time, and write a conditional finding. No
-            database experience is required.
+            Run two real databases in this browser, check their answers,
+            separate preparation from request time, and explain what your
+            measurements support. No database experience is required; the
+            chapter introduces the requests you will run.
           </p>
         </div>
         <noscript
@@ -170,11 +173,24 @@
           <p class="eyebrow section-number">01 / The customer decision</p>
           <h2>Two jobs can lead to different answers</h2>
           <p>
-            A sales operations team needs an order screen and a revenue
-            dashboard. The order screen fetches one known order. The dashboard
-            adds up all orders by month and region. “Faster” is incomplete until
-            you say which job the customer needs, with how much data, and under
-            what conditions.
+            In Chapter 1, you compared two ways to add numbers. Now we’ll use
+            the same method to compare two database engines: programs that store
+            data and answer requests about it. A request to retrieve or
+            calculate information is called a <strong>query</strong>.
+          </p>
+          <p>
+            Imagine a sales operations team choosing a database for an order
+            screen and a revenue dashboard. The screen needs one known order;
+            the dashboard needs totals by month and region. We’ll use these jobs
+            because they ask the engines to do different kinds of work, while
+            keeping the example small enough to inspect.
+          </p>
+          <p>
+            Which engine completes each job sooner on your device? You’ll run
+            both queries on the same orders, check the returned values, and
+            compare the times. This gives you a first finding to investigate in
+            later chapters, where we’ll examine configuration, customer usage
+            and the reliability of the measurements.
           </p>
           <p>
             DuckDB is often used for analytical work: reading and summarising

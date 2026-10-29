@@ -142,8 +142,10 @@
         </div>
         <h1>Choose a representative workload</h1>
         <p class="standfirst">
-          Does your recommendation change when the data and usage resemble the
-          customer’s?
+          We’ll change the orders and requests in our database example to
+          resemble different customers. A system that suits a reporting team may
+          perform differently for an order screen. You’ll learn to choose tests
+          that reflect the customer’s work and explain where the results apply.
         </p>
         <p class="notice">
           This is a chapter outline. The worked example and executable lab are
@@ -154,9 +156,12 @@
           <h2>What you will learn</h2>
           <ul>
             <li>
-              Translate customer operations into a workload specification.
+              Describe the data and requests that represent a customer’s work.
             </li>
-            <li>Vary query mix, selectivity and data distribution.</li>
+            <li>
+              Vary the types of request, the rows they need and how the data is
+              spread.
+            </li>
             <li>Explain which scenarios the evidence represents.</li>
           </ul>
         </section>
@@ -164,9 +169,24 @@
           <p class="eyebrow section-number">01 / The question</p>
           <h2>Start with a customer decision</h2>
           <p>
-            The first comparison uses uniformly distributed orders. The customer
-            has a few unusually large accounts and a mixture of recent-order
-            lookups and historical reports.
+            Once both options meet the same requirements, we need to ask whether
+            the example resembles the customer’s usage. A
+            <strong>workload</strong> describes the data and the work performed
+            on it: which requests arrive, how often they arrive, and which
+            records they touch.
+          </p>
+          <p>
+            Our first database comparison used a simple generated set of orders.
+            Imagine a customer whose orders are concentrated in a few large
+            accounts, with frequent recent-order lookups and occasional
+            historical reports. Changing those proportions can change the work
+            each database must do.
+          </p>
+          <p>
+            We’ll compare several versions of the orders workload and record why
+            each was chosen. This helps you connect a benchmark result to a
+            customer scenario and identify which assumptions need checking
+            before making a recommendation.
           </p>
         </section>
         <section id="worked-example">

@@ -7,10 +7,12 @@ and explain the evidence behind a recommendation. Readers practise both producin
 their own comparison and reviewing somebody else's. Small runnable examples lead
 to independently designed experiments, executable scripts and a final report.
 
-The reader can recognise a loop and an array. Introduce terminal commands,
-configuration files and small scripts as they become useful. Wasm provides the
-initial execution environment. Later infrastructure exercises use real services
-with downloadable harnesses and recorded deployment conditions.
+No prior programming or database experience is required for the opening labs.
+Introduce loops, arrays, queries and other technical terms where readers first
+need them. Introduce terminal commands, configuration files and small scripts as
+they become useful. Wasm provides the initial execution environment. Later
+infrastructure exercises use real services with downloadable harnesses and
+recorded deployment conditions.
 
 ## Chapters
 
@@ -183,6 +185,12 @@ The final project produces a benchmark brief, a self-checking workload, a repeat
 runner, raw observations with recorded conditions, and a concise recommendation.
 Readers also review somebody else's comparison and propose a fair follow-up test.
 The chosen system may be a database, broker or complete pipeline.
+
+Open each chapter by explaining what the reader will examine, why that example
+matters to a customer decision, and what the reader will learn. Connect it to the
+preceding chapter and introduce unfamiliar terms before relying on them. Establish
+the purpose before posing the technical question. Preserve this approach as the
+planned chapters become full labs.
 
 Each chapter needs a concrete question, a small runnable example, an observation
 target, an independent task, progressive hints and an account of what the evidence
