@@ -150,15 +150,17 @@
         </div>
         <h1>Same work,<br /><em>different order.</em></h1>
         <p class="standfirst">
-          Two loops read the same numbers and return the same sum. Does the
-          order of those reads change how long the work takes?
+          We’ll start with a small programming example: two ways to add up the
+          same grid of numbers. You’ll learn how to check the work and measure
+          the time before applying the method to databases.
         </p>
         <div class="chapter-intro">
           <span class="small-label">Your outcome</span>
           <p>
-            Connect a loop’s read order to its memory addresses, run a fair
-            comparison, and write a finding with its conditions. You only need
-            to recognise a loop and an array. Everything runs on your device.
+            Run your first benchmark, check that both approaches do the same
+            job, and explain what the measurements support. You can run the
+            example without writing code; the explanations introduce the code
+            you will see. Everything runs on your device.
           </p>
         </div>
         <noscript
@@ -178,14 +180,27 @@
           <p class="eyebrow section-number">01 / Inspect</p>
           <h2>One grid. Two ways through it.</h2>
           <p>
+            A <strong>programming loop</strong> repeats a set of instructions.
+            Here, the instructions read a number and add it to a running total.
+            Repeating them lets the program add every number in a grid.
+          </p>
+          <p>
             Imagine adding every value in a spreadsheet. You can move across
             each row, or down each column. Both routes visit every cell once.
           </p>
           <p>
-            Our grid is stored as one long array: the first row, then the
-            second, and so on. This is <strong>row-major order</strong>. Moving
-            across a row reads neighbouring values. Moving down a column jumps
-            by the width of the grid.
+            We’ll compare loops that follow these two routes. They read the same
+            numbers and return the same sum, so we can focus on one difference:
+            the order of the reads. Does changing that order change how long the
+            work takes? Starting here makes it easier to inspect the work behind
+            the timing before we compare more complex systems.
+          </p>
+          <p>
+            In memory, our grid is stored as one long <strong>array</strong>, an
+            ordered sequence of values: the first row, then the second, and so
+            on. This arrangement is called <strong>row-major order</strong>.
+            Moving across a row reads neighbouring values. Moving down a column
+            jumps by the width of the grid.
           </p>
           <figure class="memory-address-map" aria-labelledby="memory-map-title">
             <figcaption id="memory-map-title">
