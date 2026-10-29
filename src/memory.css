@@ -1,0 +1,585 @@
+/* Copyright © 2026 Christopher Snow */
+.memory-page main > section {
+  padding-top: 64px;
+}
+.memory-page main > section > p {
+  max-width: 690px;
+}
+.memory-page main > section > h2 {
+  max-width: 730px;
+  text-wrap: balance;
+}
+.memory-page .standfirst {
+  max-width: 730px;
+}
+.memory-chapter-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 22px;
+}
+.memory-chapter-nav a {
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.memory-chapter-nav a:hover {
+  color: var(--green);
+  text-decoration: underline;
+}
+.memory-page .sidebar-note {
+  margin-top: 20px;
+  padding-top: 20px;
+}
+.memory-page main figure {
+  margin-left: 0;
+  margin-right: 0;
+}
+.memory-address-map {
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  margin-top: 34px;
+  padding: 24px 0 8px;
+}
+.memory-address-map figcaption {
+  display: grid;
+  gap: 10px;
+}
+.memory-address-map figcaption > strong {
+  font:
+    normal 27px/1.3 Georgia,
+    serif;
+  letter-spacing: -0.4px;
+  max-width: 590px;
+  text-wrap: balance;
+}
+.memory-map-label {
+  color: var(--muted);
+  font:
+    11px/1.6 Arial,
+    sans-serif;
+  margin: 24px 0 10px;
+}
+.memory-storage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--soft);
+  border: 1px solid var(--line);
+}
+.memory-storage > div {
+  min-width: 0;
+  padding: 13px 12px;
+}
+.memory-storage > div + div {
+  border-left: 1px solid var(--line);
+}
+.memory-storage span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font:
+    10px/1.6 Arial,
+    sans-serif;
+}
+.memory-storage code {
+  font:
+    12px/1.6 ui-monospace,
+    monospace;
+  white-space: nowrap;
+  color: var(--green);
+}
+.memory-routes,
+.memory-work-contract {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  margin: 28px 0 20px;
+}
+.memory-routes > div,
+.memory-work-contract > div {
+  min-width: 0;
+  border-top: 2px solid var(--green);
+  padding-top: 18px;
+}
+.memory-routes > div + div,
+.memory-work-contract > div + div {
+  border-color: var(--accent);
+}
+.memory-routes > div + div .small-label,
+.memory-work-contract > div + div .small-label {
+  color: var(--accent);
+}
+.memory-routes h3 {
+  font:
+    normal 23px/1.3 Georgia,
+    serif;
+  margin: 10px 0 14px;
+}
+.memory-routes code {
+  font:
+    14px/1.8 ui-monospace,
+    monospace;
+  color: var(--green);
+}
+.memory-routes > div + div code {
+  color: var(--accent);
+}
+.memory-routes p,
+.memory-work-contract p {
+  font:
+    13px/1.8 Arial,
+    sans-serif;
+  margin: 10px 0 0;
+}
+.memory-routes p {
+  color: var(--muted);
+}
+.memory-page .figure,
+.memory-page .experiment {
+  border-radius: 2px;
+  padding: 28px;
+}
+.memory-page .trace-layout {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 28px;
+}
+.memory-step-instruction {
+  color: var(--muted);
+  font:
+    12px/1.7 Arial,
+    sans-serif;
+  margin: 0 0 18px;
+}
+.memory-page .segmented {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 18px;
+}
+.memory-page .segmented label {
+  min-height: 38px;
+}
+.memory-page pre {
+  max-width: 100%;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.memory-grid-wrap .memory-map-label {
+  margin-top: 0;
+}
+.memory-page .grid {
+  max-width: 330px;
+}
+.memory-page .grid span {
+  border-radius: 2px;
+}
+.memory-page .trace-readout {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  font:
+    12px/1.8 ui-monospace,
+    monospace;
+  color: var(--green);
+}
+.memory-grid-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: var(--muted);
+  font:
+    10px/1.6 Arial,
+    sans-serif;
+  margin: 10px 0 0;
+}
+.memory-grid-key span::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--green);
+  background: var(--green);
+  margin-right: 6px;
+}
+.memory-grid-key span + span::before {
+  background: var(--soft);
+}
+.memory-page .trace-footer button {
+  min-width: 42px;
+}
+.memory-page .thought {
+  background: transparent;
+  padding: 6px 0 6px 22px;
+  margin: 30px 0;
+}
+.memory-page .experiment {
+  border-top: 3px solid var(--green);
+}
+.memory-lab-intro {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font:
+    13px/1.8 Arial,
+    sans-serif;
+}
+.memory-page .settings-row {
+  grid-template-columns: 1.25fr 1fr;
+  gap: 26px;
+}
+.memory-page .settings-row label {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.memory-page select {
+  background: var(--surface);
+  border-radius: 2px;
+  max-width: 100%;
+}
+.memory-control-help {
+  display: block;
+  color: var(--muted);
+  font:
+    normal 11px/1.7 Arial,
+    sans-serif;
+  margin-top: 9px;
+}
+.memory-page main details {
+  margin: 22px 0;
+  padding: 17px 0 0;
+}
+.memory-page main summary {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.memory-page main details[open] > summary {
+  margin-bottom: 18px;
+}
+.memory-page main details p {
+  font:
+    14px/1.8 Arial,
+    sans-serif;
+}
+.memory-page textarea {
+  border-radius: 2px;
+}
+.memory-run-boundary {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin: 26px 0 22px;
+}
+.memory-run-boundary p {
+  color: var(--muted);
+  font:
+    13px/1.8 Arial,
+    sans-serif;
+  margin: 8px 0 0;
+}
+.memory-page #status {
+  border-left: 3px solid var(--green);
+  background: var(--soft);
+  padding: 14px 16px;
+  font:
+    14px/1.7 Arial,
+    sans-serif;
+  min-height: 52px;
+}
+.memory-page #status.error {
+  border-color: var(--accent);
+  background: var(--warm);
+}
+.memory-page #results {
+  border-top: 1px solid var(--ink);
+  padding-top: 24px;
+  margin-top: 28px;
+}
+.memory-results-heading h3 {
+  font:
+    normal 28px/1.3 Georgia,
+    serif;
+  letter-spacing: -0.4px;
+  margin: 10px 0 22px;
+}
+.memory-page .result-summary {
+  margin: 0 0 28px;
+  border: 0;
+  padding: 0;
+  gap: 26px;
+}
+.memory-page .result-summary > div {
+  border-top: 2px solid var(--row);
+  padding-top: 15px;
+  min-width: 0;
+}
+.memory-page .result-summary > div + div {
+  border-color: var(--column);
+}
+.memory-page .result-summary > div + div .small-label {
+  color: var(--accent);
+}
+.memory-page .result-summary strong {
+  font-size: clamp(29px, 3vw, 37px);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.memory-page .result-summary small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+}
+.memory-page .chart {
+  overflow: visible;
+  padding: 10px 0 0;
+}
+.memory-page #comparison {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 18px;
+  font:
+    18px/1.7 Georgia,
+    serif;
+  margin: 24px 0 18px;
+}
+.memory-page #run-details {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.memory-page table {
+  font-size: 12px;
+}
+.memory-page th,
+.memory-page td {
+  padding: 12px 10px;
+  line-height: 1.5;
+}
+.memory-page th {
+  color: var(--muted);
+  font-size: 11px;
+}
+.memory-page table caption {
+  text-align: left;
+  color: var(--muted);
+  font:
+    12px/1.7 Arial,
+    sans-serif;
+  white-space: normal;
+  padding-bottom: 12px;
+}
+.memory-page .table-scroll {
+  overscroll-behavior: contain;
+}
+.memory-page .table-scroll:focus-visible {
+  outline-offset: 2px;
+}
+.memory-procedure {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin: 30px 0 22px;
+}
+.memory-procedure > div {
+  border-top: 1px solid var(--ink);
+  padding-top: 18px;
+}
+.memory-procedure span {
+  display: block;
+  font:
+    11px/1.7 Arial,
+    sans-serif;
+  color: var(--muted);
+}
+.memory-procedure strong {
+  display: block;
+  margin-top: 8px;
+  font:
+    normal 19px/1.5 Georgia,
+    serif;
+  color: var(--green);
+}
+.memory-procedure p {
+  font:
+    13px/1.8 Arial,
+    sans-serif;
+  margin: 10px 0 0;
+}
+.memory-page .method {
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.memory-reading-guide {
+  margin: 30px 0;
+  border-top: 1px solid var(--ink);
+}
+.memory-reading-guide > div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 26px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.memory-reading-guide dt {
+  color: var(--green);
+  font:
+    normal 20px/1.5 Georgia,
+    serif;
+}
+.memory-reading-guide dd {
+  margin: 0;
+  font:
+    14px/1.8 Arial,
+    sans-serif;
+}
+.memory-page .evidence > p:not(.caption) {
+  max-width: 650px;
+}
+.memory-practice-steps {
+  list-style: none;
+  counter-reset: memory-practice;
+  padding: 0;
+  max-width: 690px;
+  margin: 28px 0;
+}
+.memory-practice-steps li {
+  counter-increment: memory-practice;
+  position: relative;
+  padding: 15px 0 15px 42px;
+  border-top: 1px solid var(--line);
+  font:
+    15px/1.8 Arial,
+    sans-serif;
+}
+.memory-practice-steps li::before {
+  content: "0" counter(memory-practice);
+  position: absolute;
+  top: 18px;
+  left: 0;
+  color: var(--accent);
+  font:
+    12px/1.8 ui-monospace,
+    monospace;
+}
+.memory-practice-steps strong {
+  color: var(--green);
+}
+.memory-page .references ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 24px;
+}
+.memory-page .references li {
+  border-top: 1px solid var(--line);
+  padding: 13px 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1100px) {
+  .memory-page .trace-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .memory-grid-wrap {
+    max-width: 350px;
+  }
+  .memory-storage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .memory-storage > div:nth-child(3) {
+    border-left: 0;
+  }
+  .memory-storage > div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+}
+@media (max-width: 750px) {
+  .memory-page main > section {
+    padding-top: 46px;
+  }
+  .memory-chapter-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 20px;
+  }
+  .memory-page .figure,
+  .memory-page .experiment {
+    padding: 22px;
+  }
+  .memory-page .small-label {
+    font-size: 10px;
+  }
+  .memory-address-map figcaption > strong {
+    font-size: 25px;
+  }
+}
+@media (max-width: 550px) {
+  .memory-page h1 {
+    font-size: clamp(40px, 11.9vw, 58px);
+    letter-spacing: -1.8px;
+    line-height: 1.1;
+  }
+  .memory-page .figure,
+  .memory-page .experiment {
+    padding: 18px 16px;
+  }
+  .memory-page .figure-heading {
+    gap: 8px;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .memory-routes,
+  .memory-work-contract,
+  .memory-procedure,
+  .memory-page .settings-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+  .memory-routes > div,
+  .memory-work-contract > div {
+    padding-top: 15px;
+  }
+  .memory-routes h3 {
+    font-size: 22px;
+    margin: 8px 0 10px;
+  }
+  .memory-storage > div {
+    padding: 12px 10px;
+  }
+  .memory-storage code {
+    font-size: 11px;
+  }
+  .memory-page .trace-footer {
+    gap: 10px;
+  }
+  .memory-page #pseudocode {
+    font-size: 11px;
+    padding: 12px;
+  }
+  .memory-page .trace-footer button {
+    padding: 10px;
+  }
+  .memory-page .run-row {
+    gap: 12px;
+  }
+  .memory-page .run-row button,
+  .memory-page #download,
+  .memory-page #cancel {
+    width: 100%;
+  }
+  .memory-page .result-summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .memory-page .result-summary strong {
+    font-size: 34px;
+  }
+  .memory-page .result-summary small {
+    display: inline;
+    margin-left: 4px;
+  }
+  .memory-reading-guide > div {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .memory-page .chart {
+    margin-left: -6px;
+    margin-right: -6px;
+  }
+}

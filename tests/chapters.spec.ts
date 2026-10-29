@@ -1,6 +1,35 @@
 // Copyright © 2026 Christopher Snow
 import { test, expect } from "@playwright/test";
 
+test("chapter 1 has one book menu and separate in-chapter links across screen sizes", async ({
+  page,
+}) => {
+  for (const width of [1280, 1024, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("./");
+    await expect(page.locator("aside nav")).toHaveCount(1);
+    await expect(
+      page.locator('aside nav[aria-label="Book chapters"] a'),
+    ).toHaveCount(12);
+    await expect(page.locator('aside a[href="#follow"]')).toHaveCount(0);
+    const contents = page.locator(".book-contents");
+    if (width > 750) await expect(contents).toHaveAttribute("open", "");
+    else {
+      await expect(contents).not.toHaveAttribute("open");
+      await page.getByText("Book contents", { exact: true }).click();
+      await expect(page.locator('aside [aria-current="page"]')).toBeVisible();
+    }
+    await page.locator('main nav a[href="#follow"]').click();
+    await expect(page).toHaveURL(/#follow$/);
+    await expect(page.locator("#follow")).toBeInViewport();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+});
+
 test("working chapters and outlines open and reload without JavaScript", async ({
   browser,
 }) => {

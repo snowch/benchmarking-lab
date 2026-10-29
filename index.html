@@ -11,8 +11,9 @@
     <title>Same work, different order · Benchmarking Lab</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/memory.css" />
   </head>
-  <body>
+  <body class="memory-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
       <a class="brand" href="./"
@@ -32,16 +33,7 @@
       <aside class="sidebar">
         <p class="eyebrow">The interactive book</p>
         <p class="sidebar-title">Measure.<br />Then explain.</p>
-        <nav aria-label="Chapter sections">
-          <a class="chapter-link" href="#main"
-            ><span>01</span>Same work,<br />different order</a
-          >
-          <a href="#follow">Follow the reads</a>
-          <a href="#experiment">Run the experiment</a>
-          <a href="#interpret">Read the evidence</a>
-          <a href="#practice">Try it yourself</a>
-        </nav>
-        <details class="roadmap book-contents">
+        <details class="book-contents" open>
           <summary>Book contents</summary>
           <nav aria-label="Book chapters">
             <ol class="book-list">
@@ -145,7 +137,6 @@
               </li>
             </ol>
           </nav>
-          <p>Chapters 3–12 are outlines; their labs are planned.</p>
         </details>
         <div class="sidebar-note">
           <span class="live-dot"></span> Runs on your device
@@ -154,8 +145,8 @@
       </aside>
       <main id="main" tabindex="-1">
         <div class="chapter-meta">
-          <span>Chapter 01</span><span>Memory access</span
-          ><span>2 working labs · 10 outlines</span>
+          <span>Chapter 01</span><span>Working lab</span
+          ><span>Memory access</span>
         </div>
         <h1>Same work,<br /><em>different order.</em></h1>
         <p class="standfirst">
@@ -163,11 +154,11 @@
           order of those reads change how long the work takes?
         </p>
         <div class="chapter-intro">
-          <span class="small-label">In this chapter</span>
+          <span class="small-label">Your outcome</span>
           <p>
-            Follow a loop through memory, compare two measured runs, and decide
-            what the evidence supports. You only need to recognise a loop and an
-            array.
+            Connect a loop’s read order to its memory addresses, run a fair
+            comparison, and write a finding with its conditions. You only need
+            to recognise a loop and an array. Everything runs on your device.
           </p>
         </div>
         <noscript
@@ -176,6 +167,12 @@
             step through the diagram and run benchmarks.
           </p></noscript
         >
+        <nav class="memory-chapter-nav" aria-label="In this chapter">
+          <a href="#follow">Follow the reads</a>
+          <a href="#experiment">Run the experiment</a>
+          <a href="#interpret">Read the evidence</a>
+          <a href="#practice">Try it yourself</a>
+        </nav>
 
         <section id="follow">
           <p class="eyebrow section-number">01 / Inspect</p>
@@ -190,13 +187,56 @@
             across a row reads neighbouring values. Moving down a column jumps
             by the width of the grid.
           </p>
+          <figure class="memory-address-map" aria-labelledby="memory-map-title">
+            <figcaption id="memory-map-title">
+              <span class="small-label"
+                >The mechanism · illustrative 4 × 4 grid</span
+              >
+              <strong>A grid on the page. A sequence in memory.</strong>
+            </figcaption>
+            <p class="memory-map-label">Array indices in storage order →</p>
+            <div
+              class="memory-storage"
+              aria-label="Row zero contains indices 0 to 3, row one 4 to 7, row two 8 to 11, and row three 12 to 15, stored consecutively."
+            >
+              <div><span>Row 0</span><code>0 · 1 · 2 · 3</code></div>
+              <div><span>Row 1</span><code>4 · 5 · 6 · 7</code></div>
+              <div><span>Row 2</span><code>8 · 9 · 10 · 11</code></div>
+              <div><span>Row 3</span><code>12 · 13 · 14 · 15</code></div>
+            </div>
+            <div class="memory-routes">
+              <div>
+                <span class="small-label">Across rows</span>
+                <h3>Read the neighbours</h3>
+                <code>0 → 1 → 2 → 3 → …</code>
+                <p>First four reads: advance one element, or four bytes.</p>
+              </div>
+              <div>
+                <span class="small-label">Down columns</span>
+                <h3>Jump by the row width</h3>
+                <code>0 → 4 → 8 → 12 → …</code>
+                <p>
+                  First four reads: advance four elements, or sixteen bytes.
+                </p>
+              </div>
+            </div>
+            <p class="caption">
+              The numbers are addresses expressed as array indices, not stored
+              values or timings. Both complete routes visit all sixteen
+              positions once.
+            </p>
+          </figure>
           <div class="figure">
             <div class="figure-heading">
-              <span class="small-label">Follow the addresses</span
+              <span class="small-label">Step through the reads</span
               ><span class="badge">Explanatory model · 4 × 4</span>
             </div>
             <div class="trace-layout">
               <div>
+                <p class="memory-step-instruction">
+                  Choose an order, then use the arrows or slider to follow each
+                  read.
+                </p>
                 <fieldset id="trace-controls" disabled>
                   <legend>Read order</legend>
                   <div class="segmented">
@@ -220,18 +260,25 @@
                   source shown below.
                 </p>
               </div>
-              <div>
+              <div class="memory-grid-wrap">
+                <p class="memory-map-label">Array index · arranged as a grid</p>
                 <div
                   id="grid"
                   class="grid"
                   role="img"
                   aria-label="The sixteen array indices, arranged in four rows"
                 >
-                  0 · 1 · 2 · 3<br />4 · 5 · 6 · 7<br />8 · 9 · 10 · 11<br />12
-                  · 13 · 14 · 15
+                  <span class="current">0</span><span>1</span><span>2</span
+                  ><span>3</span><span>4</span><span>5</span><span>6</span
+                  ><span>7</span><span>8</span><span>9</span><span>10</span
+                  ><span>11</span><span>12</span><span>13</span><span>14</span
+                  ><span>15</span>
                 </div>
                 <p id="trace-readout" class="trace-readout" aria-live="polite">
                   Read 1 of 16 · array index 0 · byte offset 0
+                </p>
+                <p class="memory-grid-key">
+                  <span>Current read</span><span>Already read</span>
                 </p>
               </div>
             </div>
@@ -277,6 +324,22 @@
             strides. A <strong>stride</strong> is the distance between
             successive elements in a direction.
           </p>
+          <div class="memory-work-contract">
+            <div>
+              <span class="small-label">Keep the work equal</span>
+              <p>
+                The original scalar Wasm loop reads every cell once per pass.
+                Both orders share one grid; only the address strides change.
+              </p>
+            </div>
+            <div>
+              <span class="small-label">Change the question</span>
+              <p>
+                Choose a grid size and compare the two orders within that run. A
+                larger grid also means more total work.
+              </p>
+            </div>
+          </div>
           <aside class="thought">
             <span>Before you run</span>
             <p>
@@ -290,22 +353,36 @@
               <span class="small-label">Experiment 01</span
               ><span class="badge">Measured · WebAssembly</span>
             </div>
+            <p class="memory-lab-intro">
+              Start with the original source. Keep this tab visible and let the
+              run finish.
+            </p>
             <fieldset id="settings" disabled>
               <legend class="sr-only">Benchmark settings</legend>
               <div class="settings-row">
                 <label for="size"
-                  >Grid size<select id="size">
+                  >Grid size<select
+                    id="size"
+                    aria-describedby="memory-size-help"
+                  >
                     <option value="64">64 × 64 · 16 KiB</option>
                     <option value="256">256 × 256 · 256 KiB</option>
                     <option value="1024" selected>1,024 × 1,024 · 4 MiB</option>
-                    <option value="2048">2,048 × 2,048 · 16 MiB</option>
-                  </select></label
+                    <option value="2048">2,048 × 2,048 · 16 MiB</option></select
+                  ><span id="memory-size-help" class="memory-control-help"
+                    >The size shown is the grid’s data footprint.</span
+                  ></label
                 ><label for="samples"
-                  >Sample pairs<select id="samples">
+                  >Sample pairs<select
+                    id="samples"
+                    aria-describedby="memory-samples-help"
+                  >
                     <option value="10">10 pairs</option>
                     <option value="20" selected>20 pairs</option>
-                    <option value="40">40 pairs</option>
-                  </select></label
+                    <option value="40">40 pairs</option></select
+                  ><span id="memory-samples-help" class="memory-control-help"
+                    >Each pair measures both traversal orders.</span
+                  ></label
                 >
               </div>
               <details class="code-details">
@@ -334,6 +411,14 @@
                   Restore original source
                 </button>
               </details>
+              <div class="memory-run-boundary">
+                <span class="small-label">The timing boundary</span>
+                <p>
+                  Each sample times one JavaScript → Wasm call containing a
+                  batch of complete grid passes. Setup, warm-up, calibration,
+                  checksum checks and drawing sit outside that timer.
+                </p>
+              </div>
               <div class="run-row">
                 <button id="run" class="primary" type="button">
                   <span aria-hidden="true">▶</span> Run benchmark</button
@@ -351,6 +436,10 @@
                 Settings or source changed. These results belong to the previous
                 run.
               </p>
+              <div class="memory-results-heading">
+                <span class="small-label">Your measured evidence</span>
+                <h3>Two distributions. One time scale.</h3>
+              </div>
               <div id="summary" class="result-summary"></div>
               <div id="chart" class="chart"></div>
               <p class="caption">
@@ -363,8 +452,20 @@
               <p id="run-details" class="caption"></p>
               <details>
                 <summary>Inspect every sample</summary>
-                <div class="table-scroll">
+                <p class="caption">
+                  All accepted batches are retained. On narrow screens, scroll
+                  the table sideways; focus it to use the arrow keys.
+                </p>
+                <div
+                  class="table-scroll"
+                  role="region"
+                  aria-label="Raw benchmark samples"
+                  tabindex="0"
+                >
                   <table>
+                    <caption>
+                      Measured batches, normalised per complete grid pass
+                    </caption>
                     <thead>
                       <tr>
                         <th>Pair</th>
@@ -381,6 +482,24 @@
               <button id="download" type="button">
                 Download run record (.json)
               </button>
+            </div>
+          </div>
+          <div class="memory-procedure" aria-label="How a run is prepared">
+            <div>
+              <span>Before sampling</span
+              ><strong>Prepare → warm → calibrate</strong>
+              <p>
+                Fill one shared grid. Warm both orders, then choose a common
+                number of passes per batch.
+              </p>
+            </div>
+            <div>
+              <span>During sampling</span
+              ><strong>Time → check → alternate</strong>
+              <p>
+                Time each batch, verify its sum, and alternate which order runs
+                first in the next pair.
+              </p>
             </div>
           </div>
           <details class="method">
@@ -436,6 +555,29 @@
             from one run; it is not a confidence interval or proof of a general
             speedup.
           </p>
+          <dl class="memory-reading-guide">
+            <div>
+              <dt>The middle</dt>
+              <dd>
+                Read each median as milliseconds per complete pass. Lower means
+                less elapsed time for that run’s work.
+              </dd>
+            </div>
+            <div>
+              <dt>The spread</dt>
+              <dd>
+                Each dot is a batch average per pass. Notice interruptions,
+                clusters and overlap before quoting a ratio.
+              </dd>
+            </div>
+            <div>
+              <dt>The ratio</dt>
+              <dd>
+                Column median ÷ row median. Above 1 means columns took longer;
+                below 1 means rows took longer. Near 1 means similar medians.
+              </dd>
+            </div>
+          </dl>
           <div class="evidence">
             <span class="small-label">A claim you can defend</span>
             <p>
@@ -454,10 +596,24 @@
           <p class="eyebrow section-number">04 / Experiment again</p>
           <h2>Try to change your conclusion.</h2>
           <p>
-            Run the 64 × 64 and 2,048 × 2,048 grids with the original source.
-            Download each result before the next run. Compare the ratio and the
-            sample spread. Then repeat the comparison.
+            Does the difference depend on how much data you read? Change one
+            condition at a time and keep the evidence from each run.
           </p>
+          <ol class="memory-practice-steps">
+            <li>
+              <strong>Make a small-grid record.</strong> Run 64 × 64 with the
+              original source and download the result.
+            </li>
+            <li>
+              <strong>Increase the footprint.</strong> Run 2,048 × 2,048 with
+              the same source and sample-pair count. Download this result too.
+            </li>
+            <li>
+              <strong>Repeat both runs.</strong> Compare the column-to-row ratio
+              and sample spread within each size. Record whether the pattern
+              repeats.
+            </li>
+          </ol>
           <p>
             <strong>Your task:</strong> explain whether traversal order mattered
             more for one grid on your device. Name one thing these timings

@@ -194,6 +194,29 @@ test("trace, phone layout, theme and hints stay usable", async ({ page }) => {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  await page.setViewportSize({ width: 320, height: 844 });
+  await expect(page.locator("#chart circle")).toHaveCount(40);
+  await expect(async () => {
+    const bounds = await page.locator("#chart svg").evaluate((node) => {
+      const svg = node as SVGSVGElement;
+      const rect = svg.getBoundingClientRect();
+      return {
+        width: rect.width,
+        viewWidth: svg.viewBox.baseVal.width,
+        labelsFit: [...svg.querySelectorAll("text")].every((text) => {
+          const label = text.getBoundingClientRect();
+          return label.left >= rect.left - 1 && label.right <= rect.right + 1;
+        }),
+      };
+    });
+    expect(bounds.viewWidth).toBeLessThanOrEqual(bounds.width + 1);
+    expect(bounds.labelsFit).toBe(true);
+  }).toPass();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });
 
 test("the reading path and styling work without JavaScript", async ({

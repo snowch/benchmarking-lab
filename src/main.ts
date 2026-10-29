@@ -1,5 +1,5 @@
 // Copyright © 2026 Christopher Snow
-import "./theme";
+import "./chapter";
 import original from "./kernel.wat?raw";
 import { median } from "./stats";
 import type { Result, Settings } from "./benchmark";
@@ -141,9 +141,9 @@ function renderChart(value: Result) {
   const rowMedian = median(row),
     columnMedian = median(column);
   const max = Math.max(...row, ...column) * 1.08;
-  const width = Math.max(280, Math.min(640, el("chart").clientWidth));
+  const width = Math.max(220, Math.min(640, el("chart").clientWidth));
   const left = width < 500 ? 90 : 120;
-  const right = width - 25;
+  const right = width - (width < 500 ? 30 : 25);
   const ticks = width < 500 ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1];
   const x = (v: number) => left + (v / max) * (right - left);
   const marks = (values: number[], y: number, klass: string) =>
@@ -286,4 +286,3 @@ el("hint").onclick = () => {
       : `Show hint · ${hintIndex + 1} of 5`;
   el<HTMLButtonElement>("hint").disabled = hintIndex === 5;
 };
-el("build").textContent = __BUILD__;
