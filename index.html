@@ -16,7 +16,7 @@
   <body class="memory-page">
     <a class="skip" href="#main">Skip to chapter</a>
     <header class="header">
-      <a class="brand" href="./"
+      <a class="brand" href="./chapters/start-here.html"
         ><svg viewBox="0 0 30 30" aria-hidden="true">
           <path d="M5 24V15m10 9V6m10 18V11" /></svg
         >Benchmarking Lab</a
@@ -37,6 +37,12 @@
           <summary>Book contents</summary>
           <nav aria-label="Book chapters">
             <ol class="book-list">
+              <li>
+                <a href="./chapters/start-here.html"
+                  ><span aria-hidden="true">→</span
+                  ><span>Start here<small>Introduction</small></span></a
+                >
+              </li>
               <li>
                 <a href="./" aria-current="page"
                   ><span>01</span
@@ -148,6 +154,9 @@
           <span>Chapter 01</span><span>Working lab</span
           ><span>Memory access</span>
         </div>
+        <p class="caption">
+          <a href="./chapters/start-here.html">New to the book? Start here →</a>
+        </p>
         <h1>Same work,<br /><em>different order.</em></h1>
         <p class="standfirst">
           We’ll start with a small programming example: two ways to add up the
@@ -716,7 +725,10 @@
             </li>
           </ul>
         </section>
-        <nav class="chapter-pagination" aria-label="Next chapter">
+        <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <a rel="prev" href="./chapters/start-here.html"
+            ><span class="small-label">Introduction</span>← Start here</a
+          >
           <a rel="next" href="./chapters/02-duckdb-postgres.html"
             ><span class="small-label">Next · 02</span>DuckDB or Postgres? →</a
           >

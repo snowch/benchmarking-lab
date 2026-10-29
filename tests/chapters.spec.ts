@@ -10,7 +10,7 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
     await expect(page.locator("aside nav")).toHaveCount(1);
     await expect(
       page.locator('aside nav[aria-label="Book chapters"] a'),
-    ).toHaveCount(12);
+    ).toHaveCount(13);
     await expect(page.locator('aside a[href="#follow"]')).toHaveCount(0);
     const contents = page.locator(".book-contents");
     if (width > 750) await expect(contents).toHaveAttribute("open", "");
@@ -30,26 +30,57 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
   }
 });
 
-test("working chapters and outlines open and reload without JavaScript", async ({
+test("introduction, working chapters and outlines open and reload without JavaScript", async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:4173/benchmarking-lab/");
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto(
+    "http://127.0.0.1:4173/benchmarking-lab/chapters/start-here.html",
+  );
+  await expect(page.locator("h1")).toContainText("Start here");
+  await expect(page.locator("#finished-comparison")).toBeVisible();
+  await expect(
+    page.locator('nav[aria-label="Book chapters"] [aria-current="page"]'),
+  ).toHaveAttribute("href", "start-here.html");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.reload();
+  await page.locator('a[rel="next"]').click();
+  await expect(page.locator("#run")).toBeDisabled();
+  await page.locator('a[rel="prev"]').click();
+  await expect(page.locator("h1")).toContainText("Start here");
+  await page.locator('a[rel="next"]').click();
   await page.getByText("Book contents", { exact: true }).click();
   const links = await page
     .locator('nav[aria-label="Book chapters"] a')
     .evaluateAll((nodes) =>
-      nodes.map((node) => ({
-        href: (node as HTMLAnchorElement).href,
-        text: node.textContent,
-      })),
+      nodes
+        .filter(
+          (node) =>
+            !(node as HTMLAnchorElement).href.endsWith("/start-here.html"),
+        )
+        .map((node) => ({
+          href: (node as HTMLAnchorElement).href,
+          text: node.textContent,
+        })),
     );
   expect(links).toHaveLength(12);
   for (let i = 1; i < links.length; i++) {
     const response = await page.goto(links[i].href);
     expect(response?.status()).toBe(200);
     await expect(page.locator("h1")).toHaveCount(1);
+    await expect(page.locator('aside a[href="start-here.html"]')).toHaveCount(
+      1,
+    );
+    await expect(page.locator(".brand")).toHaveAttribute(
+      "href",
+      "start-here.html",
+    );
     if (i > 1) {
       await expect(page.locator("main > .notice")).toContainText(
         "chapter outline",
@@ -86,7 +117,7 @@ test("working chapters and outlines open and reload without JavaScript", async (
   await context.close();
 });
 
-test("outlines work on phones with shared theme and no benchmark loading", async ({
+test("introduction and outlines work on phones with shared theme and no benchmark loading", async ({
   page,
 }) => {
   const errors: string[] = [],
@@ -94,9 +125,16 @@ test("outlines work on phones with shared theme and no benchmark loading", async
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("request", (request) => requests.push(request.url()));
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("./chapters/10-complete-pipeline.html");
+  await page.goto("./chapters/start-here.html");
   await expect(page.locator(".book-contents")).not.toHaveAttribute("open");
   await page.getByRole("button", { name: "Switch to dark theme" }).click();
+  await page.getByText("Book contents", { exact: true }).click();
+  await page
+    .locator(
+      'nav[aria-label="Book chapters"] a[href="10-complete-pipeline.html"]',
+    )
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByText("Book contents", { exact: true }).click();
   await page
     .locator(

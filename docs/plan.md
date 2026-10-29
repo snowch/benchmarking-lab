@@ -14,6 +14,16 @@ they become useful. Wasm provides the initial execution environment. Later
 infrastructure exercises use real services with downloadable harnesses and
 recorded deployment conditions.
 
+## Introduction
+
+The unnumbered [Start here](../chapters/start-here.html) page introduces the
+customer decision, the skills readers will practise, the route through the book
+and the evidence they will produce. It takes about three minutes to read and
+leads directly to Chapter 1. No prior programming or database experience is
+required for the opening labs. It distinguishes the two working browser labs
+from the planned infrastructure chapters. Keep it linked from every book menu
+and from Chapter 1 without changing the numbered chapters or their URLs.
+
 ## Chapters
 
 | Chapter                                                                                  | Question                                                                                        | Status               |

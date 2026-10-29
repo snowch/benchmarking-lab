@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Learn to design, run and explain benchmarks that help customers compare technology. Start with browser experiments and build toward your own evidence-based recommendation."
+    />
+    <title>Start here · Benchmarking Lab</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="outline-page introduction-page">
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="start-here.html"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      ><span class="tagline">A field guide to performance</span
+      ><button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme</button
+      ><a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <details class="book-contents" open>
+          <summary>Book contents</summary>
+          <nav aria-label="Book chapters">
+            <ol class="book-list">
+              <li>
+                <a href="start-here.html" aria-current="page"
+                  ><span aria-hidden="true">→</span
+                  ><span>Start here<small>Introduction</small></span></a
+                >
+              </li>
+              <li>
+                <a href="../"
+                  ><span>01</span
+                  ><span
+                    >Same work, different order<small>Working lab</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="02-duckdb-postgres.html"
+                  ><span>02</span
+                  ><span>DuckDB or Postgres?<small>Working lab</small></span></a
+                >
+              </li>
+              <li>
+                <a href="03-equivalent-work.html"
+                  ><span>03</span
+                  ><span
+                    >Are they doing the same work?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="04-representative-workloads.html"
+                  ><span>04</span
+                  ><span
+                    >Choose a representative workload<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="05-trust-the-benchmark.html"
+                  ><span>05</span
+                  ><span
+                    >Can you trust your benchmark?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="06-differences-and-uncertainty.html"
+                  ><span>06</span
+                  ><span
+                    >How much faster—and how certain?<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="07-beyond-the-average.html"
+                  ><span>07</span
+                  ><span>Beyond the average<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="08-demand-and-scaling.html"
+                  ><span>08</span
+                  ><span
+                    >What happens as demand grows?<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="09-beyond-databases.html"
+                  ><span>09</span
+                  ><span>Beyond databases<small>Outline</small></span></a
+                >
+              </li>
+              <li>
+                <a href="10-complete-pipeline.html"
+                  ><span>10</span
+                  ><span
+                    >Benchmark the complete pipeline<small>Outline</small></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="11-capacity-and-cost.html"
+                  ><span>11</span
+                  ><span
+                    >From benchmark results to capacity and cost<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="12-defensible-comparison.html"
+                  ><span>12</span
+                  ><span
+                    >Present a comparison you can defend<small
+                      >Outline</small
+                    ></span
+                  ></a
+                >
+              </li>
+            </ol>
+          </nav>
+        </details>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Introduction</span><span>Your guide to the book</span
+          ><span>About 3 minutes</span>
+        </div>
+        <h1>Start here.<br /><em>Compare with purpose.</em></h1>
+        <p class="standfirst">
+          A customer asks, “Which option should we choose?” A performance chart
+          might help—but only if it measures work that matters to them. This
+          book teaches you to design, run and explain comparisons that support
+          that decision.
+        </p>
+        <div class="chapter-intro">
+          <span class="small-label">Your outcome</span>
+          <p>
+            Build a repeatable benchmark and a concise recommendation supported
+            by evidence. Start with a small experiment you can run in your
+            browser, then develop the skills to design your own comparisons.
+          </p>
+        </div>
+        <section id="why-benchmark">
+          <p class="eyebrow section-number">01 / The purpose</p>
+          <h2>Give “faster” a useful meaning</h2>
+          <p>
+            Imagine a slide says one database is “twice as fast.” Before using
+            that claim in a customer conversation, you need to know what it did,
+            whether the answers were correct, and how closely the test resembles
+            the customer’s work.
+          </p>
+          <p>
+            A <strong>benchmark</strong> is a repeatable test of performance
+            under stated conditions. A useful comparison asks both options to
+            meet the customer’s requirements, records what happened, and gives
+            someone else enough information to check the finding.
+          </p>
+          <p>
+            You’ll practise turning a broad claim into a specific question:
+            which option completes this work correctly, within the required
+            time, using which resources? Later, you’ll connect that evidence to
+            capacity and cost.
+          </p>
+        </section>
+        <section id="learn">
+          <p class="eyebrow section-number">02 / The skills</p>
+          <h2>Run, design and explain</h2>
+          <p>
+            The book is for people who need to compare technology and explain
+            the result, including sales teams working with customers and
+            technical colleagues. You’ll learn to:
+          </p>
+          <ul>
+            <li>
+              <strong>Run a comparison.</strong> Inspect the work, check the
+              answers and collect real measurements.
+            </li>
+            <li>
+              <strong>Design your own benchmark.</strong> Choose a customer
+              workload, define success and build a repeatable test.
+            </li>
+            <li>
+              <strong>Review a claim.</strong> Find missing conditions,
+              recognise uncertainty and propose a useful follow-up experiment.
+            </li>
+            <li>
+              <strong>Explain a recommendation.</strong> Connect performance,
+              cost and tradeoffs to the customer’s decision.
+            </li>
+          </ul>
+        </section>
+        <section id="route">
+          <p class="eyebrow section-number">03 / The route</p>
+          <h2>Start small. Build the method.</h2>
+          <ol class="outline-steps">
+            <li>
+              <strong>Try a first experiment.</strong>
+              <a href="../"
+                >Chapter 1 compares two ways to add a grid of numbers.</a
+              >
+              The work is small enough to follow before you measure it.
+            </li>
+            <li>
+              <strong>Compare real databases.</strong>
+              <a href="02-duckdb-postgres.html"
+                >Chapter 2 runs DuckDB and Postgres in your browser.</a
+              >
+              You’ll find an order and total revenue, then examine what the
+              timings support.
+            </li>
+            <li>
+              <strong>Improve the comparison.</strong> Chapters 3–8 develop fair
+              tests, representative work, reliable measurements and comparisons
+              under growing demand.
+            </li>
+            <li>
+              <strong>Apply the method more widely.</strong> Chapters 9–10
+              explore Kafka, other data technologies and complete pipelines with
+              several connected parts.
+            </li>
+            <li>
+              <strong>Support a decision.</strong> Chapters 11–12 connect the
+              evidence to capacity, total cost of ownership and a recommendation
+              another person can review.
+            </li>
+          </ol>
+          <p class="caption">
+            Chapters 1 and 2 have working browser labs. Chapters 3–12 currently
+            provide outlines and design tasks; their executable labs are
+            planned.
+          </p>
+        </section>
+        <section id="starting-point">
+          <p class="eyebrow section-number">04 / Your starting point</p>
+          <h2>Bring curiosity</h2>
+          <p>
+            You don’t need programming or database experience for the opening
+            labs. We’ll introduce the code and technical terms as they become
+            useful. You can run the first examples without writing code, then
+            try changes when you are ready.
+          </p>
+          <p>
+            The first two labs run on your device using WebAssembly, a way to
+            run compiled programs inside a browser. Enable JavaScript to use
+            them; no installation or account is needed. The chapters remain
+            readable without running an experiment.
+          </p>
+          <p>
+            Later infrastructure labs will use real services and downloadable
+            test programs. Browser results describe the browser setup you
+            tested; a customer’s server deployment needs measurements of that
+            deployment.
+          </p>
+        </section>
+        <section id="finished-comparison">
+          <p class="eyebrow section-number">05 / What you’ll produce</p>
+          <h2>Your finished comparison</h2>
+          <p>
+            As you work through the book, you’ll assemble a short benchmark
+            brief describing the customer’s decision, the work to test and the
+            requirements both options must meet. Alongside it, you’ll keep:
+          </p>
+          <ul>
+            <li>A repeatable test with checks that its answers are correct.</li>
+            <li>
+              The raw measurements and the conditions needed to interpret them.
+            </li>
+            <li>
+              A recommendation explaining the findings, costs, tradeoffs and
+              questions still open.
+            </li>
+          </ul>
+          <p>
+            Begin by following two loops through the same numbers. You’ll see
+            why checking the work comes before explaining the time.
+          </p>
+        </section>
+        <nav class="chapter-pagination" aria-label="Next chapter">
+          <a rel="next" href="../"
+            ><span class="small-label">Begin · Chapter 01</span>Same work,
+            different order →</a
+          >
+        </nav>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/plan.md"
+              >Course plan</a
+            >
+            ·
+            <a href="https://snowch.github.io/sizing-and-tco/"
+              >Companion: Sizing and TCO</a
+            >
+          </p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a href="../third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/chapter.ts"></script>
+  </body>
+</html>

@@ -7,11 +7,14 @@ The first chapter compares two ways to sum a grid using real WebAssembly in a
 browser worker. Read the source, step through an address diagram, change the grid
 size, edit the Wasm function, and download the measured samples with their conditions.
 
-Course URL: <https://snowch.github.io/benchmarking-lab/>.
+Start reading: <https://snowch.github.io/benchmarking-lab/chapters/start-here.html>.
+
+Chapter 1 remains at <https://snowch.github.io/benchmarking-lab/>.
 
 ## Current scope
 
-Two executable chapters:
+An unnumbered **Start here** introduction explains the purpose, reader outcomes
+and route through the book. It leads into two executable chapters:
 
 - **Same work, different order:** sum a grid using a real scalar Wasm loop,
   inspect memory addresses, and explore how traversal order affects measured time.
@@ -21,8 +24,9 @@ Two executable chapters:
 
 Chapters 3–12 have navigable skeleton pages with objectives, planned experiments,
 design tasks and evidence checklists. Their labs are explicitly marked as planned.
-Book contents and previous/next links connect all twelve chapters, including direct
-loads without JavaScript. Explanatory diagrams stay distinct from measured outputs.
+Book contents and previous/next links connect the introduction and all twelve
+chapters, including direct loads without JavaScript. Explanatory diagrams stay
+distinct from measured outputs.
 
 The chapter 1 benchmark uses the same scalar function for both traversal orders. Compilation
 and input setup happen before timing. It warms both orders, calibrates a common
@@ -74,7 +78,7 @@ are required. Wasm engines and compilers are loaded into workers only when Run i
 - [Sizing and TCO companion](https://snowch.github.io/sizing-and-tco/): capacity
   planning and cost modelling, linked from the planned cost chapter.
 - `index.html`: the working first chapter, also available without JavaScript.
-- `chapters/`: the working database chapter and static HTML outlines for chapters 3–12.
+- `chapters/`: the introduction, working database chapter and static HTML outlines for chapters 3–12.
 - `src/theme.ts`, `src/chapter.ts`: shared theme and lightweight outline-page behaviour.
 - `src/kernel.wat`: the original scalar Wasm loop.
 - `src/benchmark.ts`, `src/worker.ts`: compilation and measurement.
