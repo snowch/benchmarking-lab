@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="An interactive book about measuring performance. Read the code, run real WebAssembly experiments, and inspect the evidence."
+    />
+    <meta name="theme-color" content="#f7f5ef" />
+    <title>Same work, different order · Benchmarking Lab</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to chapter</a>
+    <header class="header">
+      <a class="brand" href="./"
+        ><svg viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M5 24V15m10 9V6m10 18V11" /></svg
+        >Benchmarking Lab</a
+      >
+      <span class="tagline">A field guide to performance</span>
+      <button id="theme" type="button" aria-label="Switch to dark theme">
+        Dark theme
+      </button>
+      <a class="source-link" href="https://github.com/snowch/benchmarking-lab"
+        >Source ↗</a
+      >
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">The interactive book</p>
+        <p class="sidebar-title">Measure.<br />Then explain.</p>
+        <nav aria-label="Chapter sections">
+          <a class="chapter-link" href="#main"
+            ><span>01</span>Same work,<br />different order</a
+          >
+          <a href="#follow">Follow the reads</a>
+          <a href="#experiment">Run the experiment</a>
+          <a href="#interpret">Read the evidence</a>
+          <a href="#practice">Try it yourself</a>
+        </nav>
+        <details class="roadmap">
+          <summary>The book ahead</summary>
+          <p>Planned chapters</p>
+          <ol start="2">
+            <li>What does a timer measure?</li>
+            <li>Warm-up and repeated runs</li>
+            <li>Noise and comparisons</li>
+            <li>Branches and input data</li>
+            <li>Doing several things at once</li>
+            <li>Allocation and reuse</li>
+            <li>A benchmark you can defend</li>
+          </ol>
+        </details>
+        <div class="sidebar-note">
+          <span class="live-dot"></span> Runs on your device
+          <p>Real WebAssembly.<br />No installation or account.</p>
+        </div>
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="chapter-meta">
+          <span>Chapter 01</span><span>Memory access</span
+          ><span>First edition · one chapter</span>
+        </div>
+        <h1>Same work,<br /><em>different order.</em></h1>
+        <p class="standfirst">
+          Two loops read the same numbers and return the same sum. Does the
+          order of those reads change how long the work takes?
+        </p>
+        <div class="chapter-intro">
+          <span class="small-label">In this chapter</span>
+          <p>
+            Follow a loop through memory, compare two measured runs, and decide
+            what the evidence supports. You only need to recognise a loop and an
+            array.
+          </p>
+        </div>
+        <noscript
+          ><p class="notice">
+            You can read this chapter without JavaScript. Enable JavaScript to
+            step through the diagram and run benchmarks.
+          </p></noscript
+        >
+
+        <section id="follow">
+          <p class="eyebrow section-number">01 / Inspect</p>
+          <h2>One grid. Two ways through it.</h2>
+          <p>
+            Imagine adding every value in a spreadsheet. You can move across
+            each row, or down each column. Both routes visit every cell once.
+          </p>
+          <p>
+            Our grid is stored as one long array: the first row, then the
+            second, and so on. This is <strong>row-major order</strong>. Moving
+            across a row reads neighbouring values. Moving down a column jumps
+            by the width of the grid.
+          </p>
+          <div class="figure">
+            <div class="figure-heading">
+              <span class="small-label">Follow the addresses</span
+              ><span class="badge">Explanatory model · 4 × 4</span>
+            </div>
+            <div class="trace-layout">
+              <div>
+                <fieldset id="trace-controls" disabled>
+                  <legend>Read order</legend>
+                  <div class="segmented">
+                    <label
+                      ><input type="radio" name="order" value="row" checked />
+                      Across rows</label
+                    ><label
+                      ><input type="radio" name="order" value="column" /> Down
+                      columns</label
+                    >
+                  </div>
+                </fieldset>
+                <pre
+                  id="pseudocode"
+                  aria-label="Illustrative loop"
+                ><code>for (row = 0; row &lt; n; row++)
+  for (col = 0; col &lt; n; col++)
+    sum += data[row * n + col];</code></pre>
+                <p class="caption">
+                  Illustrative pseudocode. The benchmark runs the WebAssembly
+                  source shown below.
+                </p>
+              </div>
+              <div>
+                <div
+                  id="grid"
+                  class="grid"
+                  role="img"
+                  aria-label="The sixteen array indices, arranged in four rows"
+                >
+                  0 · 1 · 2 · 3<br />4 · 5 · 6 · 7<br />8 · 9 · 10 · 11<br />12
+                  · 13 · 14 · 15
+                </div>
+                <p id="trace-readout" class="trace-readout" aria-live="polite">
+                  Read 1 of 16 · array index 0 · byte offset 0
+                </p>
+              </div>
+            </div>
+            <div class="trace-footer">
+              <button id="step-back" disabled aria-label="Previous read">
+                ←</button
+              ><label for="step">Read</label
+              ><input
+                id="step"
+                type="range"
+                min="0"
+                max="15"
+                value="0"
+                disabled
+              /><button id="step-next" disabled aria-label="Next read">
+                →
+              </button>
+            </div>
+            <p class="caption">
+              Each value occupies four bytes. This picture shows address order;
+              it does not simulate caches or measure time.
+            </p>
+          </div>
+          <p>
+            A processor keeps recently used data in small, fast stores called
+            <strong>caches</strong>. Fetching a value can bring nearby bytes
+            into a cache too. Reading those neighbours soon afterwards can make
+            useful work of that fetch.
+          </p>
+          <p>
+            This gives us a reason to expect a difference. We still need to
+            measure it. A small grid may fit in cache regardless of traversal
+            order.
+          </p>
+        </section>
+
+        <section id="experiment">
+          <p class="eyebrow section-number">02 / Measure</p>
+          <h2>Ask your machine.</h2>
+          <p>
+            The experiment adds every unsigned 32-bit value in a square grid.
+            Both orders use the same Wasm function with different address
+            strides. A <strong>stride</strong> is the distance between
+            successive elements in a direction.
+          </p>
+          <aside class="thought">
+            <span>Before you run</span>
+            <p>
+              Which order do you expect to take less time? Would your answer
+              change if the whole grid fitted in cache? Keep that prediction in
+              mind, or write it in the optional notes below.
+            </p>
+          </aside>
+          <div class="experiment">
+            <div class="figure-heading">
+              <span class="small-label">Experiment 01</span
+              ><span class="badge">Measured · WebAssembly</span>
+            </div>
+            <fieldset id="settings" disabled>
+              <legend class="sr-only">Benchmark settings</legend>
+              <div class="settings-row">
+                <label for="size"
+                  >Grid size<select id="size">
+                    <option value="64">64 × 64 · 16 KiB</option>
+                    <option value="256">256 × 256 · 256 KiB</option>
+                    <option value="1024" selected>1,024 × 1,024 · 4 MiB</option>
+                    <option value="2048">2,048 × 2,048 · 16 MiB</option>
+                  </select></label
+                ><label for="samples"
+                  >Sample pairs<select id="samples">
+                    <option value="10">10 pairs</option>
+                    <option value="20" selected>20 pairs</option>
+                    <option value="40">40 pairs</option>
+                  </select></label
+                >
+              </div>
+              <details class="code-details">
+                <summary>Inspect or edit the WebAssembly source</summary>
+                <p>
+                  WebAssembly text (WAT) describes the function executed by the
+                  browser. The four arguments are grid width, repeat count,
+                  inner stride, and outer stride. Row order uses strides 1 and
+                  n; column order uses n and 1.
+                </p>
+                <label for="source">Complete Wasm module</label
+                ><textarea
+                  id="source"
+                  spellcheck="false"
+                  maxlength="20000"
+                  rows="20"
+                  aria-describedby="source-help"
+                ></textarea>
+                <p id="source-help" class="caption">
+                  Each batch must return the sum of all passes, wrapping at 32
+                  bits. Editing this module changes both traversal orders. A
+                  matching checksum checks this fixture; it cannot prove every
+                  read took place.
+                </p>
+                <button id="restore" type="button">
+                  Restore original source
+                </button>
+              </details>
+              <div class="run-row">
+                <button id="run" class="primary" type="button">
+                  <span aria-hidden="true">▶</span> Run benchmark</button
+                ><span class="caption"
+                  >Usually a few seconds · stops after 30 seconds</span
+                >
+              </div>
+            </fieldset>
+            <button id="cancel" hidden type="button">Stop benchmark</button>
+            <p id="status" class="status" role="status">
+              Ready when you are. No timings have been collected.
+            </p>
+            <div id="results" hidden>
+              <p id="stale" class="notice" hidden>
+                Settings or source changed. These results belong to the previous
+                run.
+              </p>
+              <div id="summary" class="result-summary"></div>
+              <div id="chart" class="chart"></div>
+              <p class="caption">
+                Each mark is one timed batch, divided by its number of complete
+                grid passes. Both rows share the same time scale, in
+                milliseconds per pass. The vertical line marks the median. Lower
+                is faster.
+              </p>
+              <p id="comparison"></p>
+              <p id="run-details" class="caption"></p>
+              <details>
+                <summary>Inspect every sample</summary>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Pair</th>
+                        <th>Order</th>
+                        <th>Batch (ms)</th>
+                        <th>Per pass (ms)</th>
+                        <th>Checksum</th>
+                      </tr>
+                    </thead>
+                    <tbody id="raw"></tbody>
+                  </table>
+                </div>
+              </details>
+              <button id="download" type="button">
+                Download run record (.json)
+              </button>
+            </div>
+          </div>
+          <details class="method">
+            <summary>What exactly is being timed?</summary>
+            <p>
+              The worker compiles the module, allocates the grid and fills it
+              with values <code>index % 251</code> before timing. It warms both
+              orders for at least four pairs, aiming for 100 ms and stopping at
+              1,000 pairs.
+            </p>
+            <p>
+              Calibration chooses a common repeat count for both orders. It aims
+              for at least 8 ms in the faster batch, stopping when the slower
+              batch reaches 150 ms or the count reaches 4,096 passes.
+              Calibration timings are discarded.
+            </p>
+            <p>
+              Each sample times one call from JavaScript into Wasm with
+              <code>performance.now()</code>. Loop overhead and that call are
+              included. Compilation, input setup, correctness checks and drawing
+              are excluded. The starting order is random; subsequent pairs
+              alternate which runs first. Every timed result is checked against
+              the expected unsigned sum.
+            </p>
+            <p>
+              The timed passes repeatedly read the same grid. This is a warmed,
+              repeated-access experiment. It does not measure cold-cache
+              latency. Browser compilation tiers, scheduling, power management
+              and other programs can still affect timings. Keep this tab
+              visible; leaving it stops the run.
+            </p>
+          </details>
+        </section>
+
+        <section id="interpret">
+          <p class="eyebrow section-number">03 / Explain</p>
+          <h2>A result needs its conditions.</h2>
+          <p>
+            Look at the spread of samples as well as the middle value. The
+            <strong>median</strong> is the middle sample after sorting; with an
+            even count, it is the average of the middle two. It is less affected
+            by one slow interruption than the arithmetic mean.
+          </p>
+          <p>
+            If row order is faster, that is consistent with benefiting from
+            nearby reads. Timing alone does not identify the cause. Cache
+            behaviour, address translation and browser code generation can all
+            contribute. This lab has no hardware performance counters.
+          </p>
+          <p>
+            If the samples overlap heavily or a second run changes the ordering,
+            report that uncertainty. The ratio shown here compares two medians
+            from one run; it is not a confidence interval or proof of a general
+            speedup.
+          </p>
+          <div class="evidence">
+            <span class="small-label">A claim you can defend</span>
+            <p>
+              “For this grid, code, browser and device, these were the observed
+              times.”
+            </p>
+            <p class="caption">
+              Keep the raw samples and conditions with the claim. The download
+              includes both source and Wasm hashes, settings, batch count,
+              checksums, browser identifier and build.
+            </p>
+          </div>
+        </section>
+
+        <section id="practice">
+          <p class="eyebrow section-number">04 / Experiment again</p>
+          <h2>Try to change your conclusion.</h2>
+          <p>
+            Run the 64 × 64 and 2,048 × 2,048 grids with the original source.
+            Download each result before the next run. Compare the ratio and the
+            sample spread. Then repeat the comparison.
+          </p>
+          <p>
+            <strong>Your task:</strong> explain whether traversal order mattered
+            more for one grid on your device. Name one thing these timings
+            cannot establish.
+          </p>
+          <div class="hints">
+            <button id="hint" type="button">Show hint · 1 of 5</button>
+            <ol id="hints-list"></ol>
+          </div>
+          <details>
+            <summary>Compare your explanation</summary>
+            <p>
+              The larger grid can put more pressure on caches and address
+              translation, so it may show a larger difference. Your device may
+              produce another pattern. Quote your actual medians and spread; a
+              different outcome is not a failed exercise. These runs do not
+              establish native C performance, a cache size, or how another
+              device will behave.
+            </p>
+          </details>
+          <details>
+            <summary>Break and repair the calculation</summary>
+            <p>
+              In the Wasm editor, change the first
+              <code>(local.get $sum)</code> inside the addition to
+              <code>(i32.const 0)</code>. The loop now replaces its running sum
+              at each read. Run it and inspect the checksum diagnostic. Restore
+              the original source and run again.
+            </p>
+            <p>
+              A fast wrong result is not an optimisation. The check catches this
+              deliberate error for this input; it does not certify arbitrary
+              edited code.
+            </p>
+          </details>
+          <details class="notes">
+            <summary>Notes and prediction (optional)</summary>
+            <label for="notes"
+              >What did you expect, and what did your runs show?</label
+            ><textarea
+              id="notes"
+              rows="6"
+              maxlength="10000"
+              placeholder="Record the grid sizes, your observations, and what you would test next."
+            ></textarea>
+            <p id="save-status" class="caption">
+              Source, settings and notes save in this browser. Run records
+              remain in this tab until reload; download any you want to keep.
+            </p>
+            <button id="download-notes" type="button">
+              Download notes (.txt)
+            </button>
+          </details>
+        </section>
+
+        <section class="references" id="references">
+          <h2>Read further</h2>
+          <p>
+            These references explain the mechanisms and measurement tools used
+            here.
+          </p>
+          <ul>
+            <li>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format"
+                >MDN · Understanding WebAssembly text</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Performance/now"
+                >MDN · performance.now() and timer precision</a
+              >
+            </li>
+            <li>
+              <a href="https://web.dev/articles/webassembly-tiering"
+                >WebAssembly compilation tiers</a
+              >
+            </li>
+            <li>
+              <a href="https://www.akkadia.org/drepper/cpumemory.pdf"
+                >Ulrich Drepper · What Every Programmer Should Know About
+                Memory</a
+              >
+            </li>
+          </ul>
+        </section>
+        <footer>
+          <p>Benchmarking Lab · Copyright © 2026 Christopher Snow</p>
+          <p>
+            Build <span id="build">development</span> ·
+            <a
+              href="https://github.com/snowch/benchmarking-lab/blob/main/docs/design-review.md"
+              >Design notes</a
+            >
+            · <a href="./third-party-notices.txt">Third-party notices</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
