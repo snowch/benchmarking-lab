@@ -30,6 +30,9 @@ and cost assumptions are not live service measurements. Short infrastructure
 smoke tests establish execution and checking, not sustainable capacity, production
 availability or a universal winner.
 
+The header includes a “Star on GitHub” link that opens the repository in a new
+tab. GitHub handles sign-in and the reader’s star action.
+
 One book menu connects every page. It stays visible on desktop/tablet and uses a
 collapsed “Chapters” disclosure on phones. With JavaScript disabled, the phone
 menu starts open and the complete reading path remains available. Light/dark themes

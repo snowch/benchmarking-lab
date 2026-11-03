@@ -7,6 +7,16 @@ test("chapter 1 has one book menu and separate in-chapter links across screen si
   for (const width of [1280, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("./");
+    const star = page.getByRole("link", {
+      name: "Star Benchmarking Lab on GitHub (opens in a new tab)",
+    });
+    await expect(star).toBeVisible();
+    await expect(star).toHaveAttribute(
+      "href",
+      "https://github.com/snowch/benchmarking-lab",
+    );
+    await expect(star).toHaveAttribute("target", "_blank");
+    await expect(star).toHaveAttribute("rel", "noopener noreferrer");
     await expect(page.locator("aside nav")).toHaveCount(1);
     await expect(
       page.locator('aside nav[aria-label="Book chapters"] a'),
@@ -94,6 +104,7 @@ test("the introduction and all complete chapters open and reload without JavaScr
     const response = await page.goto(links[i].href);
     expect(response?.status()).toBe(200);
     await expect(page.locator("h1")).toHaveCount(1);
+    await expect(page.locator(".header .github-star")).toBeVisible();
     await expect(page.locator('aside a[href="start-here.html"]')).toHaveCount(
       1,
     );
