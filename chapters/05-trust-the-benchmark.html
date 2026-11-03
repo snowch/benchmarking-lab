@@ -599,6 +599,21 @@ FROM orders WHERE order_id = 10000;
           </p>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <div class="lesson-progress" hidden>
+            <label for="lesson-done"
+              ><input
+                id="lesson-done"
+                type="checkbox"
+                aria-describedby="lesson-progress-note"
+                disabled
+              /><span>Mark lesson as done</span></label
+            >
+            <p
+              id="lesson-progress-note"
+              class="lesson-progress-note"
+              role="status"
+            ></p>
+          </div>
           <a rel="prev" href="04-representative-workloads.html"
             ><span class="small-label">Previous · 04</span>← Choose a
             representative workload</a

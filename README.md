@@ -33,7 +33,12 @@ availability or a universal winner.
 One book menu connects every page. It stays visible on desktop/tablet and uses a
 collapsed “Chapters” disclosure on phones. With JavaScript disabled, the phone
 menu starts open and the complete reading path remains available. Light/dark themes
-and a clearly marked current chapter are shared throughout.
+and a clearly marked current chapter are shared throughout. Each page has a manual
+“Mark lesson as done” checkbox beside its next-lesson navigation. Completed pages
+get an accessible tick in every book menu. Reading marks use separate per-lesson
+browser-storage keys, support undo and updates between tabs, and leave lab drafts
+and benchmark results independent. If storage is blocked, the mark works on the
+current page with an explicit unsaved note.
 
 Settings and notes are local browser drafts where storage is available. Downloads
 are the portable record; no offline installation, account or cross-device sync is

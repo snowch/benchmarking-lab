@@ -878,6 +878,7 @@ code {
   margin: 0;
 }
 .sidebar nav .book-list a {
+  position: relative;
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
   gap: 8px;
@@ -900,6 +901,25 @@ code {
   border-color: var(--green);
   background: var(--soft);
   color: var(--ink);
+}
+.sidebar nav .book-list a[data-complete="true"] {
+  padding-right: 32px;
+}
+.chapter-complete-mark {
+  position: absolute;
+  right: 9px;
+  top: 12px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--green);
+  background: var(--soft);
+  font:
+    600 14px/1 Arial,
+    sans-serif;
 }
 .outline-page h1 {
   font-size: clamp(40px, 4.1vw, 60px);
@@ -939,6 +959,60 @@ code {
 .chapter-pagination .small-label {
   display: block;
   margin-bottom: 10px;
+}
+.lesson-progress label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+  cursor: pointer;
+  font:
+    600 14px/1.5 Arial,
+    Helvetica,
+    sans-serif;
+}
+.lesson-progress input {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.lesson-progress[data-complete="true"] label {
+  border-color: var(--green);
+  background: var(--soft);
+  color: var(--green);
+}
+.chapter-pagination .lesson-progress-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font:
+    12px/1.6 Arial,
+    Helvetica,
+    sans-serif;
+}
+@media (min-width: 751px) {
+  .chapter-pagination.has-completion {
+    row-gap: 16px;
+  }
+  .chapter-pagination.has-completion .lesson-progress {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .chapter-pagination.has-completion > a[rel="prev"] {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: end;
+  }
+  .chapter-pagination.has-completion > a:not([rel="prev"]) {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 .pipeline {
   font:

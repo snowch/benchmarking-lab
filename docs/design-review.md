@@ -81,3 +81,20 @@ Additional representative sources: Digital Design's `docs/authoring.md` and
 
 The prose and application implementation in Benchmarking Lab are original. The
 review borrows interaction and presentation patterns, not source files.
+
+## Manual reading completion — 3 November 2026
+
+Reviewed Assembly Lab's
+[completion store](https://github.com/snowch/assembly-lab/blob/104abbfd86147313669a823b583defe1b18ce128/apps/course/src/lesson-completion.ts)
+and completion control. Its useful distinction is a reader's own completion mark,
+separate from verified exercise results. Benchmarking Lab implements that pattern
+with a native checkbox in the next-lesson area and accessible green ticks in the
+single book menu. The interface uses this book's existing colours and typography.
+
+Each page, including the introduction and final chapter, has its own versioned
+storage key. Toggling one page does not replace another mark or lab draft. Marks
+can be undone, reflect changes from another tab, and refresh on back-cache
+restoration. Failed storage writes retain the explicit on-page choice and show an
+unsaved note. The control stays hidden and disabled without JavaScript while
+previous/next navigation remains available. Completion does not run a benchmark,
+certify an answer or gate access to the next chapter.

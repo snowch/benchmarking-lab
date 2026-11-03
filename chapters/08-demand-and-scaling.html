@@ -508,6 +508,21 @@ B,300,60,12000,0,1800,0,4200,600,99,45</textarea>
           </ul>
         </section>
         <nav class="chapter-pagination" aria-label="Previous and next chapters">
+          <div class="lesson-progress" hidden>
+            <label for="lesson-done"
+              ><input
+                id="lesson-done"
+                type="checkbox"
+                aria-describedby="lesson-progress-note"
+                disabled
+              /><span>Mark lesson as done</span></label
+            >
+            <p
+              id="lesson-progress-note"
+              class="lesson-progress-note"
+              role="status"
+            ></p>
+          </div>
           <a rel="prev" href="07-beyond-the-average.html"
             ><span class="small-label">Previous · 07</span>← Beyond the
             average</a

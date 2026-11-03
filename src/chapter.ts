@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 import "./theme";
+import "./completion";
 document.getElementById("build")!.textContent = __BUILD__;
 const contents = document.querySelector<HTMLDetailsElement>(".book-contents");
 if (contents) {
