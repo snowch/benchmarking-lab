@@ -377,11 +377,22 @@ total priced groups = active groups + whole-group failure reserve</code></pre>
           <p class="eyebrow section-number">03 / Planning lab</p>
           <h2>Find the assumption that matters</h2>
           <p>
-            Run the starting model before editing. Compare group counts, the
-            full cost breakdown and sensitivity rows. Then lower A’s rate from
-            900 to 600 and calculate again. Observe the discrete jump in
-            deployment size: cost does not always change smoothly with demand or
-            performance.
+            The planner calculates an estimate as soon as it opens. If you have
+            a saved plan, use <strong>Load illustrative example</strong> to try
+            the starter inputs. You can bring back your current fields with
+            <strong>Recover previous inputs</strong>.
+          </p>
+          <p>
+            In <strong>Option A</strong>, change
+            <strong
+              >Sustainable correct, timely results / second per complete
+              group</strong
+            >
+            from 900 to 600. Select <strong>Calculate and save</strong> to
+            update the estimate and save your edits in this browser. Compare
+            <strong>Total priced groups (including failure reserve)</strong> and
+            <strong>Total over horizon</strong> for A before and after. What
+            extra capacity does the lower rate require?
           </p>
           <p>
             Replace the example with your own evidence when available. Capacity
@@ -405,13 +416,12 @@ total priced groups = active groups + whole-group failure reserve</code></pre>
             </p></noscript
           >
           <p>
-            Calculate saves the current valid plan locally. Download JSON to
-            back it up or attach it to the Chapter 12 report. Import accepts
-            this planner’s versioned JSON format; it does not turn Chapter 2
-            browser timings into server capacity. To use infrastructure
-            evidence, inspect its run record, extract the sustainable verified
-            rate with the service-level checks, and cite the record ID in the
-            capacity evidence field.
+            Use <strong>Download plan JSON</strong> for a portable copy or an
+            attachment to the Chapter 12 report. Use a plan JSON from this
+            planner to import and save those inputs in this browser. To use
+            infrastructure evidence, inspect its run record, extract the
+            sustainable verified rate with the service-level checks, and cite
+            the record ID in the capacity evidence field.
           </p>
           <details>
             <summary>Read the JSON as a small configuration file</summary>

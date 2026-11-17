@@ -197,9 +197,15 @@ for (const control of controls)
   control.addEventListener("change", () => {
     save();
     source();
-    if (record)
-      $("methods-stale").hidden =
-        JSON.stringify(record.settings) === JSON.stringify(settings());
+    if (record) {
+      const changed =
+        JSON.stringify(record.settings) !== JSON.stringify(settings());
+      $("methods-stale").hidden = !changed;
+      if (chapter === "3" && record.outcome)
+        status.textContent = changed
+          ? "Settings changed. Run the equivalence check for the selected query."
+          : record.outcome;
+    }
   });
 notes.addEventListener("input", save);
 source();
@@ -290,11 +296,13 @@ function render(value: Evidence) {
   const area = $("methods-results");
   area.hidden = false;
   area.replaceChildren();
-  const summary = document.createElement("div");
-  summary.className = "methods-result";
-  summary.append(paragraph(value.outcome ?? value.error ?? "Run ended."));
-  area.append(summary);
-  if (chapter === "3") {
+  if (chapter !== "3") {
+    const summary = document.createElement("div");
+    summary.className = "methods-result";
+    summary.append(paragraph(value.outcome ?? value.error ?? "Run ended."));
+    area.append(summary);
+  }
+  if (chapter === "3" && value.samples.length) {
     area.append(
       table(
         "Every measured answer is checked against the January contract. Failed answers cannot support a speed claim.",
@@ -572,8 +580,8 @@ async function fair(options: Record<string, string>) {
         repeat + 1,
       );
   record!.outcome = record!.samples.every((s) => s.verified)
-    ? "Contract passed in both engines: two ordered region totals match all six measured answers. These times describe correct January reports on this fixture."
-    : "Contract FAILED: the candidate returns different work. The clock ran, but these timings cannot support a comparison of January reports. Repair the SQL and run again.";
+    ? "Contract passed. All six answers from both engines match the expected January rows."
+    : "Contract failed. Both engines ran the query, and the answers differ from the expected January rows. Select Repaired January report and run again.";
 }
 async function representative(options: Record<string, string>) {
   const fixture = workload(Number(options.size), options.shape);
@@ -746,6 +754,7 @@ runButton.addEventListener("click", async () => {
   controls.forEach((c) => (c.disabled = true));
   $("methods-stale").hidden = true;
   $("methods-results").hidden = true;
+  if (chapter === "3") status.textContent = "Preparing the equivalence check…";
   record = {
     format: "benchmarking-lab-methods-v1",
     chapter,
@@ -800,13 +809,18 @@ runButton.addEventListener("click", async () => {
     if (chapter === "3") await fair(record.settings);
     else if (chapter === "4") await representative(record.settings);
     else await runner(record.settings);
-    status.textContent =
-      "Run complete. Inspect the evidence and download the record before leaving.";
     for (const client of clients) await client.call({ operation: "close" });
+    status.textContent =
+      chapter === "3"
+        ? record.outcome!
+        : "Run complete. Inspect the evidence and download the record before leaving.";
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     record.error = message;
-    record.outcome = `${stopped ? "Stopped" : "Run failed"}: ${message} Completed samples and work accounting are retained as an incomplete record; they do not establish a successful comparison.`;
+    record.outcome =
+      chapter === "3"
+        ? `${stopped ? "Run stopped." : "Execution error."} ${message} The download contains any samples collected before the run ended.`
+        : `${stopped ? "Stopped" : "Run failed"}: ${message} Completed samples and work accounting are retained as an incomplete record; they do not establish a successful comparison.`;
     status.textContent = record.outcome;
   } finally {
     clients.forEach((client) => client.terminate());

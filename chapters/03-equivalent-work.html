@@ -391,11 +391,12 @@ GROUP BY region_id ORDER BY region_id;</pre>
           <p class="eyebrow section-number">03 / Execute the contract</p>
           <h2>Catch the wrong work, then repair it</h2>
           <p>
-            Run the candidate first. The result should fail in both engines
-            regardless of which takes less time. Then select the repaired query
-            and run again. Optionally add the month index to both options and
-            inspect its preparation time separately. Predicting is optional; you
-            can also read the complete SQL before running.
+            With the colleague’s candidate selected under
+            <strong>Query to execute</strong>, select
+            <strong>Run equivalence check</strong>. Read the contract result
+            below the button and compare the expected rows with each engine’s
+            rows. Select <strong>Repaired January report</strong> and run again.
+            Do both engines now return the expected rows?
           </p>
           <div class="methods-lab">
             <div class="methods-controls">
@@ -427,6 +428,12 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
 -- All eight rows are shown above.
 -- Expected rows: [1, 3, 450], [2, 2, 0].
 -- The repaired query counts every row and filters month_id = 1.</pre>
+              <p>
+                To inspect index setup, select
+                <strong>Build an index on month_id</strong> and run again. Find
+                the index times in the preparation table, separate from the
+                query times.
+              </p>
             </details>
             <div class="methods-buttons">
               <button id="methods-run" type="button" disabled>
@@ -446,8 +453,7 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
               role="status"
               aria-live="polite"
             >
-              Ready. Engines load only when you press Run. No timings have been
-              recorded.
+              The engines load when you select Run equivalence check.
             </p>
             <p class="caption">
               Real DuckDB-Wasm 1.32.0 and PGlite 0.5.13 package builds run

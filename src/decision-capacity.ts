@@ -10,11 +10,15 @@ import {
 } from "./decision-model";
 const root = document.getElementById("capacity-planner")!;
 const key = "benchmarking-lab-capacity-v1";
+const recoveryKey = "benchmarking-lab-capacity-recovery-v1";
 let plan = examplePlan();
-let storageNotice = "";
+let storageNotice = "Illustrative estimate ready.";
 try {
   const saved = localStorage.getItem(key);
-  if (saved) plan = validatePlan(JSON.parse(saved));
+  if (saved) {
+    plan = validatePlan(JSON.parse(saved));
+    storageNotice = "Saved plan loaded from this browser.";
+  }
 } catch {
   storageNotice =
     "Saved data could not be read. The illustrative example is shown; import a backup if needed.";
@@ -36,11 +40,7 @@ function download(name: string, value: unknown) {
 }
 const form = make("form");
 form.noValidate = true;
-const status = make(
-  "p",
-  storageNotice ||
-    "Illustrative planning inputs. Changes save locally in this browser.",
-);
+const status = make("p", storageNotice);
 status.id = "capacity-status";
 status.setAttribute("role", "status");
 const output = make("div");
@@ -159,9 +159,12 @@ const optionFields = [
   ],
   ["Exclusions / costs included elsewhere", "exclusions", "textarea"],
 ] as const;
+const optionHeadings: HTMLLegendElement[] = [];
 plan.options.forEach((option, i) => {
   const set = make("fieldset");
-  set.append(make("legend", `${i + 2} · ${option.name}`));
+  const heading = make("legend");
+  optionHeadings.push(heading);
+  set.append(heading);
   const fields = make("div");
   fields.className = "decision-grid";
   for (const [label, prop, kind] of optionFields)
@@ -172,16 +175,20 @@ plan.options.forEach((option, i) => {
 const actions = make("div");
 actions.className = "decision-actions";
 const calculate = make("button", "Calculate and save");
+calculate.className = "primary";
 calculate.type = "submit";
 const exportButton = make("button", "Download plan JSON");
 exportButton.type = "button";
 const reset = make("button", "Load illustrative example");
 reset.type = "button";
-actions.append(calculate, exportButton, reset);
+const recover = make("button", "Recover previous inputs");
+recover.type = "button";
+recover.hidden = true;
+actions.append(calculate, exportButton, reset, recover);
 form.append(actions);
 const importLabel = make(
   "label",
-  "Import a capacity plan JSON (replaces these inputs)",
+  "Import and save a capacity plan JSON (replaces these inputs)",
 );
 const upload = make("input");
 upload.type = "file";
@@ -190,6 +197,30 @@ upload.id = "capacity-import";
 importLabel.append(upload);
 form.append(importLabel);
 root.append(form, status, output);
+let previousInputs: Record<string, string> | undefined;
+try {
+  const stored = JSON.parse(localStorage.getItem(recoveryKey) ?? "null");
+  if (
+    stored &&
+    controls.every(({ input }) => typeof stored[input.id] === "string")
+  )
+    previousInputs = stored;
+} catch {
+  // Recovery remains available for this tab when storage is inaccessible.
+}
+function updateRecovery() {
+  const inputs = previousInputs;
+  recover.hidden =
+    !inputs || controls.every(({ input }) => input.value === inputs[input.id]);
+}
+function updateOptionHeadings() {
+  optionHeadings.forEach((heading, index) => {
+    const name = form.querySelector<HTMLInputElement>(
+      `#capacity-${index}-name`,
+    )!.value;
+    heading.textContent = `${index + 2} · ${name}`;
+  });
+}
 const fmt = (n: number) =>
   n.toLocaleString(undefined, { maximumFractionDigits: 2 });
 function table(headers: string[], rows: (string | number)[][]) {
@@ -264,6 +295,7 @@ function comparison(title: string, values: (number | null)[], unit: string) {
   return figure;
 }
 function render() {
+  updateOptionHeadings();
   output.replaceChildren();
   const results = plan.options.map((o) => capacityResult(plan, o));
   const summary = make(
@@ -399,11 +431,12 @@ function read() {
   }
   return validatePlan(draft);
 }
-function save() {
+function save(
+  message = "Plan saved in this browser. Download the JSON for a portable copy.",
+) {
   try {
     localStorage.setItem(key, JSON.stringify(plan));
-    status.textContent =
-      "Plan saved locally. Download JSON to keep a portable backup.";
+    status.textContent = message;
   } catch {
     status.textContent =
       "Calculated successfully, but browser storage is unavailable or full. Download JSON to keep this plan.";
@@ -413,7 +446,6 @@ function compute() {
   try {
     plan = read();
     render();
-    save();
     return true;
   } catch (error) {
     status.textContent = `Calculation blocked: ${(error as Error).message}`;
@@ -425,20 +457,30 @@ function compute() {
 }
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  compute();
+  if (compute()) save();
 });
+function showUncalculated(message: string) {
+  status.textContent = message;
+  output.replaceChildren(
+    make("p", "Results need recalculation for these inputs."),
+  );
+  updateRecovery();
+}
 form.addEventListener("input", (event) => {
   if (!controls.some((c) => c.input === event.target)) return;
-  status.textContent =
-    "Inputs changed. Calculate to update the result and saved plan.";
-  output.replaceChildren(
-    make("p", "Results need recalculation for the edited inputs."),
+  showUncalculated(
+    "Edits are unsaved. Select Calculate and save to update the estimate and saved plan.",
   );
 });
 exportButton.addEventListener("click", () => {
-  if (compute()) download("capacity-plan.json", plan);
+  if (compute()) {
+    download("capacity-plan.json", plan);
+    status.textContent =
+      "Plan downloaded. Select Calculate and save to update the plan stored in this browser.";
+  }
 });
-function populate() {
+function populate(next: CapacityPlan) {
+  plan = next;
   for (const c of controls)
     c.input.value = String(
       (
@@ -449,11 +491,33 @@ function populate() {
       )[c.property],
     );
   render();
-  save();
+  updateRecovery();
 }
 reset.addEventListener("click", () => {
-  plan = examplePlan();
-  populate();
+  const outgoing = Object.fromEntries(
+    controls.map(({ input }) => [input.id, input.value]),
+  );
+  populate(examplePlan());
+  status.textContent =
+    "Illustrative estimate ready. Use Calculate and save to keep these inputs in this browser.";
+  if (controls.every(({ input }) => outgoing[input.id] === input.value)) return;
+  previousInputs = outgoing;
+  updateRecovery();
+  try {
+    localStorage.setItem(recoveryKey, JSON.stringify(previousInputs));
+  } catch {
+    status.textContent =
+      "Illustrative example loaded. Recover your previous inputs before leaving this page. Browser storage is unavailable or full.";
+  }
+});
+recover.addEventListener("click", () => {
+  if (!previousInputs) return;
+  for (const { input } of controls) input.value = previousInputs[input.id];
+  updateOptionHeadings();
+  calculate.focus();
+  showUncalculated(
+    "Previous inputs recovered. Select Calculate and save to update the estimate and saved plan.",
+  );
 });
 upload.addEventListener("change", async () => {
   const file = upload.files?.[0];
@@ -462,13 +526,14 @@ upload.addEventListener("change", async () => {
     if (file.size > 4 * 1024 * 1024)
       throw new Error("File is larger than 4 MB.");
     const imported = validatePlan(JSON.parse(await file.text()));
-    plan = imported;
-    populate();
-    status.textContent =
-      "Capacity plan imported and saved locally. Check all provenance and billing assumptions.";
+    populate(imported);
+    save(
+      "Capacity plan imported and saved in this browser. Check all provenance and billing assumptions.",
+    );
   } catch (error) {
     status.textContent = `Import rejected; existing plan retained. ${(error as Error).message}`;
   }
   upload.value = "";
 });
 render();
+updateRecovery();

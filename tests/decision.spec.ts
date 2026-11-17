@@ -116,6 +116,54 @@ test("planner recalculates changed assumptions, persists, exports and rejects a 
     "No current result",
   );
 });
+
+test("loading the illustrative plan keeps the saved plan and can recover unsaved fields", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("chapters/11-capacity-and-cost.html");
+  const rate = page.locator("#capacity-0-rate");
+  const average = page.locator("#capacity-common-average");
+  const save = page.getByRole("button", { name: "Calculate and save" });
+  const load = page.getByRole("button", { name: "Load illustrative example" });
+  const recover = page.getByRole("button", { name: "Recover previous inputs" });
+  await expect(recover).toBeHidden();
+  await rate.fill("750");
+  await save.click();
+  await rate.fill("650");
+  await expect(page.locator("#capacity-status")).toContainText(
+    "Edits are unsaved",
+  );
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download plan JSON" }).click();
+  const exported = JSON.parse(
+    await readFile((await (await downloading).path())!, "utf8"),
+  );
+  expect(exported.options[0].rate).toBe(650);
+  await page.reload();
+  await expect(rate).toHaveValue("750");
+
+  await rate.fill("600");
+  await average.fill("");
+  await load.click();
+  await expect(rate).toHaveValue("900");
+  await expect(recover).toBeVisible();
+  await load.click();
+  await page.reload();
+  await expect(rate).toHaveValue("750");
+  await recover.press("Enter");
+  await expect(save).toBeFocused();
+  await expect(rate).toHaveValue("600");
+  await expect(average).toHaveValue("");
+  await expect(page.locator("#capacity-status")).toContainText(
+    "Previous inputs recovered",
+  );
+  await average.fill("600");
+  await save.click();
+  await page.reload();
+  await expect(rate).toHaveValue("600");
+});
+
 test("report retains original evidence safely, restores a project and exports readable limitations", async ({
   page,
 }) => {
