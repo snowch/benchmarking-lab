@@ -2,10 +2,10 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-async function run(page: Page) {
+async function run(page: Page, outcome = "Run complete") {
   await page.locator("#methods-run").click();
   await expect(page.locator("#methods-run")).toBeEnabled({ timeout: 90000 });
-  await expect(page.locator("#methods-status")).toContainText("Run complete");
+  await expect(page.locator("#methods-status")).toContainText(outcome);
   await expect(page.locator("#methods-download")).toBeEnabled();
 }
 async function evidence(page: Page) {
@@ -23,9 +23,9 @@ test("real SQL rejects different work, then accepts the repaired January contrac
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("chapters/03-equivalent-work.html");
-  await run(page);
+  await run(page, "Contract failed. Both engines ran the query");
   await expect(page.locator("#methods-results")).toContainText(
-    "Contract FAILED",
+    "FAIL: different work",
   );
   const failed = await evidence(page);
   expect(failed.expected).toEqual([
@@ -43,12 +43,12 @@ test("real SQL rejects different work, then accepts the repaired January contrac
   await page.locator("#methods-candidate").selectOption("repaired");
   await page.locator("#methods-index").selectOption("yes");
   await expect(page.locator("#methods-stale")).toBeVisible();
+  await expect(page.locator("#methods-status")).toContainText(
+    "Settings changed",
+  );
   const stillFailed = await evidence(page);
   expect(stillFailed.settings.candidate).toBe("incomplete");
-  await run(page);
-  await expect(page.locator("#methods-results")).toContainText(
-    "Contract passed",
-  );
+  await run(page, "Contract passed. All six answers from both engines");
   const repaired = await evidence(page);
   expect(repaired.samples).toHaveLength(6);
   for (const sample of repaired.samples) {
@@ -68,6 +68,22 @@ test("real SQL rejects different work, then accepts the repaired January contrac
     "export function expectedResults",
   );
   expect(errors).toEqual([]);
+});
+
+test("an equivalence execution error is distinct from a completed contract check", async ({
+  page,
+}) => {
+  await page.route("**/engines/manifest.json", (route) =>
+    route.fulfill({ status: 503, body: "unavailable" }),
+  );
+  await page.goto("chapters/03-equivalent-work.html");
+  await run(
+    page,
+    "Execution error. Engine asset manifest could not be loaded.",
+  );
+  const record = await evidence(page);
+  expect(record.error).toContain("manifest");
+  expect(record.samples).toEqual([]);
 });
 
 test("representative trace executes the selected mix and hotspot with independently checkable full rows", async ({

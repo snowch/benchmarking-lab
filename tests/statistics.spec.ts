@@ -153,6 +153,33 @@ test("tail lab reveals pre-send waiting and keeps failures visible", async ({
   await expect(
     page.locator("#statistics-output .statistics-chart figcaption"),
   ).toHaveText("Successful request response times");
+  const input = page.locator("#statistics-input");
+  await input.fill(
+    (await input.inputValue()).replace(
+      "r7,600,900,950,ok",
+      "r7,600,900,990,ok",
+    ),
+  );
+  await page.getByRole("button", { name: "Analyse evidence" }).click();
+  await expect(page.locator("#statistics-output")).toContainText(
+    "p99 390.00 ms",
+  );
+  await expect(page.locator("#statistics-output")).toContainText(
+    "7 successful + 1 errors + 1 timeouts + 1 pending",
+  );
+  await input.fill(
+    (await input.inputValue()).replace(
+      "r10,900,900,,pending",
+      "r10,900,900,980,ok",
+    ),
+  );
+  await page.getByRole("button", { name: "Analyse evidence" }).click();
+  await expect(page.locator("#statistics-output")).toContainText(
+    "p99 390.00 ms",
+  );
+  await expect(page.locator("#statistics-output")).toContainText(
+    "8 successful + 1 errors + 1 timeouts + 0 pending",
+  );
 });
 
 test("capacity lab refuses unreconciled evidence and shows failed rule", async ({
@@ -170,6 +197,15 @@ test("capacity lab refuses unreconciled evidence and shows failed rule", async (
   await expect(page.locator("#statistics-output")).toContainText(
     "B: highest supplied passing load 100/s",
   );
+  const relaxedPoint = page.getByRole("row").filter({ hasText: "B / 200" });
+  await expect(relaxedPoint.getByRole("cell")).toHaveText([
+    "B / 200",
+    "190.00",
+    "180",
+    "2.50",
+    "300",
+    "fails",
+  ]);
   const input = page.locator("#statistics-input");
   await input.fill(
     (await input.inputValue()).replace("A,100,60,6000", "A,100,60,6001"),

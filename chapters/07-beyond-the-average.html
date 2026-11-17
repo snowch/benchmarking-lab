@@ -274,12 +274,28 @@
         <section id="experiment">
           <p class="eyebrow section-number">03 / Evidence lab</p>
           <h2>Change the timing boundary without losing the population</h2>
-          <p>
-            Switch between actual send and planned arrival. Then change r7’s
-            finish time to 990 ms and analyse again. Finally change r10 from
-            pending to a successful completion at 980 ms. Observe the population
-            counts as well as the percentile.
-          </p>
+          <ol>
+            <li>
+              The lab starts with <strong>Actual send</strong>. Under
+              <strong>Successful-request latency starts at</strong>, select
+              <strong>Planned arrival (includes pre-send waiting)</strong>. The
+              result updates automatically. Compare p99 across the two starting
+              points. Which accounts for the time before sending?
+            </li>
+            <li>
+              In <strong>Request events</strong>, change the
+              <code>r7</code> row’s <code>finished_ms</code> from
+              <code>950</code> to <code>990</code>. Select
+              <strong>Analyse evidence</strong> and check how p99 changes.
+            </li>
+            <li>
+              In the <code>r10</code> row, fill the empty
+              <code>finished_ms</code> with <code>980</code> and change
+              <code>status</code> from <code>pending</code> to <code>ok</code>.
+              Select <strong>Analyse evidence</strong> again. How do the
+              successful and pending counts change? Does p99 change too?
+            </li>
+          </ol>
           <div class="statistics-lab">
             <p class="caption">
               All starter values below are authored illustrative data for

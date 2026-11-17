@@ -75,6 +75,15 @@
 .decision-tool button:hover {
   background: var(--paper);
 }
+.decision-actions button.primary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.decision-actions button.primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
 .decision-tool [role="status"] {
   min-height: 1.5em;
   font-size: 0.9rem;

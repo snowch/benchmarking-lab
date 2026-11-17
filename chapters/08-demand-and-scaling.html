@@ -284,10 +284,12 @@
           <p class="eyebrow section-number">03 / Evidence lab</p>
           <h2>Change the target and inspect the constraint</h2>
           <p>
-            Analyse the supplied steps, then relax the p99 target to 200 ms. B’s
-            200/s point still fails because timeouts and pending work exceed the
-            rule. Inspect the counts before editing them: every arrival must end
-            as success, error, timeout or pending in this accounting boundary.
+            Find the <strong>B / 200</strong> row in the results. Change
+            <strong>Maximum successful-request p99 (ms)</strong> from 150 to 200
+            and select <strong>Analyse evidence</strong>. Use the
+            <strong>p99 ms</strong>, <strong>Failure %</strong> and
+            <strong>Pending change</strong> columns to explain whether the row
+            now passes. Keep the supplied request counts for this comparison.
           </p>
           <div class="statistics-lab">
             <p class="caption">
@@ -482,10 +484,12 @@ B,300,60,12000,0,1800,0,4200,600,99,45</textarea>
             <p>
               A’s supplied passing points are 100/s and 200/s. B’s only passing
               supplied point is 100/s. A’s 300/s point completes 250 successes/s
-              but fails latency, failure and pending-growth requirements.
-              Relaxing latency alone does not make B’s 200/s point pass. Neither
-              option has a measured precise maximum from these three
-              illustrative steps.
+              but fails latency, failure and pending-growth requirements. At
+              200/s, B’s 180 ms p99 meets the relaxed 200 ms target. The 2.5%
+              failure rate exceeds the 1% limit and the pending count grows by
+              300, so the row still fails. These illustrative steps show which
+              supplied points pass. A precise maximum would need measurements at
+              more loads.
             </p>
           </details>
         </section>
