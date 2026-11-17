@@ -462,15 +462,16 @@ form.addEventListener("submit", (e) => {
 function showUncalculated(message: string) {
   status.textContent = message;
   output.replaceChildren(
-    make("p", "Results need recalculation for these inputs."),
+    make(
+      "p",
+      "Results need recalculation. Select Calculate and save to update the estimate and keep these inputs.",
+    ),
   );
   updateRecovery();
 }
 form.addEventListener("input", (event) => {
   if (!controls.some((c) => c.input === event.target)) return;
-  showUncalculated(
-    "Edits are unsaved. Select Calculate and save to update the estimate and saved plan.",
-  );
+  showUncalculated("Edits are unsaved.");
 });
 exportButton.addEventListener("click", () => {
   if (compute()) {
@@ -515,9 +516,7 @@ recover.addEventListener("click", () => {
   for (const { input } of controls) input.value = previousInputs[input.id];
   updateOptionHeadings();
   calculate.focus();
-  showUncalculated(
-    "Previous inputs recovered. Select Calculate and save to update the estimate and saved plan.",
-  );
+  showUncalculated("Previous inputs recovered.");
 });
 upload.addEventListener("change", async () => {
   const file = upload.files?.[0];
