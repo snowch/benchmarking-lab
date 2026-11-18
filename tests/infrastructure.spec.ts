@@ -39,13 +39,18 @@ for (const chapter of ["09-beyond-databases", "10-complete-pipeline"]) {
         name: /Download the runnable infrastructure harness/,
       }),
     ).toHaveAttribute("href", "../harnesses/infrastructure.zip");
+    await page
+      .getByText("Inspect your own harness evidence", { exact: true })
+      .click();
     await page.locator("#trace-json").fill(JSON.stringify(evidence));
     await page.getByRole("button", { name: "Inspect evidence" }).click();
     await expect(page.locator("#trace-result")).toContainText(
       "User-supplied trace",
     );
     await expect(page.locator("#trace-chart svg")).toBeVisible();
-    await page.getByText("Show exact event observations").click();
+    await page
+      .getByText("Show exact event observations", { exact: true })
+      .click();
     const rows = page.locator("#trace-chart tbody tr");
     await expect(rows.last()).toContainText("1");
     await expect(rows.last().locator("td").last()).toHaveText("1");
@@ -76,6 +81,9 @@ for (const chapter of ["09-beyond-databases", "10-complete-pipeline"]) {
     );
     await expect(page.locator("#trace-json")).toHaveValue("{}");
     await page.setViewportSize({ width: 375, height: 800 });
+    await page
+      .getByText("Inspect your own harness evidence", { exact: true })
+      .click();
     await page.locator("#trace-json").fill(JSON.stringify(evidence));
     await page.getByRole("button", { name: "Inspect evidence" }).click();
     await expect(page.locator("#trace-chart svg")).toBeVisible();
@@ -93,6 +101,9 @@ for (const chapter of ["09-beyond-databases", "10-complete-pipeline"]) {
       "Recorded local functional example",
     );
     await expect(page.locator("#trace-result")).toContainText("missing 0");
+    await expect(page.locator("#trace-json")).toHaveValue(
+      JSON.stringify(evidence),
+    );
     for (const width of [390, 320]) {
       await page.setViewportSize({ width, height: 800 });
       await expect

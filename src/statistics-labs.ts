@@ -15,13 +15,33 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) =>
 const input = el<HTMLTextAreaElement>("statistics-input");
 const output = el("statistics-output");
 const status = el("statistics-status");
+const storageStatus = el("statistics-storage");
+const recover = el<HTMLButtonElement>("statistics-recover");
+const controls = [
+  ...document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+    "[data-statistics-control]",
+  ),
+];
 const notes = el<HTMLTextAreaElement>("statistics-notes");
 const chapter = document.body.dataset.statistics!;
 const key = `benchmarking-lab-statistics-${chapter}-v1`;
-const initial = input.value;
+type Inputs = {
+  input: string;
+  provenance: string;
+  originals: unknown[];
+  controls: [string, string][];
+};
+const illustration =
+  "Authored illustrative exercise. The starter values are invented.";
+const initial: Inputs = {
+  input: input.value,
+  provenance: illustration,
+  originals: [],
+  controls: controls.map((control) => [control.id, control.value]),
+};
+let backup: Inputs | undefined;
 let originals: unknown[] = [];
-let provenance =
-  "Authored illustrative exercise; these numbers are not measurements of a product.";
+let provenance = illustration;
 const fmt = (value: number, digits = 2) =>
   Number.isFinite(value)
     ? value.toFixed(digits)
@@ -92,7 +112,7 @@ function calculate() {
         estimate = pairedEstimate(rows);
       current = estimate;
       para(
-        `${rows.length} paired independent runs. Geometric mean A/B time ratio: ${fmt(estimate.ratio)}×; approximate 95% interval ${fmt(estimate.low)}–${fmt(estimate.high)}×. A ratio above 1 means B took less time.`,
+        `${rows.length} supplied run pairs. Geometric mean A/B time ratio: ${fmt(estimate.ratio)}×; approximate 95% interval ${fmt(estimate.low)}–${fmt(estimate.high)}×. A ratio above 1 means B took less time.`,
       );
       para(
         estimate.low > 1
@@ -102,7 +122,7 @@ function calculate() {
             : "The interval includes parity (1). These runs do not resolve the direction of the difference at this interval level.",
       );
       plot(
-        "Time ratio for each independent paired run",
+        "Time ratio for each supplied run pair",
         rows.map((r) => r.run),
         rows.map((r) => r.a / r.b),
         "× A/B",
@@ -208,46 +228,62 @@ function calculate() {
     el<HTMLButtonElement>("statistics-download").disabled = true;
   }
 }
+function snapshot(): Inputs {
+  return {
+    input: input.value,
+    provenance,
+    originals,
+    controls: controls.map((control) => [control.id, control.value]),
+  };
+}
+function applyInputs(values: Inputs) {
+  input.value = values.input;
+  provenance = values.provenance;
+  originals = values.originals;
+  for (const [id, value] of values.controls) {
+    const control = controls.find((item) => item.id === id);
+    if (control) control.value = value;
+  }
+}
 function save() {
   try {
     localStorage.setItem(
       key,
-      JSON.stringify({
-        input: input.value,
-        notes: notes.value,
-        provenance,
-        originals,
-        controls: [
-          ...document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-            "[data-statistics-control]",
-          ),
-        ].map((e) => [e.id, e.value]),
-      }),
+      JSON.stringify({ ...snapshot(), notes: notes.value, backup }),
     );
+    storageStatus.hidden = true;
   } catch {
-    status.textContent +=
-      " Browser storage unavailable; download your evidence.";
+    storageStatus.textContent =
+      "This browser could not save your latest inputs or notes. Copy your work or download the analysis before leaving.";
+    storageStatus.hidden = false;
   }
+  recover.hidden = !backup;
+}
+function rememberInputs() {
+  const current = snapshot();
+  if (JSON.stringify(current) !== JSON.stringify(initial)) backup ??= current;
 }
 try {
   const draft = JSON.parse(localStorage.getItem(key) ?? "null");
   if (draft && typeof draft.input === "string") {
-    input.value = draft.input;
+    applyInputs({
+      input: draft.input,
+      provenance:
+        typeof draft.provenance === "string"
+          ? draft.provenance
+          : "Restored inputs with no source recorded.",
+      originals: Array.isArray(draft.originals) ? draft.originals : [],
+      controls: Array.isArray(draft.controls) ? draft.controls : [],
+    });
     notes.value = typeof draft.notes === "string" ? draft.notes : "";
-    provenance =
-      typeof draft.provenance === "string"
-        ? draft.provenance
-        : "Restored editable data; provenance unspecified.";
-    originals = Array.isArray(draft.originals) ? draft.originals : [];
-    for (const [id, value] of draft.controls ?? []) {
-      const control = document.getElementById(id) as HTMLInputElement | null;
-      if (control?.hasAttribute("data-statistics-control"))
-        control.value = value;
-    }
+    if (draft.backup && typeof draft.backup.input === "string")
+      backup = draft.backup;
   }
 } catch {
-  /* Draft storage is optional. */
+  storageStatus.textContent = "This browser could not open your saved draft.";
+  storageStatus.hidden = false;
 }
+recover.hidden = !backup;
 el("statistics-analyse").addEventListener("click", () => {
   calculate();
   save();
@@ -268,12 +304,18 @@ for (const control of document.querySelectorAll("[data-statistics-control]"))
     save();
   });
 el("statistics-reset").addEventListener("click", () => {
-  input.value = initial;
-  originals = [];
-  provenance =
-    "Authored illustrative exercise; these numbers are not measurements of a product.";
+  rememberInputs();
+  applyInputs(initial);
   calculate();
   save();
+});
+recover.addEventListener("click", () => {
+  if (!backup) return;
+  applyInputs(backup);
+  backup = undefined;
+  calculate();
+  save();
+  input.focus();
 });
 el("statistics-download").addEventListener("click", () => {
   if (current === undefined) return;
@@ -382,6 +424,7 @@ file?.addEventListener("change", async () => {
         `run-${index + 1},${median(a.map((s: { elapsedMs: number }) => s.elapsedMs))},${median(b.map((s: { elapsedMs: number }) => s.elapsedMs))}`,
       );
     }
+    rememberInputs();
     input.value = rows.join("\n");
     originals = data;
     provenance = `Imported ${data.length} Chapter 2 exports for ${query}. A = DuckDB-Wasm, B = PGlite; one median per engine per fresh run. Independence remains your experimental responsibility.`;

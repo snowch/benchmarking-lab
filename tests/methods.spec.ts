@@ -48,6 +48,15 @@ test("real SQL rejects different work, then accepts the repaired January contrac
   );
   const stillFailed = await evidence(page);
   expect(stillFailed.settings.candidate).toBe("incomplete");
+  await page.locator("#methods-index").selectOption("no");
+  await run(page, "Contract passed. All six answers from both engines");
+  const withoutIndex = await evidence(page);
+  expect(
+    withoutIndex.phases.some(
+      (phase: { phase: string }) => phase.phase === "index",
+    ),
+  ).toBe(false);
+  await page.locator("#methods-index").selectOption("yes");
   await run(page, "Contract passed. All six answers from both engines");
   const repaired = await evidence(page);
   expect(repaired.samples).toHaveLength(6);
@@ -130,6 +139,27 @@ test("representative trace executes the selected mix and hotspot with independen
   await expect(page.locator("#methods-results")).toContainText(
     "calculated planning summary",
   );
+  await page.locator("#methods-mix").selectOption("8");
+  await run(page);
+  const mixed = await evidence(page);
+  await page.locator("#methods-order").selectOption("burst");
+  await run(page);
+  const burst = await evidence(page);
+  for (const engine of ["duckdb", "pglite"]) {
+    function requests(record: {
+      samples: { engine: string; query: string }[];
+    }) {
+      return record.samples
+        .filter((sample) => sample.engine === engine)
+        .map((sample) => sample.query);
+    }
+    expect(requests(mixed).slice(0, 8)).toContain("revenue");
+    expect(requests(burst)).toEqual([
+      ...Array(8).fill("lookup"),
+      "revenue",
+      "revenue",
+    ]);
+  }
 });
 
 test("scheduled arrivals expose client waiting and keep every offered work item in the evidence", async ({
@@ -171,6 +201,13 @@ test("scheduled arrivals expose client waiting and keep every offered work item 
   );
   const final = record.samples.at(-1);
   expect(final.completedMs - final.intendedMs).toBeGreaterThan(150);
+  await page.locator("#methods-interval").selectOption("25");
+  await run(page);
+  const wider = await evidence(page);
+  expect(wider.accounting).toEqual(record.accounting);
+  expect(
+    wider.workItems.map((item: { intendedMs: number }) => item.intendedMs),
+  ).toEqual(Array.from({ length: 12 }, (_, index) => index * 25));
   await page.locator("#methods-arrival").selectOption("closed");
   await run(page);
   const closed = await evidence(page);
@@ -244,11 +281,15 @@ test("methods lessons keep drafts, stay within phone width and remain readable w
   const requests: string[] = [];
   page.on("request", (request) => requests.push(request.url()));
   await page.setViewportSize({ width: 320, height: 844 });
-  for (const filename of [
-    "03-equivalent-work.html",
-    "04-representative-workloads.html",
-    "05-trust-the-benchmark.html",
-  ]) {
+  const chapters = [
+    ["03-equivalent-work.html", "Design an adversarial fixture"],
+    [
+      "04-representative-workloads.html",
+      "Replace a convenient workload with a justified one",
+    ],
+    ["05-trust-the-benchmark.html", "Challenge a plausible benchmark claim"],
+  ];
+  for (const [filename] of chapters) {
     await page.goto(`chapters/${filename}`);
     await expect(page.locator(".book-contents")).not.toHaveAttribute("open");
     await page
@@ -273,17 +314,13 @@ test("methods lessons keep drafts, stay within phone width and remain readable w
     viewport: { width: 320, height: 844 },
   });
   const plain = await context.newPage();
-  for (const filename of [
-    "03-equivalent-work.html",
-    "04-representative-workloads.html",
-    "05-trust-the-benchmark.html",
-  ]) {
+  for (const [filename, practice] of chapters) {
     await plain.goto(`chapters/${filename}`);
     await expect(plain.locator("noscript")).toBeVisible();
     await expect(plain.locator("#methods-run")).toBeDisabled();
-    await expect(plain.locator("#practice")).toContainText(
-      "Independent practice",
-    );
+    await expect(
+      plain.locator("#practice").getByRole("heading", { name: practice }),
+    ).toBeVisible();
     expect(
       await plain.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

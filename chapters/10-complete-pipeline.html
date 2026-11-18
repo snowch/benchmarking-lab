@@ -200,7 +200,6 @@
           ><a href="#practice">Practice</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / Customer question</p>
           <h2>When is the upload usable?</h2>
           <p>
             A sales team submits order files throughout the day. They need all
@@ -230,14 +229,14 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
           <h2>Measure the customer’s wait directly</h2>
           <p>
             Imagine 20 objects with five records each, submitted at two objects
             per second. For each object, start at upload submission and stop at
-            the first query that finds all five expected doubled values. A 200
-            ms polling interval adds up to approximately one polling interval of
-            detection delay, plus query cost. This is per-object completion, not
+            the first query that finds all five expected doubled values. The
+            verifier checks about every 200 ms. The recorded finish includes the
+            wait until the next check and the query time. A slow query or a late
+            poll can make that delay longer. This is per-object completion, not
             per-record latency. The harness records both the polling count and
             verification time.
           </p>
@@ -258,7 +257,6 @@
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Run and diagnose</p>
           <h2>Slow the sink, then restore it</h2>
           <p>
             Run the baseline below. Repeat with
@@ -282,19 +280,22 @@
           <p>
             Unzip the bundle, open a terminal in its
             <code>infrastructure</code> directory, and use Docker Compose. First
-            startup downloads pinned images and builds the client. The trace is
-            written to <code>results/</code>.
+            startup downloads the pinned service images. The first
+            <code>docker compose run</code> builds the Python client image. The
+            trace is written to <code>results/</code>.
           </p>
           <pre><code>docker compose up -d kafka store db
 docker compose run --rm client pipeline --count 20 --records 5 --rate 2 --pause-at 2 --pause-for 3
 ls results/*.json</code></pre>
           <p>
-            For a clean repeat,
-            <code>docker compose down -v --remove-orphans</code> removes this
-            project’s service data. Inspect the JSON summary and event
-            observations, then import the file below. The harness uses one
-            broker, one partition and one replica: its results describe this
-            local topology, not a production deployment.
+            The repeat writes a separate file with its own run ID. Keep both
+            files and use Inspect your own harness evidence to compare peak
+            outstanding objects, the time from <code>offered</code> to
+            <code>verified</code> for the same Object ID, and missing or wrong
+            records. Inspect the JSON summary and event observations, then
+            import the file below. The harness uses one broker, one partition
+            and one replica: its results describe this local topology, not a
+            production deployment.
           </p>
           <p>
             Check actual offered timestamps; the synchronous ingestion client
@@ -307,13 +308,13 @@ ls results/*.json</code></pre>
           </p>
         </section>
         <section id="inspector">
-          <p class="eyebrow section-number">04 / Inspect evidence</p>
           <h2>Read a trace</h2>
           <p>
-            This browser tool inspects evidence; it does not run a broker or
-            pipeline. Import the JSON produced by the harness or paste it below.
-            The table groups observed milestones by elapsed second. Objects and
-            records have different units.
+            Select Inspect recorded pipeline run to see the browser example.
+            Compare the peak and final counts in Offered objects awaiting
+            verification. Open Show exact event observations and follow Object
+            ID 0 from offered to upload_ack to verified. How much time passes
+            between upload acknowledgement and verified completion?
           </p>
           <div id="trace-inspector" class="evidence">
             <p class="caption">
@@ -326,7 +327,7 @@ ls results/*.json</code></pre>
               id="trace-example"
               data-example="../examples/pipeline-smoke.json"
             >
-              Inspect a recorded local run
+              Inspect recorded pipeline run
             </button>
             <p class="caption">
               <a href="../examples/pipeline-smoke.json" download
@@ -334,19 +335,30 @@ ls results/*.json</code></pre>
               >
               · <a href="../examples/README.md">Sample provenance</a>
             </p>
-            <label for="trace-file">Import a harness JSON file</label
-            ><input
-              id="trace-file"
-              type="file"
-              accept="application/json,.json"
-            /><label for="trace-json">Or paste evidence JSON</label
-            ><textarea
-              id="trace-json"
-              rows="5"
-              placeholder="Paste a harness result here"
-            ></textarea
-            ><button id="trace-inspect" type="button">Inspect evidence</button>
+            <details>
+              <summary>Inspect your own harness evidence</summary>
+              <p>
+                Select a harness JSON file to inspect it automatically. To paste
+                JSON, use Evidence JSON and select Inspect evidence. Viewing the
+                recorded example keeps your draft here.
+              </p>
+              <label for="trace-file">Import a harness JSON file</label
+              ><input
+                id="trace-file"
+                type="file"
+                accept="application/json,.json"
+              /><label for="trace-json">Evidence JSON</label
+              ><textarea
+                id="trace-json"
+                rows="5"
+                placeholder="Paste a harness result here"
+              ></textarea
+              ><button id="trace-inspect" type="button">
+                Inspect evidence
+              </button>
+            </details>
             <p id="trace-result" role="status">No evidence loaded.</p>
+            <p id="trace-storage" class="caption" role="status" hidden></p>
             <div id="trace-chart"></div>
             <label for="trace-notes">Your interpretation and caveats</label
             ><textarea
@@ -360,7 +372,6 @@ ls results/*.json</code></pre>
           </div>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Practice</p>
           <h2>Test a bottleneck hypothesis</h2>
           <p>
             The broker acknowledges quickly but queryable completion gets later
@@ -392,7 +403,6 @@ ls results/*.json</code></pre>
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">06 / Take it to a customer</p>
           <h2>Report the whole path</h2>
           <p>
             Keep the commands, configuration, topology, achieved input and

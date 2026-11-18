@@ -81,6 +81,7 @@ Python's standard library and includes an intentional wrong-answer exercise.
 - [Infrastructure contract](docs/infrastructure-measurement.md): topology, guarantees, traces and limitations.
 - [Decision tools contract](docs/decision-measurement.md): sizing/TCO semantics, evidence and report formats.
 - [Design review](docs/design-review.md): patterns selected from six companion books.
+- [Wording and interface review](docs/copy-audit.md): chapter findings and verification.
 - [Sizing and TCO](https://snowch.github.io/sizing-and-tco/): the companion for deeper modelling.
 
 The static HTML lives in `index.html` and `chapters/`. Small TypeScript modules in

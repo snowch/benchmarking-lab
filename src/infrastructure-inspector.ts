@@ -2,6 +2,7 @@ import "./chapter";
 
 type Event = {
   t: number;
+  scheduled_t?: number;
   kind: string;
   object_id?: number;
   record_id?: number | null;
@@ -19,6 +20,7 @@ if (root) {
   const file = root.querySelector<HTMLInputElement>("#trace-file")!;
   const notes = root.querySelector<HTMLTextAreaElement>("#trace-notes")!;
   const result = root.querySelector<HTMLElement>("#trace-result")!;
+  const storage = root.querySelector<HTMLElement>("#trace-storage")!;
   const chart = root.querySelector<HTMLElement>("#trace-chart")!;
   const download = root.querySelector<HTMLButtonElement>("#trace-download")!;
   const storageKey = `infrastructure-review:${location.pathname}`;
@@ -26,6 +28,7 @@ if (root) {
   let inspected: Trace | null = null;
   let generation = 0;
   let source = "User-supplied trace";
+  let inspectedSource = source;
   let redraw: (() => void) | undefined;
   new ResizeObserver(() => redraw?.()).observe(chart);
   try {
@@ -41,7 +44,8 @@ if (root) {
         source = saved.source;
     }
   } catch {
-    /* Storage may be unavailable. */
+    storage.textContent = "This browser could not open your saved draft.";
+    storage.hidden = false;
   }
   const save = () => {
     try {
@@ -49,8 +53,11 @@ if (root) {
         storageKey,
         JSON.stringify({ draft: input.value, notes: notes.value, source }),
       );
+      storage.hidden = true;
     } catch {
-      /* Large drafts or private browsing may prevent storage. */
+      storage.textContent =
+        "This browser could not save the latest draft. Keep the original file and copy any updated notes before leaving.";
+      storage.hidden = false;
     }
   };
   const invalidate = (message: string) => {
@@ -131,6 +138,13 @@ if (root) {
         !kinds.has(e.kind)
       )
         throw new Error("Invalid observation time or kind.");
+      if (
+        e.scheduled_t !== undefined &&
+        (typeof e.scheduled_t !== "number" ||
+          !Number.isFinite(e.scheduled_t) ||
+          e.scheduled_t < 0)
+      )
+        throw new Error("Scheduled offer time must be nonnegative seconds.");
       if (e.kind !== "error" && !integer(e.object_id))
         throw new Error("Observation needs a nonnegative object ID.");
       if (e.object_id !== undefined && !integer(e.object_id))
@@ -150,10 +164,10 @@ if (root) {
     }
     return trace as unknown as Trace;
   };
-  const render = () => {
+  const render = (raw = input.value, recordSource = source) => {
     invalidate("Inspecting user-supplied evidence…");
     try {
-      const trace = parse(input.value);
+      const trace = parse(raw);
       const ordered = [...trace.observations].sort((a, b) => a.t - b.t);
       const offered = new Set<number>();
       const completed = new Set<number>();
@@ -177,16 +191,18 @@ if (root) {
         points.push({ t: event.t, count: outstanding, event });
       }
       inspected = trace;
+      inspectedSource = recordSource;
       const s = trace.summary;
-      result.textContent = `${source} · ${trace.run_id} · ${trace.mode} · offered ${s.offered} · received ${s.received} · missing ${s.missing} · duplicate receipts ${s.duplicate_receipts} · errors ${s.errors}`;
+      const pipeline = trace.mode === "pipeline";
+      const inputUnit = pipeline ? "objects" : "events";
+      result.textContent = `${recordSource} · ${trace.run_id}. Offered ${s.offered} ${inputUnit}. Received ${s.received} ${pipeline ? "records" : "events"}. ${pipeline ? `Verified ${s.verified_objects} objects. ` : ""}Records missing ${s.missing}, wrong ${s.wrong_values}, extra ${s.extra}. Duplicate receipts ${s.duplicate_receipts}. Errors ${s.errors}.`;
       const heading = document.createElement("h3");
       heading.textContent =
         trace.mode === "broker"
           ? "Broker inputs awaiting processing"
-          : "Uploaded objects awaiting verification";
+          : "Offered objects awaiting verification";
       const description = document.createElement("p");
-      description.textContent =
-        "Outstanding unique IDs over elapsed seconds. Each completion is counted once; the evidence table below lists exact event times.";
+      description.textContent = `Peak outstanding ${inputUnit}: ${points.reduce((peak, point) => Math.max(peak, point.count), 0)}. Final outstanding ${inputUnit}: ${outstanding}. Each unique ${pipeline ? "offered object stays outstanding until it is verified" : "offered event stays outstanding until processing finishes"}. The table lists one row per observed milestone.`;
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("role", "img");
       svg.setAttribute(
@@ -250,7 +266,8 @@ if (root) {
       for (const label of [
         "Elapsed seconds",
         "Milestone",
-        "Object ID",
+        "Scheduled offer (s)",
+        pipeline ? "Object ID" : "Event ID",
         "Record ID",
         "Outstanding unique IDs",
       ]) {
@@ -265,6 +282,7 @@ if (root) {
         for (const value of [
           point.t,
           point.event.kind,
+          point.event.scheduled_t ?? "—",
           point.event.object_id ?? "—",
           point.event.record_id ?? "—",
           point.count,
@@ -276,16 +294,17 @@ if (root) {
       chart.append(heading, description, svg, details);
       redraw();
       download.disabled = false;
-      save();
+      return true;
     } catch (error) {
       invalidate(
         `Cannot inspect: ${error instanceof Error ? error.message : "invalid JSON"}`,
       );
+      return false;
     }
   };
   root
     .querySelector<HTMLButtonElement>("#trace-inspect")!
-    .addEventListener("click", render);
+    .addEventListener("click", () => render());
   input.addEventListener("input", () => {
     generation++;
     source = "User-supplied trace";
@@ -305,9 +324,7 @@ if (root) {
         throw new Error(`Example download failed (${response.status}).`);
       const text = await response.text();
       if (current !== generation) return;
-      input.value = text;
-      source = "Recorded local functional example";
-      render();
+      render(text, "Recorded local functional example");
     } catch (error) {
       if (current === generation)
         invalidate(`Cannot load example: ${String(error)}`);
@@ -315,7 +332,6 @@ if (root) {
   });
   file.addEventListener("change", async () => {
     const current = ++generation;
-    source = "User-supplied trace";
     invalidate("Loading user-supplied evidence…");
     try {
       const selected = file.files?.[0];
@@ -327,9 +343,11 @@ if (root) {
         throw new Error("Evidence exceeds the 5 MB limit.");
       const text = await selected.text();
       if (current !== generation) return;
-      input.value = text;
-      save();
-      render();
+      if (render(text, "User-supplied trace")) {
+        input.value = text;
+        source = "User-supplied trace";
+        save();
+      }
     } catch (error) {
       if (current === generation)
         invalidate(
@@ -343,7 +361,11 @@ if (root) {
       new Blob(
         [
           JSON.stringify(
-            { evidence: inspected, notes: notes.value, source },
+            {
+              evidence: inspected,
+              notes: notes.value,
+              source: inspectedSource,
+            },
             null,
             2,
           ),

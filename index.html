@@ -211,8 +211,7 @@
         </nav>
 
         <section id="follow">
-          <p class="eyebrow section-number">01 / Inspect</p>
-          <h2>One grid. Two ways through it.</h2>
+          <h2>How the two read orders work</h2>
           <p>
             A <strong>programming loop</strong> repeats a set of instructions.
             Here, the instructions read a number and add it to a running total.
@@ -223,11 +222,8 @@
             each row, or down each column. Both routes visit every cell once.
           </p>
           <p>
-            We’ll compare loops that follow these two routes. They read the same
-            numbers and return the same sum, so we can focus on one difference:
-            the order of the reads. Does changing that order change how long the
-            work takes? Starting here makes it easier to inspect the work behind
-            the timing before we compare more complex systems.
+            The two loops read the same numbers and return the same sum. Does
+            changing the order of the reads change how long the work takes?
           </p>
           <p>
             In memory, our grid is stored as one long <strong>array</strong>, an
@@ -283,8 +279,9 @@
             <div class="trace-layout">
               <div>
                 <p class="memory-step-instruction">
-                  Choose an order, then use the arrows or slider to follow each
-                  read.
+                  Select Across rows and use Next read three times. Then select
+                  Down columns and repeat. Compare Array index in the readout to
+                  see how far each route jumps.
                 </p>
                 <fieldset id="trace-controls" disabled>
                   <legend>Read order</legend>
@@ -305,8 +302,9 @@
   for (col = 0; col &lt; n; col++)
     sum += data[row * n + col];</code></pre>
                 <p class="caption">
-                  Illustrative pseudocode. The benchmark runs the WebAssembly
-                  source shown below.
+                  This pseudocode shows the order of the reads in a simplified
+                  form. You can open Edit the WebAssembly source to see the
+                  executable version.
                 </p>
               </div>
               <div class="memory-grid-wrap">
@@ -365,13 +363,13 @@
         </section>
 
         <section id="experiment">
-          <p class="eyebrow section-number">02 / Measure</p>
-          <h2>Ask your machine.</h2>
+          <h2>Run the memory benchmark</h2>
           <p>
-            The experiment adds every unsigned 32-bit value in a square grid.
-            Both orders use the same Wasm function with different address
-            strides. A <strong>stride</strong> is the distance between
-            successive elements in a direction.
+            The page prepares a square grid of whole numbers. Each complete pass
+            adds every value. Both orders use the same WebAssembly (Wasm)
+            function, a program that runs in the browser. Only the
+            <strong>stride</strong>, or the distance between successive reads,
+            changes.
           </p>
           <div class="memory-work-contract">
             <div>
@@ -403,8 +401,12 @@
               ><span class="badge">Measured · WebAssembly</span>
             </div>
             <p class="memory-lab-intro">
-              Start with the original source. Keep this tab visible and let the
-              run finish.
+              The page prepares the source, grid and sample count. To run the
+              first comparison, leave Grid size at 1,024 × 1,024 and Sample
+              pairs at 20 pairs. If you have a saved edit, open Edit the
+              WebAssembly source and select Restore original source first. Use
+              Recover saved source edit to return to that draft. Select Run
+              benchmark and keep this tab visible.
             </p>
             <fieldset id="settings" disabled>
               <legend class="sr-only">Benchmark settings</legend>
@@ -435,7 +437,7 @@
                 >
               </div>
               <details class="code-details">
-                <summary>Inspect or edit the WebAssembly source</summary>
+                <summary>Edit the WebAssembly source</summary>
                 <p>
                   WebAssembly text (WAT) describes the function executed by the
                   browser. The four arguments are grid width, repeat count,
@@ -451,13 +453,18 @@
                   aria-describedby="source-help"
                 ></textarea>
                 <p id="source-help" class="caption">
-                  Each batch must return the sum of all passes, wrapping at 32
-                  bits. Editing this module changes both traversal orders. A
-                  matching checksum checks this fixture; it cannot prove every
-                  read took place.
+                  Each batch repeats complete passes. The browser checks the
+                  returned sum against a separately calculated value called the
+                  expected checksum. The sum wraps back to zero after the
+                  largest 32-bit value. This shared editor changes both read
+                  orders. Other incorrect code could still return the expected
+                  sum.
                 </p>
                 <button id="restore" type="button">
                   Restore original source
+                </button>
+                <button id="recover-source" type="button" hidden>
+                  Recover saved source edit
                 </button>
               </details>
               <div class="memory-run-boundary">
@@ -478,8 +485,9 @@
             </fieldset>
             <button id="cancel" hidden type="button">Stop benchmark</button>
             <p id="status" class="status" role="status">
-              Ready when you are. No timings have been collected.
+              Select Run benchmark to collect times.
             </p>
+            <p id="save-status" class="caption" role="status" hidden></p>
             <div id="results" hidden>
               <p id="stale" class="notice" hidden>
                 Settings or source changed. These results belong to the previous
@@ -487,7 +495,7 @@
               </p>
               <div class="memory-results-heading">
                 <span class="small-label">Your measured evidence</span>
-                <h3>Two distributions. One time scale.</h3>
+                <h3>Measured times for each read order</h3>
               </div>
               <div id="summary" class="result-summary"></div>
               <div id="chart" class="chart"></div>
@@ -584,8 +592,7 @@
         </section>
 
         <section id="interpret">
-          <p class="eyebrow section-number">03 / Explain</p>
-          <h2>A result needs its conditions.</h2>
+          <h2>Read the times and their spread</h2>
           <p>
             Look at the spread of samples as well as the middle value. The
             <strong>median</strong> is the middle sample after sorting; with an
@@ -642,25 +649,26 @@
         </section>
 
         <section id="practice">
-          <p class="eyebrow section-number">04 / Experiment again</p>
-          <h2>Try to change your conclusion.</h2>
+          <h2>Compare a small grid with a large grid</h2>
           <p>
             Does the difference depend on how much data you read? Change one
             condition at a time and keep the evidence from each run.
           </p>
           <ol class="memory-practice-steps">
             <li>
-              <strong>Make a small-grid record.</strong> Run 64 × 64 with the
-              original source and download the result.
+              <strong>Make a small-grid record.</strong> In Grid size, select 64
+              × 64. Keep the original source and the same Sample pairs value.
+              Select Run benchmark, then select Download run record.
             </li>
             <li>
-              <strong>Increase the footprint.</strong> Run 2,048 × 2,048 with
-              the same source and sample-pair count. Download this result too.
+              <strong>Increase the grid size.</strong> Select 2,048 × 2,048 in
+              Grid size and run again. Download this result before rerunning.
             </li>
             <li>
-              <strong>Repeat both runs.</strong> Compare the column-to-row ratio
-              and sample spread within each size. Record whether the pattern
-              repeats.
+              <strong>Repeat both runs.</strong> For each size, compare the
+              column median divided by the row median and the spread of dots.
+              Does one grid size show a larger difference between read orders,
+              and does that pattern repeat?
             </li>
           </ol>
           <p>
@@ -686,11 +694,16 @@
           <details>
             <summary>Break and repair the calculation</summary>
             <p>
-              In the Wasm editor, change the first
+              In Run the memory benchmark, open Edit the WebAssembly source. If
+              your source already has edits, select Restore original source
+              before changing it. In Complete Wasm module, change the first
               <code>(local.get $sum)</code> inside the addition to
-              <code>(i32.const 0)</code>. The loop now replaces its running sum
-              at each read. Run it and inspect the checksum diagnostic. Restore
-              the original source and run again.
+              <code>(i32.const 0)</code>. Select Run benchmark and read the
+              checksum message next to the button. Why does replacing the
+              running sum with zero change the answer? Select Restore original
+              source, then Run benchmark to check the repair. Select Recover
+              saved source edit to return to the draft you had before the
+              exercise.
             </p>
             <p>
               A fast wrong result is not an optimisation. The check catches this
@@ -708,9 +721,10 @@
               maxlength="10000"
               placeholder="Record the grid sizes, your observations, and what you would test next."
             ></textarea>
-            <p id="save-status" class="caption">
-              Source, settings and notes save in this browser. Run records
-              remain in this tab until reload; download any you want to keep.
+            <p class="caption">
+              The browser keeps source, settings and notes when storage is
+              available. Run records stay in the tab until reload. Download the
+              records you want to keep.
             </p>
             <button id="download-notes" type="button">
               Download notes (.txt)

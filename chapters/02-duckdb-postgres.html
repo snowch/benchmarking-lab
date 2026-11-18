@@ -201,7 +201,6 @@
           <a href="#practice">Make your claim</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The customer decision</p>
           <h2>Two jobs can lead to different answers</h2>
           <p>
             In Chapter 1, you compared two ways to add numbers. Now we’ll use
@@ -287,7 +286,6 @@
           </figure>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
           <h2>Follow an order through the comparison</h2>
           <p>
             A <strong>table</strong> stores rows of records and named columns.
@@ -442,12 +440,16 @@ Enable JavaScript to expand the deterministic recipe into all INSERT statements.
           </details>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Your experiment</p>
           <h2>Inspect the requests. Run the comparison.</h2>
           <p>
-            Start with 2,000 orders. Read the two requests below and, if you
-            like, write a prediction. Then run again with 20,000 orders. Does
-            the relationship between the engines change when there is more work?
+            The page prepares identical synthetic orders and read-only SQL for
+            both engines. In Orders in each engine, select 2,000 orders. Leave
+            Measured pairs per query at 5 pairs and select Run database
+            comparison. Check that both answers match the reference. In Your
+            measured requests, compare each query’s Median (ms) and Observed
+            range (ms). Then select 20,000 orders and run again with the same
+            pair count. Does either query show a different timing pattern with
+            more rows?
           </p>
           <div class="experiment">
             <div class="figure-heading">
@@ -458,18 +460,14 @@ Enable JavaScript to expand the deterministic recipe into all INSERT statements.
             </div>
             <div class="db-controls">
               <label for="db-size"
-                ><span
-                  ><span class="db-control-number">01</span> Orders in each
-                  engine</span
+                ><span>Orders in each engine</span
                 ><select id="db-size">
                   <option value="2000">2,000 orders</option>
                   <option value="20000">20,000 orders</option>
                 </select></label
               >
               <label for="db-repeats"
-                ><span
-                  ><span class="db-control-number">02</span> Measured pairs per
-                  query</span
+                ><span>Measured pairs per query</span
                 ><select id="db-repeats">
                   <option value="5">5 pairs</option>
                   <option value="9">9 pairs</option>
@@ -527,9 +525,7 @@ ORDER BY month_id, region_id;</code></pre>
               </div>
             </div>
             <details>
-              <summary>
-                Prediction and observations (optional, saved on this device)
-              </summary>
+              <summary>Prediction and observations (optional)</summary>
               <label class="db-label" for="db-notes"
                 >What do you expect for each query, and why? Add observations
                 after the run.</label
@@ -539,11 +535,12 @@ ORDER BY month_id, region_id;</code></pre>
               ></textarea>
             </details>
             <p class="caption">
-              Engines download only when you press Run: about 54 MiB of
-              Wasm/data plus JavaScript, cached according to your browser. Both
-              use one thread and fresh in-memory databases. Allow roughly 300
-              MiB or more of free memory; mobile devices may need the smaller
-              size. Closing the tab or pressing Stop discards engine memory.
+              When you select Run database comparison, your browser fetches the
+              engine files: about 54 MiB of Wasm/data plus JavaScript, cached
+              according to your browser. Both use one thread and fresh in-memory
+              databases. Allow roughly 300 MiB or more of free memory; mobile
+              devices may need the smaller size. Closing the tab or pressing
+              Stop discards engine memory.
             </p>
             <div class="db-run-boundary">
               <span class="small-label">What this run compares</span>
@@ -555,13 +552,13 @@ ORDER BY month_id, region_id;</code></pre>
             <div class="db-actions">
               <button id="db-run" type="button" disabled>
                 Run database comparison</button
-              ><button id="db-stop" type="button" disabled>
+              ><button id="db-stop" type="button" disabled hidden>
                 Stop comparison
               </button>
             </div>
             <p id="db-status" role="status" aria-live="polite">
-              Ready. No database engine has been loaded. Your browser will
-              perform every measurement.
+              Select Run database comparison to load both engines and start
+              measuring.
             </p>
             <p class="caption">
               Limits: 60 seconds for each engine’s startup, 30 seconds for each
@@ -597,7 +594,6 @@ Enable JavaScript to inspect all reference rows.</pre>
           </div>
         </section>
         <section id="observe">
-          <p class="eyebrow section-number">04 / Read your result</p>
           <h2>First check what the clock included</h2>
           <p>
             The useful number depends on where you start and stop the clock.
@@ -665,8 +661,9 @@ Enable JavaScript to inspect all reference rows.</pre>
               <strong
                 >Warm request time · milliseconds. Lower is faster.</strong
               >
-              Both engines share a zero-based scale within each plot; the two
-              queries can have different scales.
+              Both engines share a scale starting at zero within each plot.
+              Compare engines within a plot, since lookup and revenue can use
+              different scales.
             </p>
             <ul class="db-plot-legend" aria-label="How to read the plots">
               <li>
@@ -687,10 +684,8 @@ Enable JavaScript to inspect all reference rows.</pre>
             </p>
             <div id="db-plots"></div>
             <p id="db-finding" class="db-finding"></p>
-            <details id="db-exact-values">
-              <summary>
-                Exact values: medians, observed ranges and request counts
-              </summary>
+            <div id="db-exact-values">
+              <h4>Medians, ranges and request counts</h4>
               <p class="caption db-scroll-hint">
                 The detailed timing tables below scroll sideways on narrow
                 screens.
@@ -716,15 +711,17 @@ Enable JavaScript to inspect all reference rows.</pre>
                     <tr role="row">
                       <th scope="col" role="columnheader">Query</th>
                       <th scope="col" role="columnheader">Engine</th>
-                      <th scope="col" role="columnheader">Median ms</th>
-                      <th scope="col" role="columnheader">Observed range ms</th>
+                      <th scope="col" role="columnheader">Median (ms)</th>
+                      <th scope="col" role="columnheader">
+                        Observed range (ms)
+                      </th>
                       <th scope="col" role="columnheader">Requests</th>
                     </tr>
                   </thead>
                   <tbody id="db-summary" role="rowgroup"></tbody>
                 </table>
               </div>
-            </details>
+            </div>
             <p class="db-small">
               Every returned row matched the reference. These few warm samples
               describe this run’s spread; they do not establish statistical
@@ -847,7 +844,6 @@ Enable JavaScript to inspect all reference rows.</pre>
           </details>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">05 / Keep the comparison honest</p>
           <h2>The same data is only the beginning</h2>
           <div class="db-method-ledger">
             <div>
@@ -885,7 +881,6 @@ Enable JavaScript to inspect all reference rows.</pre>
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">06 / Independent practice</p>
           <h2>Write a claim someone else can check</h2>
           <p>
             Complete two runs, one at each size. Write an initial finding for
@@ -930,7 +925,6 @@ Enable JavaScript to inspect all reference rows.</pre>
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">07 / Sources and method</p>
           <h2>Keep the experiment open to inspection</h2>
           <p>
             The engine code, worker scripts, data bundle and WebAssembly

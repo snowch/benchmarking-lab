@@ -119,6 +119,7 @@ test("run evidence imports actual export structure, retains originals and persis
     .locator("#statistics-notes")
     .fill("Same verified revenue job; repeat on another day.");
   const download = page.waitForEvent("download");
+  await page.getByText("Download analysis and notes", { exact: true }).click();
   await page.locator("#statistics-download").click();
   const artifact = await download;
   const stream = await artifact.createReadStream();
@@ -133,6 +134,27 @@ test("run evidence imports actual export structure, retains originals and persis
   );
   await expect(page.locator("#statistics-input")).toHaveValue(
     "run,a_ms,b_ms\nrun-1,20,10\nrun-2,20,10",
+  );
+  await page
+    .getByRole("button", { name: "Restore illustrative data" })
+    .press("Enter");
+  const input = page.locator("#statistics-input");
+  const illustrative = await input.inputValue();
+  const edited = illustrative.replace("run-5,126,100", "run-5,126,150");
+  expect(edited).not.toBe(illustrative);
+  await input.fill(edited);
+  await page.getByRole("button", { name: "Analyse evidence" }).press("Enter");
+  await expect(page.locator("#statistics-output")).toContainText(
+    "interval includes parity",
+  );
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Recover previous inputs" })
+    .press("Enter");
+  await expect(input).toHaveValue("run,a_ms,b_ms\nrun-1,20,10\nrun-2,20,10");
+  await expect(input).toBeFocused();
+  await expect(page.locator("#statistics-notes")).toHaveValue(
+    "Same verified revenue job; repeat on another day.",
   );
 });
 

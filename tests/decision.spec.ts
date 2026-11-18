@@ -217,7 +217,30 @@ test("report retains original evidence safely, restores a project and exports re
     buffer: Buffer.from("{}"),
   });
   await expect(page.locator("#report-status")).toContainText(
-    "existing draft retained",
+    "Your existing draft is still open",
   );
+  await expect(page.locator("#report-question")).toHaveValue(/order dashboard/);
+  await expect(page.locator("#report-storage")).toContainText(
+    "Draft saved locally",
+  );
+  await page.evaluate(() => {
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Storage limit reached", "QuotaExceededError");
+    };
+  });
+  await page.locator("#report-question").fill("Latest tab-only draft");
+  await expect(page.locator("#report-storage")).toContainText(
+    "Your latest changes are still open in this tab",
+  );
+  await expect(
+    page.getByText("Draft saved locally", { exact: false }),
+  ).toHaveCount(0);
+  const tabCopy = page.waitForEvent("download");
+  await page.locator("#report-download").press("Enter");
+  const tabOnly = JSON.parse(
+    await readFile((await (await tabCopy).path())!, "utf8"),
+  );
+  expect(tabOnly.fields.question).toBe("Latest tab-only draft");
+  await page.reload();
   await expect(page.locator("#report-question")).toHaveValue(/order dashboard/);
 });

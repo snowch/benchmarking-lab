@@ -75,10 +75,24 @@ test("edited source is actually compiled, wrong results rejected, and work survi
   page,
 }) => {
   await page.goto("./");
-  await page
-    .getByText("Inspect or edit the WebAssembly source", { exact: true })
-    .click();
+  const editor = page.getByText("Edit the WebAssembly source", { exact: true });
+  await editor.press("Enter");
   const source = await page.locator("#source").inputValue();
+  const savedSource = `${source}\n;; previous source edit`;
+  await page.evaluate(
+    (draft) =>
+      localStorage.setItem(
+        "benchmarking-lab:chapter-01:v1",
+        JSON.stringify(draft),
+      ),
+    { n: "64", samples: "10", source: savedSource, notes: "Prior notes" },
+  );
+  await page.reload();
+  await expect(page.locator("#source")).toHaveValue(savedSource);
+  await expect(page.locator("#notes")).toHaveValue("Prior notes");
+  await editor.press("Enter");
+  await page.locator("#restore").press("Enter");
+  await expect(page.locator("#source")).toHaveValue(source);
   await page
     .locator("#source")
     .fill(
@@ -100,9 +114,7 @@ test("edited source is actually compiled, wrong results rejected, and work survi
   await expect(page.locator("#source")).toHaveValue(
     source.replace("(i32.add (local.get $sum)", "(i32.add (i32.const 0)"),
   );
-  await page
-    .getByText("Inspect or edit the WebAssembly source", { exact: true })
-    .click();
+  await editor.press("Enter");
   await page.locator("#source").fill("(module broken");
   await page.locator("#run").click();
   await expect(page.locator("#status")).toHaveClass(/error/);
@@ -112,15 +124,21 @@ test("edited source is actually compiled, wrong results rejected, and work survi
   await expect(page.locator("#status")).toContainText("Run complete", {
     timeout: 30000,
   });
+  await page.reload();
+  await editor.press("Enter");
+  await page.locator("#recover-source").press("Enter");
+  await expect(page.locator("#source")).toHaveValue(savedSource);
+  await expect(page.locator("#source")).toBeFocused();
+  await expect(page.locator("#notes")).toHaveValue(
+    "Compare 16 KiB with 16 MiB.",
+  );
 });
 
 test("an unbounded Wasm loop can be stopped and the runner recovers", async ({
   page,
 }) => {
   await page.goto("./");
-  await page
-    .getByText("Inspect or edit the WebAssembly source", { exact: true })
-    .click();
+  await page.getByText("Edit the WebAssembly source", { exact: true }).click();
   await page
     .locator("#source")
     .fill(
@@ -145,9 +163,7 @@ test("an unbounded edited module hits the wall-clock limit", async ({
 }) => {
   await page.goto("./");
   await page.clock.install();
-  await page
-    .getByText("Inspect or edit the WebAssembly source", { exact: true })
-    .click();
+  await page.getByText("Edit the WebAssembly source", { exact: true }).click();
   await page
     .locator("#source")
     .fill(
@@ -225,7 +241,7 @@ test("the reading path and styling work without JavaScript", async ({
   const page = await browser.newPage({ javaScriptEnabled: false });
   await page.goto("http://127.0.0.1:4173/benchmarking-lab/");
   await expect(
-    page.getByRole("heading", { name: "A result needs its conditions." }),
+    page.getByRole("heading", { name: "Read the times and their spread" }),
   ).toBeVisible();
   await expect(page.locator("#run")).toBeDisabled();
   await expect(page.locator("noscript")).toBeVisible();

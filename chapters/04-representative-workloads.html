@@ -200,7 +200,6 @@
           <a href="#practice">Build your own trace</a>
         </nav>
         <section id="workload">
-          <p class="eyebrow section-number">01 / Describe the customer</p>
           <h2>A workload is more than a dataset size</h2>
           <p>
             A <strong>workload</strong> combines the data with the requests made
@@ -289,7 +288,6 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / A worked calculation</p>
           <h2>A recommendation depends on the mix</h2>
           <p>
             Before running, use an explicitly
@@ -324,14 +322,18 @@ B = 0.2 × 3 + 0.8 × 4 = 3.8 ms/request</pre>
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Replay real SQL</p>
           <h2>Change one workload condition</h2>
           <p>
-            Begin with the defaults and download the record. Keep the size and
-            distribution fixed, change only the request mix, and run again. Then
-            hold the mix fixed and change distribution or size. The
-            deterministic trace spaces lookup requests through ten positions; it
-            does not silently generate a new random order on each run.
+            The page builds the same orders and ten-request sequence for both
+            engines. Set Order count to 2,000, Region distribution to Uniform
+            and Request order to Mix lookups and reports. Under Lookup share in
+            each ten-request trace, choose 80% lookups. Select Run workload
+            comparison and download the evidence. Change only the lookup share
+            to 20% and rerun. Compare Lookup median ms, Report median ms and
+            Weighted ms/request. Which job now contributes more to the weighted
+            value? Then set Region distribution to Hotspot, keep the other
+            inputs fixed and rerun. Read the same fields to see whether the data
+            distribution changed either job’s time.
           </p>
           <div class="methods-lab">
             <div class="methods-controls">
@@ -356,6 +358,13 @@ B = 0.2 × 3 + 0.8 × 4 = 3.8 ms/request</pre>
                   <option value="8">80% lookups · 8 lookup / 2 report</option>
                   <option value="5">50% lookups · 5 lookup / 5 report</option>
                   <option value="2">20% lookups · 2 lookup / 8 report</option>
+                </select></label
+              ><label for="methods-order"
+                >Request order<select id="methods-order" data-method-setting>
+                  <option value="mixed">Mix lookups and reports</option>
+                  <option value="burst">
+                    Run all reports together after the lookups
+                  </option>
                 </select></label
               >
             </div>
@@ -388,7 +397,8 @@ FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
               role="status"
               aria-live="polite"
             >
-              Ready. No engine or measurement is loaded until you press Run.
+              Select Run workload comparison to load both engines and replay the
+              selected sequence.
             </p>
             <p class="caption">
               Both real engines receive identical rows and queries, with no
@@ -431,7 +441,6 @@ FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
           </div>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">04 / Interpret a workload result</p>
           <h2>Separate a mix effect from a data effect</h2>
           <p>
             First check that every answer passed. Read lookup and report medians
@@ -485,7 +494,6 @@ FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
           </details>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Independent practice</p>
           <h2>Replace a convenient workload with a justified one</h2>
           <p>
             Write a workload brief for an order-screen customer and a month-end
@@ -504,22 +512,19 @@ FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
               not change within your observations.
             </li>
             <li>
-              Design a new ten-request trace with a short report burst. Predict
-              which conclusion it might challenge, then implement and execute it
-              locally.
+              Test a report burst with the same request counts. Predict what
+              might change if reports run consecutively.
             </li>
           </ol>
           <p>
-            For that final step, edit <code>trace()</code> in
-            <code>src/methods-model.ts</code>. For example, return eight
-            <code>'lookup'</code> entries followed by two
-            <code>'revenue'</code> entries. A quoted word here is a
-            request-class name; the runner uses it to select SQL and the
-            independent expected answer. Keep the total at ten and keep the
-            selected mix consistent with its counts, so the weighted summary
-            remains truthful. Then use the
-            <a href="#evidence">local reproduction commands</a> and compare your
-            burst trace with the evenly interleaved baseline.
+            For the burst test, set Lookup share to 80%, keep both data settings
+            fixed and select Run workload comparison with Request order set to
+            Mix lookups and reports. Download the result. Set Request order to
+            Run all reports together after the lookups and rerun. Compare Trace
+            sum ms and Report median ms in the two results. Does changing the
+            order while keeping the counts fixed change the result? The exact
+            request sequence is available in Inspect the schema, SQL and trace
+            order.
           </p>
           <label class="methods-label" for="methods-notes"
             >Your workload evidence, conditional finding and trace design</label
@@ -545,7 +550,6 @@ FROM orders GROUP BY month_id, region_id ORDER BY month_id, region_id;
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">06 / Sources and reproducibility</p>
           <h2>Keep the workload attached to the score</h2>
           <p>
             The deterministic generator is the Chapter 2 generator. In hotspot

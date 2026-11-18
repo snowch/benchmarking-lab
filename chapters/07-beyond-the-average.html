@@ -202,7 +202,6 @@
           ><a href="#practice">Design your test</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The decision</p>
           <h2>What did the customer actually receive?</h2>
           <p>
             Chapter 6 compared repeated run summaries. Now imagine that an order
@@ -228,7 +227,6 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
           <h2>Seven quick answers do not mean ten happy users</h2>
           <p>
             Our authored trace plans ten requests during a one-second window.
@@ -272,11 +270,13 @@
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Evidence lab</p>
           <h2>Change the timing boundary without losing the population</h2>
           <ol>
             <li>
-              The lab starts with <strong>Actual send</strong>. Under
+              The page analyses the starter request events when it opens. If
+              your own inputs are open, select Restore illustrative data.
+              Recover previous inputs brings them back. The starter result uses
+              <strong>Actual send</strong>. Under
               <strong>Successful-request latency starts at</strong>, select
               <strong>Planned arrival (includes pre-send waiting)</strong>. The
               result updates automatically. Compare p99 across the two starting
@@ -337,8 +337,8 @@ r10,900,900,,pending</textarea>
                 Analyse evidence</button
               ><button type="button" id="statistics-reset">
                 Restore illustrative data</button
-              ><button type="button" id="statistics-download" disabled>
-                Download evidence
+              ><button type="button" id="statistics-recover" hidden>
+                Recover previous inputs
               </button>
             </div>
             <p
@@ -347,6 +347,7 @@ r10,900,900,,pending</textarea>
               role="status"
               aria-live="polite"
             ></p>
+            <p id="statistics-storage" class="caption" role="status" hidden></p>
             <div class="statistics-output" id="statistics-output"></div>
             <label for="statistics-notes"
               >Your experiment design, finding and next check</label
@@ -361,10 +362,15 @@ r10,900,900,,pending</textarea>
               any imported original records. Keep a download for your benchmark
               brief.
             </p>
+            <details>
+              <summary>Download analysis and notes</summary>
+              <button type="button" id="statistics-download" disabled>
+                Download evidence
+              </button>
+            </details>
           </div>
         </section>
         <section id="observe">
-          <p class="eyebrow section-number">04 / Measurement traps</p>
           <h2>A slowing client can hide missing demand</h2>
           <p>
             A <strong>closed-loop</strong> client sends its next request only
@@ -402,7 +408,6 @@ r10,900,900,,pending</textarea>
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Independent practice</p>
           <h2>Build a service-level account</h2>
           <p>
             Design two tests: an interactive lookup and an overnight revenue

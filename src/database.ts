@@ -304,6 +304,7 @@ runButton.addEventListener("click", async () => {
   runController = new AbortController();
   runButton.disabled = true;
   stopButton.disabled = false;
+  stopButton.hidden = false;
   size.disabled = true;
   repeats.disabled = true;
   clients = [];
@@ -477,6 +478,7 @@ runButton.addEventListener("click", async () => {
     active = false;
     runButton.disabled = false;
     stopButton.disabled = true;
+    stopButton.hidden = true;
     size.disabled = false;
     repeats.disabled = false;
   }
