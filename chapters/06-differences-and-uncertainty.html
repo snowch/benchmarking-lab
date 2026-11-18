@@ -204,7 +204,6 @@
           ><a href="#practice">Design your test</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / The decision</p>
           <h2>A repeatable benefit is more useful than a winning run</h2>
           <p>
             Chapter 5 examined whether the runner measures the intended work.
@@ -232,7 +231,6 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
           <h2>Make the direction and denominator explicit</h2>
           <p>
             In one illustrative run, A takes 120 ms and B takes 100 ms. The
@@ -291,13 +289,16 @@
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Evidence lab</p>
           <h2>Compare run summaries, then inspect the pairs</h2>
           <p>
-            Read the starter result first, or change one run and analyse again.
-            Try changing B in run 5 from 100 to 150 ms. Observe both the central
-            ratio and the interval: a headline alone hides the less consistent
-            result.
+            The page analyses the starter run summaries when it opens. If you
+            have a saved draft, select Restore illustrative data to try this
+            example. Recover previous inputs brings the draft back. In Paired
+            run summaries, replace <code>run-5,126,100</code> with
+            <code>run-5,126,150</code>. Select Analyse evidence. Compare
+            Geometric mean A/B time ratio and the approximate 95% interval with
+            the starter result. Does the edited interval still lie above parity,
+            where both options take the same time?
           </p>
           <div class="statistics-lab">
             <p class="caption">
@@ -359,8 +360,8 @@ run-5,126,100</textarea>
                 Analyse evidence</button
               ><button type="button" id="statistics-reset">
                 Restore illustrative data</button
-              ><button type="button" id="statistics-download" disabled>
-                Download evidence
+              ><button type="button" id="statistics-recover" hidden>
+                Recover previous inputs
               </button>
             </div>
             <p
@@ -369,6 +370,7 @@ run-5,126,100</textarea>
               role="status"
               aria-live="polite"
             ></p>
+            <p id="statistics-storage" class="caption" role="status" hidden></p>
             <div class="statistics-output" id="statistics-output"></div>
             <label for="statistics-notes"
               >Your experiment design, finding and next check</label
@@ -383,10 +385,15 @@ run-5,126,100</textarea>
               any imported original records. Keep a download for your benchmark
               brief.
             </p>
+            <details>
+              <summary>Download analysis and notes</summary>
+              <button type="button" id="statistics-download" disabled>
+                Download evidence
+              </button>
+            </details>
           </div>
         </section>
         <section id="observe">
-          <p class="eyebrow section-number">04 / Read the evidence</p>
           <h2>Ask what repetition actually repeated</h2>
           <p>
             Inspect the per-run bars before trusting the interval. Are later
@@ -412,7 +419,6 @@ run-5,126,100</textarea>
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Independent practice</p>
           <h2>Write a repeatable comparison plan</h2>
           <p>
             Choose one real customer job. State the useful time reduction, what

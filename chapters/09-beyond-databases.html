@@ -200,7 +200,6 @@
           ><a href="#practice">Practice</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / Customer question</p>
           <h2>When is an order delivered?</h2>
           <p>
             A fulfilment team needs each order processed within a target time
@@ -219,8 +218,7 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
-          <h2>Three clocks for one event</h2>
+          <h2>Four milestones on one clock</h2>
           <div class="evidence">
             <ol class="pipeline">
               <li>Offer event ID</li>
@@ -255,7 +253,6 @@
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Run the experiment</p>
           <h2>Pause and recover under arrivals</h2>
           <p>
             Predict how the gap between offered and processed events changes
@@ -276,38 +273,40 @@
           <p>
             Unzip the bundle, open a terminal in its
             <code>infrastructure</code> directory, and use Docker Compose. First
-            startup downloads pinned images and builds the client. The trace is
-            written to <code>results/</code>.
+            startup downloads the pinned service images. The first
+            <code>docker compose run</code> builds the Python client image. The
+            trace is written to <code>results/</code>.
           </p>
           <pre><code>docker compose up -d kafka store db
 docker compose run --rm client broker --count 200 --rate 20 --pause-at 2 --pause-for 3
 ls results/*.json</code></pre>
           <p>
-            For a clean repeat,
-            <code>docker compose down -v --remove-orphans</code> removes this
-            project’s service data. Inspect the JSON summary and event
-            observations, then import the file below. The harness uses one
-            broker, one partition and one replica: its results describe this
-            local topology, not a production deployment.
+            For a comparison run, change <code>--pause-for 3</code> to
+            <code>--pause-for 0</code> in the broker command and run it again.
+            Keep both JSON files. Repeated runs have separate IDs. Inspect the
+            JSON summary and event observations, then import the file below. The
+            harness uses one broker, one partition and one replica: its results
+            describe this local topology, not a production deployment.
           </p>
           <p>
-            Use the observations to calculate acknowledgement, receipt and
-            completion delays for the same ID. Count offered, processed and
-            errors; chart their difference across time. Compare the gap after
-            resume with the continuing arrival rate. The trace includes received
-            offsets and processing timestamps, allowing a lag proxy; it is not a
-            broker-side consumer-group lag metric. A timeout or error means the
-            run is incomplete.
+            Import each run under Inspect your own harness evidence. Compare the
+            peak and final counts in Broker inputs awaiting processing. In Show
+            exact event observations, compare Scheduled offer (s) with Elapsed
+            seconds for offered events to see whether the client kept up. Did
+            work build up during the pause and drain after the consumer resumed?
+            The trace includes received offsets and processing timestamps,
+            allowing a lag proxy; it is not a broker-side consumer-group lag
+            metric. A timeout or error means the run is incomplete.
           </p>
         </section>
         <section id="inspector">
-          <p class="eyebrow section-number">04 / Inspect evidence</p>
           <h2>Read a trace</h2>
           <p>
-            This browser tool inspects evidence; it does not run a broker or
-            pipeline. Import the JSON produced by the harness or paste it below.
-            The table groups observed milestones by elapsed second. Objects and
-            records have different units.
+            Select Inspect recorded broker run to see the browser example. Read
+            the peak and final outstanding event counts below Broker inputs
+            awaiting processing. Open Show exact event observations and compare
+            the Elapsed seconds of offered, ack, receipt and processed for the
+            same Event ID. What does a fast acknowledgement leave unmeasured?
           </p>
           <div id="trace-inspector" class="evidence">
             <p class="caption">
@@ -320,7 +319,7 @@ ls results/*.json</code></pre>
               id="trace-example"
               data-example="../examples/broker-smoke.json"
             >
-              Inspect a recorded local run
+              Inspect recorded broker run
             </button>
             <p class="caption">
               <a href="../examples/broker-smoke.json" download
@@ -328,19 +327,30 @@ ls results/*.json</code></pre>
               >
               · <a href="../examples/README.md">Sample provenance</a>
             </p>
-            <label for="trace-file">Import a harness JSON file</label
-            ><input
-              id="trace-file"
-              type="file"
-              accept="application/json,.json"
-            /><label for="trace-json">Or paste evidence JSON</label
-            ><textarea
-              id="trace-json"
-              rows="5"
-              placeholder="Paste a harness result here"
-            ></textarea
-            ><button id="trace-inspect" type="button">Inspect evidence</button>
+            <details>
+              <summary>Inspect your own harness evidence</summary>
+              <p>
+                Select a harness JSON file to inspect it automatically. To paste
+                JSON, use Evidence JSON and select Inspect evidence. Viewing the
+                recorded example keeps your draft here.
+              </p>
+              <label for="trace-file">Import a harness JSON file</label
+              ><input
+                id="trace-file"
+                type="file"
+                accept="application/json,.json"
+              /><label for="trace-json">Evidence JSON</label
+              ><textarea
+                id="trace-json"
+                rows="5"
+                placeholder="Paste a harness result here"
+              ></textarea
+              ><button id="trace-inspect" type="button">
+                Inspect evidence
+              </button>
+            </details>
             <p id="trace-result" role="status">No evidence loaded.</p>
+            <p id="trace-storage" class="caption" role="status" hidden></p>
             <div id="trace-chart"></div>
             <label for="trace-notes">Your interpretation and caveats</label
             ><textarea
@@ -354,7 +364,6 @@ ls results/*.json</code></pre>
           </div>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Practice</p>
           <h2>Choose a meaningful outcome</h2>
           <p>
             A customer compares object stores for a nightly upload and a search
@@ -389,7 +398,6 @@ ls results/*.json</code></pre>
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">06 / Take it to a customer</p>
           <h2>Keep the contract with the result</h2>
           <p>
             Record topology, versions, workload, achieved arrival rate,

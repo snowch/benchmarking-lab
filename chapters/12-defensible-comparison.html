@@ -199,7 +199,6 @@
           ><a href="#practice">Review another comparison</a>
         </nav>
         <section id="question">
-          <p class="eyebrow section-number">01 / Begin with a decision</p>
           <h2>Agree what would change the customer’s mind</h2>
           <p>
             Chapter 11 connected performance evidence to a deployment and its
@@ -260,7 +259,6 @@
           </figure>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / Worked example</p>
           <h2>Rewrite a broad claim into an auditable finding</h2>
           <p>
             Suppose an invented worksheet says: “A is twice as fast as B.” Its
@@ -341,9 +339,6 @@
           </div>
         </section>
         <section id="runner">
-          <p class="eyebrow section-number">
-            03 / A reproducible starting runner
-          </p>
           <h2>Read, run and change a self-checking experiment</h2>
           <p>
             A <strong>runner</strong> is the program that prepares work, submits
@@ -392,14 +387,14 @@ python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed
             timed region.
           </p>
           <p>
-            This runner is one sequential, <strong>closed-loop</strong> client:
-            it waits for a response before submitting the next request. It
-            teaches correctness, boundaries, repeated blocks and artifact
-            writing. It does not generate a fixed arrival rate or establish
-            sustainable server capacity. Loopback HTTP and client work may
-            dominate the tiny sum operation. Separate blocks share the same
-            processes; use fresh process launches for independent startup
-            experiments and record that change.
+            This runner uses one sequential client in a
+            <strong>closed loop</strong>: it waits for a response before
+            submitting the next request. It teaches correctness, boundaries,
+            repeated blocks and artifact writing. It does not generate a fixed
+            arrival rate or establish sustainable server capacity. Loopback HTTP
+            and client work may dominate the tiny sum operation. Separate blocks
+            share the same processes; use fresh process launches for independent
+            startup experiments and record that change.
           </p>
           <ol>
             <li>
@@ -408,15 +403,30 @@ python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed
               failures.
             </li>
             <li>
-              Change <code>--count</code> to 10,000 while keeping the other
-              arguments fixed. State whether the observed difference belongs to
-              the service computation, network/serialization path or a
-              combination you have not isolated.
+              In the terminal running the <code>compare</code> command, change
+              <code>--count 1000</code> to <code>--count 10000</code> and
+              <code>--output comparison.json</code> to
+              <code>--output comparison-large.json</code>. Keep the other
+              arguments fixed. Run again. Compare
+              <code>median_correct_ms</code> and
+              <code>per_repetition_median_ms</code> for A and B in
+              <code>summary</code>. The larger input changes both the summation
+              and HTTP payload, so which part of the path would you need to time
+              separately?
             </li>
             <li>
-              Make a copy of the script. Change one service to return the wrong
-              sum. Confirm the runner reports incorrect answers and exits
-              unsuccessfully. Keep this negative control artifact.
+              Stop B with Ctrl+C. Save a copy named
+              <code>decision-runner-wrong.py</code>. In that copy, find
+              <code>answer = sum(values)</code> and replace it with
+              <code>answer = sum(values) + 1</code>. Restart B with
+              <code
+                >python3 decision-runner-wrong.py serve --port 8012 --variant
+                builtin</code
+              >. Run the original comparison with
+              <code>--output comparison-wrong.json</code>. In
+              <code>summary</code>, check B’s <code>errors</code>. In
+              <code>samples</code>, find <code>error: incorrect answer</code>.
+              The program writes the record and exits with code 1.
             </li>
             <li>
               Replace the request function with your customer operation,
@@ -464,7 +474,6 @@ python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed
           </details>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">04 / Your report workshop</p>
           <h2>Connect the brief, observations and recommendation</h2>
           <p>
             Write the customer question and acceptance criteria first. Fill the
@@ -507,7 +516,6 @@ python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Independent capstone</p>
           <h2>Design, run, recommend and challenge</h2>
           <p>
             Choose a real decision from your work: a database query path, a
@@ -594,9 +602,6 @@ python3 decision-runner.py compare --count 1000 --repeats 5 --requests 20 --seed
           </p>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">
-            06 / A recommendation with boundaries
-          </p>
           <h2>Leave the reviewer a clear route to the evidence</h2>
           <p>
             Your final paragraph should answer the customer’s question at the

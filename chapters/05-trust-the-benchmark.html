@@ -200,9 +200,6 @@
           <a href="#practice">Diagnose a claim</a>
         </nav>
         <section id="arrival">
-          <p class="eyebrow section-number">
-            01 / How demand reaches the system
-          </p>
           <h2>A waiting client changes the offered load</h2>
           <p>
             <strong>Offered load</strong> is the work the test intends to
@@ -237,7 +234,6 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / A worked timeline</p>
           <h2>The missing time can be before the SQL</h2>
           <p>
             Consider an <strong>invented timeline for explanation</strong>. A
@@ -271,15 +267,18 @@ Total = scheduler lateness + queue/preparation + request time</pre>
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Investigate the runner</p>
           <h2>Make the client the bottleneck</h2>
           <p>
             A <strong>bottleneck</strong> is the stage that limits progress
-            under the tested conditions. Start with one engine, closed-loop
-            arrivals and no intentional client pause. Download the result. Add a
-            20 ms client pause before every SQL submission, then run again.
-            Finally switch to scheduled arrivals while retaining that pause. The
-            query and 20,000-row fixture stay identical.
+            under the tested conditions. The page prepares the same lookup and
+            20,000 orders for every run. Choose DuckDB-Wasm under Real local
+            engine, Closed loop under Arrival pattern and No intentional pause.
+            Select Run harness investigation and download the evidence. Change
+            Intentional client pause to 20 ms and rerun. Finally choose
+            Scheduled under Arrival pattern, with 5 ms in Spacing for scheduled
+            arrivals, and run with the pause still set. In each result, compare
+            Request ms with Total ms for the later requests. Which settings put
+            more waiting outside the SQL request?
           </p>
           <div class="methods-lab">
             <div class="methods-controls">
@@ -300,7 +299,7 @@ Total = scheduler lateness + queue/preparation + request time</pre>
                     Closed loop · next arrival waits for response
                   </option>
                   <option value="scheduled">
-                    Scheduled · twelve intended arrivals, 5 ms apart
+                    Scheduled · twelve arrivals at fixed intervals
                   </option>
                 </select></label
               ><label for="methods-pause"
@@ -310,6 +309,14 @@ Total = scheduler lateness + queue/preparation + request time</pre>
                 >
                   <option value="0">No intentional pause</option>
                   <option value="20">20 ms client preparation pause</option>
+                </select></label
+              ><label for="methods-interval"
+                >Spacing for scheduled arrivals<select
+                  id="methods-interval"
+                  data-method-setting
+                >
+                  <option value="5">5 ms</option>
+                  <option value="25">25 ms</option>
                 </select></label
               >
             </div>
@@ -339,8 +346,8 @@ FROM orders WHERE order_id = 10000;
               role="status"
               aria-live="polite"
             >
-              Ready. No engine or timings have been loaded. SQL responses will
-              come from the selected real engine.
+              Select Run harness investigation to load the selected engine and
+              make twelve checked requests.
             </p>
             <p class="caption">
               Each run creates a fresh local in-memory worker, loads the same
@@ -377,14 +384,12 @@ FROM orders WHERE order_id = 10000;
               Export each completed or incomplete observation before the next
               run. The JSON includes original settings, fixture and SQL, engine
               version, setup times, intended/enqueued/submitted/completed
-              timestamps, every correct response, and error/pending counts.
-              Notes save locally; raw completed observations remain in this tab
-              until the next run or page exit.
+              timestamps, every correct response, and error/pending counts. Raw
+              observations remain in this tab until the next run or page exit.
             </p>
           </div>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">04 / Test the explanation</p>
           <h2>A faster query can leave throughput unchanged</h2>
           <p>
             With a 20 ms pause, the client can submit at most about 50 requests
@@ -467,7 +472,6 @@ FROM orders WHERE order_id = 10000;
           </details>
         </section>
         <section id="lifecycle">
-          <p class="eyebrow section-number">05 / Observe the right lifecycle</p>
           <h2>Warm operation is only one phase</h2>
           <p>
             <strong>Startup</strong> can include downloading engine files,
@@ -491,7 +495,6 @@ FROM orders WHERE order_id = 10000;
           </p>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">06 / Independent practice</p>
           <h2>Challenge a plausible benchmark claim</h2>
           <p>
             A colleague writes: “Our database handles the peak rate. We sent the
@@ -517,14 +520,11 @@ FROM orders WHERE order_id = 10000;
             </li>
           </ol>
           <p>
-            For an executable extension, change the scheduled interval in
-            <code>runner()</code> in <code>src/methods-runtime.ts</code> from 5
-            ms to a named constant, then use that constant in the intended
-            timestamps as well as the scheduling expression. Update the visible
-            description and run both 5 ms and 25 ms intervals locally. This is a
-            useful first harness edit: the intended arrival record must change
-            with the schedule, or the evidence becomes misleading. Keep twelve
-            requests initially so you can inspect every timeline.
+            With Scheduled arrivals and the 20 ms pause still selected, change
+            Spacing for scheduled arrivals from 5 ms to 25 ms. Select Run
+            harness investigation again. Compare Enqueued, Submitted and Total
+            ms for later requests in both records. Does a wider arrival spacing
+            reduce the wait before submission?
           </p>
           <label class="methods-label" for="methods-notes"
             >Your diagnosis, measured evidence and sustained-test
@@ -551,7 +551,6 @@ FROM orders WHERE order_id = 10000;
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">07 / Sources and reproducibility</p>
           <h2>Keep the observer in the evidence</h2>
           <p>
             All clocks use the page's monotonic <code>performance.now()</code>,

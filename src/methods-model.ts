@@ -57,7 +57,14 @@ export function workload(count: number, shape: string) {
 export function equalRows(actual: Rows, expected: Rows) {
   return JSON.stringify(actual) === JSON.stringify(expected);
 }
-export function trace(lookups: number): ("lookup" | "revenue")[] {
+export function trace(
+  lookups: number,
+  order: string,
+): ("lookup" | "revenue")[] {
+  if (order === "burst")
+    return Array.from({ length: 10 }, (_, i) =>
+      i < lookups ? "lookup" : "revenue",
+    );
   // A ten-request trace, evenly interleaved; no random seed is needed.
   return Array.from({ length: 10 }, (_, i) =>
     Math.floor(((i + 1) * lookups) / 10) > Math.floor((i * lookups) / 10)

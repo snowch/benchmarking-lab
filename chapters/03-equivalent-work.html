@@ -201,7 +201,6 @@
           <a href="#practice">Design your own check</a>
         </nav>
         <section id="contract">
-          <p class="eyebrow section-number">01 / Define success first</p>
           <h2>Write the answer before timing it</h2>
           <p>
             A <strong>comparison contract</strong> is a short agreement about
@@ -278,7 +277,6 @@
           </p>
         </section>
         <section id="worked-example">
-          <p class="eyebrow section-number">02 / A worked example</p>
           <h2>Three small changes, one wrong report</h2>
           <p>
             Our eight orders include two separate purchases for 100 cents, an
@@ -388,15 +386,16 @@ GROUP BY region_id ORDER BY region_id;</pre>
           </p>
         </section>
         <section id="experiment">
-          <p class="eyebrow section-number">03 / Execute the contract</p>
           <h2>Catch the wrong work, then repair it</h2>
           <p>
-            With the colleague’s candidate selected under
-            <strong>Query to execute</strong>, select
-            <strong>Run equivalence check</strong>. Read the contract result
-            below the button and compare the expected rows with each engine’s
-            rows. Select <strong>Repaired January report</strong> and run again.
-            Do both engines now return the expected rows?
+            The page prepares eight orders and the independently calculated
+            expected rows. Set Index policy for both engines to No index. Under
+            Query to execute, select Colleague’s candidate, then select Run
+            equivalence check. Read the contract result below the button.
+            Compare the order count and revenue for each region in Expected and
+            the two engine outputs. Which orders did the candidate count or sum
+            differently? Select Repaired January report and run again. Does each
+            engine match both expected rows this time?
           </p>
           <div class="methods-lab">
             <div class="methods-controls">
@@ -428,13 +427,14 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
 -- All eight rows are shown above.
 -- Expected rows: [1, 3, 450], [2, 2, 0].
 -- The repaired query counts every row and filters month_id = 1.</pre>
-              <p>
-                To inspect index setup, select
-                <strong>Build an index on month_id</strong> and run again. Find
-                the index times in the preparation table, separate from the
-                query times.
-              </p>
             </details>
+            <p>
+              Keep Repaired January report selected, set Index policy for both
+              engines to Build an index on month_id and select Run equivalence
+              check. Find the index phase in the preparation table. Do the
+              verified answers change? The index time is a preparation cost, and
+              the eight-row fixture is for checking the answers.
+            </p>
             <div class="methods-buttons">
               <button id="methods-run" type="button" disabled>
                 Run equivalence check</button
@@ -495,7 +495,6 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
           </div>
         </section>
         <section id="interpret">
-          <p class="eyebrow section-number">04 / Read the evidence</p>
           <h2>Correctness is an admission rule</h2>
           <p>
             A failed answer is excluded from a speed claim about the agreed
@@ -565,7 +564,6 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
           </details>
         </section>
         <section id="practice">
-          <p class="eyebrow section-number">05 / Independent practice</p>
           <h2>Design an adversarial fixture</h2>
           <p>
             Your next customer asks for “orders paid in January.” Before adding
@@ -626,7 +624,6 @@ CREATE TABLE orders (order_id INTEGER, month_id INTEGER,
           </details>
         </section>
         <section id="evidence">
-          <p class="eyebrow section-number">06 / Sources and reproducibility</p>
           <h2>Make the contract inspectable</h2>
           <p>
             The exercise uses the same pinned local engine resources as Chapter

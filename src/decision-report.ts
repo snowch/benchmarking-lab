@@ -13,7 +13,7 @@ const root = document.getElementById("report-builder")!;
 const key = "benchmarking-lab-report-v1";
 let report = emptyReport();
 let firstStatus =
-  "Your draft saves locally in this browser. Download project JSON to keep the text and embedded evidence together.";
+  "This browser keeps your draft when storage is available. Download project JSON to keep the text and embedded evidence together.";
 try {
   const value = localStorage.getItem(key);
   if (value) report = validateReport(JSON.parse(value));
@@ -26,9 +26,13 @@ function make<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string) {
   if (text) node.textContent = text;
   return node;
 }
-const status = make("p", firstStatus);
+const status = make("p");
 status.id = "report-status";
+status.hidden = true;
 status.setAttribute("role", "status");
+const storageStatus = make("p", firstStatus);
+storageStatus.id = "report-storage";
+storageStatus.setAttribute("role", "status");
 const editor = make("div");
 const titleLabel = make("label", "Report title");
 const title = make("input");
@@ -93,6 +97,7 @@ const markdown = make("button", "Download report Markdown");
 markdown.id = "report-markdown";
 const refresh = make("button", "Review report");
 refresh.id = "report-review";
+refresh.className = "primary";
 actions.append(refresh, project, markdown);
 const restoreLabel = make(
   "label",
@@ -111,14 +116,19 @@ const preview = make("pre");
 preview.id = "report-preview";
 previewDetails.append(preview);
 root.append(
-  status,
+  storageStatus,
   editor,
   attachSet,
   actions,
   restoreLabel,
+  status,
   checks,
   previewDetails,
 );
+function showStatus(message: string) {
+  status.textContent = message;
+  status.hidden = false;
+}
 function read() {
   report.title = title.value;
   for (const [key] of briefFields) report.fields[key] = inputs.get(key)!.value;
@@ -126,11 +136,11 @@ function read() {
 function save() {
   try {
     localStorage.setItem(key, JSON.stringify(report));
-    status.textContent =
+    storageStatus.textContent =
       "Draft saved locally. Download project JSON for a portable backup.";
   } catch {
-    status.textContent =
-      "Draft is available in this tab; browser storage is unavailable or full. Download project JSON now to preserve it.";
+    storageStatus.textContent =
+      "This browser could not save your latest project. Your latest changes are still open in this tab. Download project JSON to keep a copy.";
   }
 }
 function review() {
@@ -217,11 +227,13 @@ editor.addEventListener("input", () => {
 refresh.addEventListener("click", () => {
   review();
   save();
+  showStatus("Report review updated. Check the evidence list below.");
 });
 addReference.addEventListener("click", () => {
   if (!nameInput.value.trim() || !sourceInput.value.trim()) {
-    status.textContent =
-      "Give the artifact a name and a source path or URL before adding it.";
+    showStatus(
+      "Give the artifact a name and a source path or URL before adding it.",
+    );
     return;
   }
   try {
@@ -233,10 +245,11 @@ addReference.addEventListener("click", () => {
       note: "",
       payload: null,
     });
+    showStatus(`Added ${nameInput.value} to the evidence register.`);
     nameInput.value = "";
     sourceInput.value = "";
   } catch (error) {
-    status.textContent = (error as Error).message;
+    showStatus((error as Error).message);
   }
 });
 attach.addEventListener("change", async () => {
@@ -275,9 +288,11 @@ attach.addEventListener("change", async () => {
       note: "",
       payload,
     });
-    status.textContent = `Attached ${file.name} as ${kind}. Add its relevance and limits, then cite its evidence ID in your report.`;
+    showStatus(
+      `Attached ${file.name} as ${kind}. Add its relevance and limits, then cite its evidence ID in your report.`,
+    );
   } catch (error) {
-    status.textContent = `Evidence not attached: ${(error as Error).message}`;
+    showStatus(`Evidence not attached. ${(error as Error).message}`);
   }
   attach.value = "";
 });
@@ -319,8 +334,11 @@ restore.addEventListener("change", async () => {
     renderRegister();
     review();
     save();
+    showStatus(`Opened project ${file.name}.`);
   } catch (error) {
-    status.textContent = `Project not imported; existing draft retained. ${(error as Error).message}`;
+    showStatus(
+      `Project not imported. Your existing draft is still open. ${(error as Error).message}`,
+    );
   }
   restore.value = "";
 });

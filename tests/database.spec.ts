@@ -73,7 +73,7 @@ test("real shipped database engines verify both queries and export the measured 
   });
   await page.goto("chapters/02-duckdb-postgres.html");
   await expect(page.locator("#db-status")).toContainText(
-    "No database engine has been loaded",
+    "Select Run database comparison to load both engines",
   );
   expect(engineRequests).toEqual([]);
   await page.locator("#db-run").click();
@@ -101,7 +101,7 @@ test("real shipped database engines verify both queries and export the measured 
     await readFile((await (await downloading).path())!, "utf8"),
   );
   await expectPlottedSamples(page, record.samples);
-  await expect(page.locator("#db-exact-values")).not.toHaveAttribute("open");
+  await expect(page.locator("#db-exact-values")).toBeVisible();
   expect(record.format).toBe("benchmarking-lab-databases-v1");
   expect(record.settings.rows).toBe(2000);
   expect(record.settings.sql).toEqual(queries(2000));
@@ -299,7 +299,6 @@ test("phone layout keeps the source readable and preserves the practice draft", 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("#db-plots").scrollIntoViewIfNeeded();
   await page.screenshot({ path: "/tmp/database-phone-results.png" });
-  await page.locator("#db-exact-values > summary").click();
   await expect(page.locator("#db-summary")).toBeVisible();
   expect(
     await page.evaluate(

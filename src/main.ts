@@ -13,6 +13,7 @@ const notes = el<HTMLTextAreaElement>("notes");
 const settings = el<HTMLFieldSetElement>("settings");
 const status = el("status");
 const storageKey = "benchmarking-lab:chapter-01:v1";
+let sourceBackup: string | undefined;
 source.value = original;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey) ?? "null");
@@ -22,10 +23,16 @@ try {
       samples.value = saved.samples;
     if (typeof saved.source === "string" && saved.source.length <= 20000)
       source.value = saved.source;
+    if (
+      typeof saved.sourceBackup === "string" &&
+      saved.sourceBackup.length <= 20000
+    )
+      sourceBackup = saved.sourceBackup;
     if (typeof saved.notes === "string" && saved.notes.length <= 10000)
       notes.value = saved.notes;
   }
 } catch {
+  el("save-status").hidden = false;
   el("save-status").textContent =
     "Saved work could not be read. You can still run experiments and download your notes.";
 }
@@ -38,14 +45,15 @@ function save() {
         n: size.value,
         samples: samples.value,
         source: source.value,
+        sourceBackup,
         notes: notes.value,
       }),
     );
-    el("save-status").textContent =
-      "Source, settings and notes saved in this browser. Download run records before reloading.";
+    el("save-status").hidden = true;
   } catch {
+    el("save-status").hidden = false;
     el("save-status").textContent =
-      "Browser storage is unavailable. Download your notes and run record to keep them.";
+      "This browser could not save your latest changes. They are available in this tab. Copy your source or download notes before leaving.";
   }
 }
 const step = el<HTMLInputElement>("step");
@@ -117,10 +125,26 @@ function changed() {
 for (const input of [size, samples, source])
   input.addEventListener("input", changed);
 notes.addEventListener("input", save);
+const recoverSource = el<HTMLButtonElement>("recover-source");
+function updateRecovery() {
+  recoverSource.hidden =
+    sourceBackup === undefined || sourceBackup === source.value;
+}
 el("restore").onclick = () => {
+  if (source.value !== original) sourceBackup ??= source.value;
   source.value = original;
   changed();
+  updateRecovery();
 };
+recoverSource.onclick = () => {
+  if (sourceBackup === undefined) return;
+  source.value = sourceBackup;
+  sourceBackup = undefined;
+  changed();
+  updateRecovery();
+  source.focus();
+};
+updateRecovery();
 function finish(message: string, error = false) {
   worker?.terminate();
   worker = undefined;
@@ -209,7 +233,11 @@ el("run").onclick = () => {
     worker.onmessage = (event) => {
       if (event.data.type === "progress")
         status.textContent = event.data.message;
-      if (event.data.type === "error") finish(event.data.message, true);
+      if (event.data.type === "error")
+        finish(
+          `${event.data.message}${result ? " The last successful record remains below." : ""}`,
+          true,
+        );
       if (event.data.type === "result") {
         renderResult(event.data.result);
         finish(

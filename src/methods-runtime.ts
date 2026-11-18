@@ -181,6 +181,9 @@ try {
 }
 function source() {
   const options = settings();
+  if (chapter === "5")
+    $("methods-interval").closest("label")!.hidden =
+      options.arrival !== "scheduled";
   let value = "";
   if (chapter === "3")
     value = `${EDGE_LOAD.join("\n")}\n${options.index === "yes" ? "CREATE INDEX orders_month ON orders(month_id);\n" : ""}ANALYZE orders;\n\n-- Candidate SQL\n${FAIR_SQL[options.candidate as keyof typeof FAIR_SQL]}\n\n-- Expected ordered rows (independent reference)\n${JSON.stringify(fairReference())}`;
@@ -189,7 +192,7 @@ function source() {
       Number(options.size ?? 20000),
       options.shape ?? "uniform",
     );
-    value = `${loadStatements(fixture.rows)[1]}\n-- ${fixture.rows.length} deterministic rows; the download contains all INSERT statements.\nANALYZE orders;\n\n${fixture.sql.lookup}\n\n${fixture.sql.revenue}\n\n-- ${chapter === "4" ? `Ten-request order: ${trace(Number(options.mix)).join(", ")}` : "Twelve lookup requests. One connection, one request in flight."}`;
+    value = `${loadStatements(fixture.rows)[1]}\n-- ${fixture.rows.length} deterministic rows; the download contains all INSERT statements.\nANALYZE orders;\n\n${fixture.sql.lookup}\n\n${fixture.sql.revenue}\n\n-- ${chapter === "4" ? `Ten-request order: ${trace(Number(options.mix), options.order).join(", ")}` : "Twelve lookup requests. One connection, one request in flight."}`;
   }
   $("methods-sql").textContent = value;
 }
@@ -210,6 +213,7 @@ for (const control of controls)
 notes.addEventListener("input", save);
 source();
 runButton.disabled = false;
+stopButton.hidden = true;
 function paragraph(text: string) {
   const p = document.createElement("p");
   p.textContent = text;
@@ -602,7 +606,7 @@ async function representative(options: Record<string, string>) {
         throw new Error("Warm-up answer failed verification.");
     }
   }
-  const sequence = trace(Number(options.mix));
+  const sequence = trace(Number(options.mix), options.order);
   status.textContent =
     "Executing the ten-request workload in both engines; all answers must match.";
   for (let i = 0; i < sequence.length; i++)
@@ -621,7 +625,7 @@ async function representative(options: Record<string, string>) {
           "Measured answer failed verification; this run is invalid.",
         );
     }
-  record!.outcome = `Run complete: ${fixture.rows.length.toLocaleString()} orders, ${options.shape} regions, ${options.mix} of ten requests are lookups. Every measured answer matched. Compare each job before interpreting the mix summary.`;
+  record!.outcome = `Run complete: ${fixture.rows.length.toLocaleString()} orders, ${options.shape} regions, ${options.mix} of ten requests are lookups, ${options.order === "burst" ? "followed by a report burst" : "mixed with reports"}. Every measured answer matched. Compare each job before interpreting the mix summary.`;
 }
 const delay = (duration: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, Math.max(0, duration)));
@@ -649,6 +653,7 @@ async function runner(options: Record<string, string>) {
   record!.accounting = counts;
   const beginning = performance.now();
   const pause = Number(options.pause);
+  const interval = Number(options.interval);
   let chain = Promise.resolve();
   const handle = async (
     position: number,
@@ -702,7 +707,7 @@ async function runner(options: Record<string, string>) {
     let arrivalError: unknown;
     try {
       for (let i = 0; i < 12; i++) {
-        const target = beginning + i * 5;
+        const target = beginning + i * interval;
         // Timers may truncate fractional delays; recheck the actual monotonic clock.
         while (performance.now() < target)
           await delay(target - performance.now());
@@ -712,10 +717,10 @@ async function runner(options: Record<string, string>) {
         const enqueuedMs = performance.now() - beginning;
         record!.workItems!.push({
           position: i + 1,
-          intendedMs: i * 5,
+          intendedMs: i * interval,
           enqueuedMs,
         });
-        chain = chain.then(() => handle(i + 1, i * 5, enqueuedMs));
+        chain = chain.then(() => handle(i + 1, i * interval, enqueuedMs));
         // Register a handler immediately, while retaining rejection for the final await.
         void chain.catch(() => {});
       }
@@ -741,7 +746,7 @@ async function runner(options: Record<string, string>) {
       await handle(i + 1, intendedMs, intendedMs);
     }
   }
-  record!.outcome = `Run complete: ${counts.completed} correct responses; ${counts.errors} errors; ${counts.pending} pending. ${options.arrival === "scheduled" ? "Arrivals were intended every 5 ms, independent of completion. Inspect the gap from intended arrival to submission." : "Each next arrival waited for the previous response. Offered demand therefore slowed with the client and database."} The ${pause} ms client pause is deliberate runner behaviour; query responses are measured from the real engine.`;
+  record!.outcome = `Run complete: ${counts.completed} correct responses; ${counts.errors} errors; ${counts.pending} pending. ${options.arrival === "scheduled" ? `Arrivals were intended every ${interval} ms, independent of completion. Inspect the gap from intended arrival to submission.` : "Each next arrival waited for the previous response. Offered demand therefore slowed with the client and database."} The ${pause} ms client pause is deliberate runner behaviour; query responses are measured from the real engine.`;
 }
 runButton.addEventListener("click", async () => {
   if (busy) return;
@@ -751,6 +756,7 @@ runButton.addEventListener("click", async () => {
   downloadButton.disabled = true;
   runButton.disabled = true;
   stopButton.disabled = false;
+  stopButton.hidden = false;
   controls.forEach((c) => (c.disabled = true));
   $("methods-stale").hidden = true;
   $("methods-results").hidden = true;
@@ -829,6 +835,7 @@ runButton.addEventListener("click", async () => {
     busy = false;
     runButton.disabled = false;
     stopButton.disabled = true;
+    stopButton.hidden = true;
     controls.forEach((c) => (c.disabled = false));
     render(record);
   }
